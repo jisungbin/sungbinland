@@ -2,7 +2,6 @@
 
   <application
     android:label="성빈랜드"
-    android:name="sungbinland.app.App"
     android:icon="@mipmap/ic_launcher"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:theme="@android:style/Theme.Material.Light.NoActionBar">
