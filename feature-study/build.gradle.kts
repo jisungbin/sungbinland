@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.android.library)
+  alias(libs.plugins.poko)
   kotlin("plugin.compose")
   kotlin("plugin.serialization")
 }
