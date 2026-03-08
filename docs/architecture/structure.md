@@ -75,6 +75,10 @@
 - Room database setup belongs only in `core`.
 - Notification logic belongs only in `core`.
 - Feature modules consume persistence and notification foundations through `core`.
+- `core/workout` stores workout routine (`WorkoutRoutine`), workout exercise (`WorkoutExercise`), supplement (`Supplement`), workout session summary (`WorkoutSession`), and supplement intake (`SupplementIntake` + `SupplementIntakeItem`) entities.
+- `WorkoutRoutine` and `WorkoutExercise` are connected by relation mapping (`Routine -> Exercises`).
+- `SupplementIntakeItem.supplementName` references `Supplement.name` through a foreign key.
+- `core/study` stores `StudyEntry` entities with composite primary key (`category`, `name`), text content, and optional image link.
 
 ## Device Scope
 

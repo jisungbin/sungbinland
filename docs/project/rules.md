@@ -102,6 +102,7 @@
 - Keep `public` API to the minimum necessary cross-module surface.
 - Remove avoidable warnings such as redundant `Unit` return types and redundant explicit type arguments.
 - Put every annotation on the same line as its declaration.
+- Exception: `@Entity`, `@Query`, `@Upsert`, and `@Delete` should be on their own line above the declaration.
 - Use 2-space indentation.
 - Reflect the linked Kotlin style guide in future implementation work.
 
