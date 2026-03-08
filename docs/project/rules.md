@@ -78,6 +78,7 @@
 
 - Use Jetpack Compose for all UI.
 - Use Compose Material3 for all UI components.
+- Prefer `@Immutable` or `@Stable` for UI-facing models and UI-related state functions.
 - Compose UI dependencies should track the latest published release.
 - When iterating lists in Compose-related code, use the fast collection APIs from `androidx.compose.ui:ui-util`.
 - Do not rely on `androidx.compose.ui:ui` for `ui-util` APIs. Depend on `androidx.compose.ui:ui-util` directly.
@@ -104,6 +105,7 @@
 
 - Prefer `private` and `internal` visibility.
 - Keep `public` API to the minimum necessary cross-module surface.
+- Avoid `data class` for project models and prefer `@Poko` classes.
 - Remove avoidable warnings such as redundant `Unit` return types and redundant explicit type arguments.
 - Put every annotation on the same line as its declaration.
 - Exception: `@Entity`, `@Query`, `@Upsert`, and `@Delete` should be on their own line above the declaration.

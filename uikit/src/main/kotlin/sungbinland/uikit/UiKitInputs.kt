@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import dev.drewhamilton.poko.Poko
 
 @Composable public fun UiKitSearchField(
   value: String,
@@ -123,8 +125,8 @@ import androidx.compose.ui.util.fastForEach
   }
 }
 
-public data class UiKitChipState(
-  val id: String,
-  val label: String,
-  val selected: Boolean,
+@Immutable @Poko public class UiKitChipState(
+  public val id: String,
+  public val label: String,
+  public val selected: Boolean,
 )

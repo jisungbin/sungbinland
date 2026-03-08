@@ -1,14 +1,16 @@
 package sungbinland.nutrition
 
+import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 import java.time.LocalDate
 
-internal data class NutritionDashboardState(
+@Immutable @Poko internal class NutritionDashboardState(
   val summary: NutritionSummaryState,
   val macroCards: List<NutritionMacroCardState>,
   val timeline: NutritionTimelineState,
 )
 
-internal data class NutritionSummaryState(
+@Immutable @Poko internal class NutritionSummaryState(
   val dayTag: String,
   val displayDate: String,
   val headline: String,
@@ -19,24 +21,24 @@ internal data class NutritionSummaryState(
   val trendValues: List<NutritionTrendValueState>,
 )
 
-internal data class NutritionTrendValueState(
+@Immutable @Poko internal class NutritionTrendValueState(
   val label: String,
   val value: String,
 )
 
-internal data class NutritionMacroCardState(
+@Immutable @Poko internal class NutritionMacroCardState(
   val title: String,
   val value: String,
   val meta: String,
   val highlighted: Boolean,
 )
 
-internal data class NutritionTimelineState(
+@Immutable @Poko internal class NutritionTimelineState(
   val meta: String,
   val items: List<NutritionTimelineItemState>,
 )
 
-internal data class NutritionTimelineItemState(
+@Immutable @Poko internal class NutritionTimelineItemState(
   val title: String,
   val subtitle: String,
   val calorieText: String,

@@ -1,23 +1,25 @@
 package sungbinland.study
 
+import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 import sungbinland.uikit.UiKitChipState
 
-internal data class StudyDashboardState(
+@Immutable @Poko internal class StudyDashboardState(
   val header: StudyHeaderState,
   val sections: List<StudySectionState>,
 )
 
-internal data class StudyHeaderState(
+@Immutable @Poko internal class StudyHeaderState(
   val searchQuery: String,
   val chips: List<UiKitChipState>,
 )
 
-internal data class StudySectionState(
+@Immutable @Poko internal class StudySectionState(
   val title: String,
   val entries: List<StudyCardState>,
 )
 
-internal data class StudyCardState(
+@Immutable @Poko internal class StudyCardState(
   val name: String,
   val contentPreview: String,
   val thumbnailLabel: String?,

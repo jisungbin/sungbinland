@@ -1,13 +1,15 @@
 package sungbinland.workout
 
+import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 import java.time.LocalDate
 
-internal data class WorkoutDashboardState(
+@Immutable @Poko internal class WorkoutDashboardState(
   val summary: WorkoutSummaryState,
   val supplements: WorkoutSupplementChecklistState,
 )
 
-internal data class WorkoutSummaryState(
+@Immutable @Poko internal class WorkoutSummaryState(
   val dayTag: String,
   val displayDate: String,
   val routineTitle: String,
@@ -21,16 +23,16 @@ internal data class WorkoutSummaryState(
   val trendValues: List<WorkoutTrendValueState>,
 )
 
-internal data class WorkoutTrendValueState(
+@Immutable @Poko internal class WorkoutTrendValueState(
   val label: String,
   val value: String,
 )
 
-internal data class WorkoutSupplementChecklistState(
+@Immutable @Poko internal class WorkoutSupplementChecklistState(
   val items: List<WorkoutSupplementItemState>,
 )
 
-internal data class WorkoutSupplementItemState(
+@Immutable @Poko internal class WorkoutSupplementItemState(
   val name: String,
   val meta: String,
   val checked: Boolean,
