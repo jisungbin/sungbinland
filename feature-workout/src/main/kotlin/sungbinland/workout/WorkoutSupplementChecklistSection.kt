@@ -4,13 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import sungbinland.uikit.UiKitChecklistRow
+import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitPillButton
-import sungbinland.uikit.UiKitSectionHeader
+import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun WorkoutSupplementChecklistSection(
   state: WorkoutSupplementChecklistState,
@@ -22,18 +25,19 @@ import sungbinland.uikit.UiKitSectionHeader
     modifier = modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    UiKitSectionHeader(
-      title = "보충제 복용 체크리스트",
-      modifier = Modifier.fillMaxWidth(),
-      meta = null,
-    )
     Row(
       modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.End,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
     ) {
+      BasicText(
+        text = "보충제 복용 체크리스트",
+        modifier = Modifier.align(Alignment.CenterVertically),
+        style = UiKitTypography.Title.copy(color = UiKitColors.Text),
+      )
       UiKitPillButton(
         text = "보충제 관리",
-        modifier = Modifier,
+        modifier = Modifier.align(Alignment.CenterVertically),
         onClick = onManageSupplementClick,
       )
     }

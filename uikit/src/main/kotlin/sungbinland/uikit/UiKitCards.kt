@@ -57,11 +57,13 @@ import androidx.compose.ui.unit.dp
   ) {
     BasicText(
       text = title,
+      modifier = Modifier.align(Alignment.CenterVertically),
       style = UiKitTypography.Title.copy(color = UiKitColors.Text),
     )
     if (meta != null) {
       BasicText(
         text = meta,
+        modifier = Modifier.align(Alignment.CenterVertically),
         style = UiKitTypography.Label.copy(color = UiKitColors.MutedText),
       )
     }
