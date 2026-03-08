@@ -1,0 +1,122 @@
+package sungbinland.study
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
+import sungbinland.uikit.UiKitColors
+import sungbinland.uikit.UiKitSectionHeader
+import sungbinland.uikit.UiKitTypography
+
+@Composable internal fun StudySectionList(
+  sections: List<StudySectionState>,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(18.dp),
+  ) {
+    sections.fastForEach { section ->
+      StudySection(
+        state = section,
+        modifier = Modifier,
+      )
+    }
+  }
+}
+
+@Composable private fun StudySection(
+  state: StudySectionState,
+  modifier: Modifier = Modifier,
+) {
+  Column(
+    modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(12.dp),
+  ) {
+    UiKitSectionHeader(
+      title = state.title,
+      modifier = Modifier.fillMaxWidth(),
+      meta = null,
+    )
+    Column(
+      modifier = Modifier.fillMaxWidth(),
+      verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+      state.entries.fastForEach { entry ->
+        StudyCard(
+          state = entry,
+          modifier = Modifier,
+        )
+      }
+    }
+  }
+}
+
+@Composable private fun StudyCard(
+  state: StudyCardState,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier
+      .fillMaxWidth()
+      .background(
+        color = UiKitColors.Surface,
+        shape = RoundedCornerShape(16.dp),
+      )
+      .border(
+        width = 1.dp,
+        color = UiKitColors.Border,
+        shape = RoundedCornerShape(16.dp),
+      )
+      .padding(horizontal = 14.dp, vertical = 16.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      BasicText(
+        text = state.name,
+        style = UiKitTypography.Title.copy(
+          color = UiKitColors.Text,
+          fontWeight = FontWeight.SemiBold,
+        ),
+      )
+      BasicText(
+        text = state.contentPreview,
+        style = UiKitTypography.Value.copy(color = UiKitColors.MutedText),
+      )
+    }
+    if (state.thumbnailLabel != null) {
+      Box(
+        modifier = Modifier
+          .padding(start = 12.dp)
+          .background(
+            color = Color(0xFFF0EEEB),
+            shape = RoundedCornerShape(14.dp),
+          )
+          .padding(horizontal = 18.dp, vertical = 24.dp),
+        contentAlignment = Alignment.Center,
+      ) {
+        BasicText(
+          text = state.thumbnailLabel,
+          style = UiKitTypography.Label.copy(color = UiKitColors.MutedText),
+        )
+      }
+    }
+  }
+}
