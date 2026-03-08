@@ -1,3 +1,8 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+
+rootProject.name = "sungbinland"
+
 pluginManagement {
   repositories {
     google()
@@ -18,11 +23,6 @@ dependencyResolutionManagement {
   }
 }
 
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
-
-rootProject.name = "sungbinland"
-
 android {
   compileSdk = 36
   minSdk = 36
@@ -30,8 +30,10 @@ android {
 
 include(
   ":app",
-  ":core",
+  ":core-alarm",
+  ":core-database",
   ":feature-nutrition",
   ":feature-workout",
   ":feature-study",
+  ":uikit",
 )

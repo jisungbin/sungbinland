@@ -1,0 +1,240 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 4,
+    "identityHash": "b056437fdd9f110355646bdcab41b2ec",
+    "entities": [
+      {
+        "tableName": "workout_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`routine_name` TEXT NOT NULL, `main_exercise_name` TEXT NOT NULL, `heaviest_weight_kg` INTEGER NOT NULL, `performed_at` INTEGER NOT NULL, PRIMARY KEY(`performed_at`))",
+        "fields": [
+          {
+            "fieldPath": "routineName",
+            "columnName": "routine_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mainExerciseName",
+            "columnName": "main_exercise_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "heaviestWeightKg",
+            "columnName": "heaviest_weight_kg",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "performedAt",
+            "columnName": "performed_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "performed_at"
+          ]
+        }
+      },
+      {
+        "tableName": "timer_records",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`started_at` INTEGER NOT NULL, PRIMARY KEY(`started_at`))",
+        "fields": [
+          {
+            "fieldPath": "startedAt",
+            "columnName": "started_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "started_at"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_timer_records_started_at",
+            "unique": false,
+            "columnNames": [
+              "started_at"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_timer_records_started_at` ON `${TABLE_NAME}` (`started_at`)"
+          }
+        ]
+      },
+      {
+        "tableName": "workout_routines",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        }
+      },
+      {
+        "tableName": "workout_exercises",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `routine_name` TEXT NOT NULL, PRIMARY KEY(`name`), FOREIGN KEY(`routine_name`) REFERENCES `workout_routines`(`name`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "routineName",
+            "columnName": "routine_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_workout_exercises_routine_name",
+            "unique": false,
+            "columnNames": [
+              "routine_name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_workout_exercises_routine_name` ON `${TABLE_NAME}` (`routine_name`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "workout_routines",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "routine_name"
+            ],
+            "referencedColumns": [
+              "name"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "supplements",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        }
+      },
+      {
+        "tableName": "supplement_intakes",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`intake_at` INTEGER NOT NULL, PRIMARY KEY(`intake_at`))",
+        "fields": [
+          {
+            "fieldPath": "intakeAt",
+            "columnName": "intake_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "intake_at"
+          ]
+        }
+      },
+      {
+        "tableName": "supplement_intake_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`intake_at` INTEGER NOT NULL, `supplement_name` TEXT NOT NULL, PRIMARY KEY(`intake_at`, `supplement_name`), FOREIGN KEY(`intake_at`) REFERENCES `supplement_intakes`(`intake_at`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`supplement_name`) REFERENCES `supplements`(`name`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "intakeAt",
+            "columnName": "intake_at",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "supplementName",
+            "columnName": "supplement_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "intake_at",
+            "supplement_name"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_supplement_intake_items_supplement_name",
+            "unique": false,
+            "columnNames": [
+              "supplement_name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_supplement_intake_items_supplement_name` ON `${TABLE_NAME}` (`supplement_name`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "supplement_intakes",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "intake_at"
+            ],
+            "referencedColumns": [
+              "intake_at"
+            ]
+          },
+          {
+            "table": "supplements",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "supplement_name"
+            ],
+            "referencedColumns": [
+              "name"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b056437fdd9f110355646bdcab41b2ec')"
+    ]
+  }
+}

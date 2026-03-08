@@ -9,9 +9,11 @@ import androidx.room.TypeConverters
 import sungbinland.core.converter.DateEpochMillisTypeConverter
 import sungbinland.core.workout.dao.SupplementDao
 import sungbinland.core.workout.dao.SupplementIntakeDao
+import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
+import sungbinland.core.workout.entity.TimerRecordEntity
 import sungbinland.core.workout.entity.SupplementEntity
 import sungbinland.core.workout.entity.SupplementIntakeEntity
 import sungbinland.core.workout.entity.SupplementIntakeItemEntity
@@ -22,13 +24,14 @@ import sungbinland.core.workout.entity.WorkoutSessionEntity
 @Database(
   entities = [
     WorkoutSessionEntity::class,
+    TimerRecordEntity::class,
     WorkoutRoutineEntity::class,
     WorkoutExerciseEntity::class,
     SupplementEntity::class,
     SupplementIntakeEntity::class,
     SupplementIntakeItemEntity::class,
   ],
-  version = 2,
+  version = 4,
   exportSchema = true,
 )
 @TypeConverters(DateEpochMillisTypeConverter::class)
@@ -37,6 +40,7 @@ public abstract class WorkoutDatabase internal constructor() : RoomDatabase() {
   public abstract fun workoutExerciseDao(): WorkoutExerciseDao
   public abstract fun supplementDao(): SupplementDao
   public abstract fun workoutSessionDao(): WorkoutSessionDao
+  public abstract fun timerRecordDao(): TimerRecordDao
   public abstract fun supplementIntakeDao(): SupplementIntakeDao
 
   public companion object {
@@ -50,6 +54,7 @@ public abstract class WorkoutDatabase internal constructor() : RoomDatabase() {
           WorkoutDatabase::class.java,
           DATABASE_NAME,
         )
+          .fallbackToDestructiveMigration(true)
           .build()
           .also { created -> instance = created }
       }

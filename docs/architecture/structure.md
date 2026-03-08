@@ -3,29 +3,35 @@
 ## Root Modules
 
 - `app`
-- `core`
+- `core-alarm`
+- `core-database`
 - `feature-nutrition`
 - `feature-workout`
 - `feature-study`
+- `uikit`
 
 ## Module Responsibilities
 
 ### `app`
 
 - Application entry point.
-- Hilt `Application` bootstrap lives here.
 - Material3 `Scaffold` with bottom navigation for the three top-level feature modules.
 - Default top-level tab is `feature-nutrition`.
 - Navigator between the three feature modules.
-- App-level Hilt setup.
+- App-level dependency wiring without a DI framework.
 - No feature business logic.
 - Android namespace and application ID use `sungbinland.app`.
 - App Kotlin sources also live under the `sungbinland.app` package.
 
-### `core`
+### `core-alarm`
+
+- Notification logic foundation.
+- No feature-specific business logic.
+- No UI or navigation contracts.
+
+### `core-database`
 
 - Room-based app database foundation.
-- Notification logic foundation.
 - No feature-specific business logic.
 - No UI or navigation contracts.
 
@@ -48,11 +54,19 @@
 - Muscle group study.
 - Exposes the study route key, entry registration DSL, and study screen to `app`.
 
+### `uikit`
+
+- Shared Compose UI toolkit for feature modules.
+- Owns reusable design tokens, reusable cards, input controls, chart widgets, and common FAB patterns.
+- Must stay UI-only and should not depend on Room DAOs, app navigation state, or feature-specific data models.
+
 ## Dependency Boundaries
 
-- `app` depends on every feature module and `core`.
-- Every feature module depends only on `core`.
-- `core` does not depend on any feature module.
+- `app` depends on every feature module and the core modules (`core-alarm`, `core-database`).
+- Every feature module depends only on core modules and `uikit`.
+- `uikit` does not depend on feature modules or core modules.
+- `core-alarm` does not depend on any feature module.
+- `core-database` does not depend on any feature module.
 
 ## Build Configuration
 
@@ -67,18 +81,18 @@
 - `feature-nutrition` is the default selected tab.
 - The three bottom-navigation tabs share one Navigation 3 back stack.
 - `app` owns the root navigation state between `feature-nutrition`, `feature-workout`, and `feature-study`.
-- `core` is not involved in navigation concerns.
+- Core modules are not involved in navigation concerns.
 
 ## Data Structure
 
-- Local persistence is centered in `core`.
-- Room database setup belongs only in `core`.
-- Notification logic belongs only in `core`.
-- Feature modules consume persistence and notification foundations through `core`.
-- `core/workout` stores workout routine (`WorkoutRoutine`), workout exercise (`WorkoutExercise`), supplement (`Supplement`), workout session summary (`WorkoutSession`), and supplement intake (`SupplementIntake` + `SupplementIntakeItem`) entities.
+- Local persistence is centered in `core-database`.
+- Room database setup belongs only in `core-database`.
+- Notification logic belongs only in `core-alarm`.
+- Feature modules consume persistence and notification foundations through core modules.
+- `core-database/workout` stores workout routine (`WorkoutRoutine`), workout exercise (`WorkoutExercise`), supplement (`Supplement`), workout session summary (`WorkoutSession`), and supplement intake (`SupplementIntake` + `SupplementIntakeItem`) entities.
 - `WorkoutRoutine` and `WorkoutExercise` are connected by relation mapping (`Routine -> Exercises`).
 - `SupplementIntakeItem.supplementName` references `Supplement.name` through a foreign key.
-- `core/study` stores `StudyEntry` entities with composite primary key (`category`, `name`), text content, and optional image link.
+- `core-database/study` stores `StudyEntry` entities with composite primary key (`category`, `name`), text content, and optional image link.
 
 ## Device Scope
 

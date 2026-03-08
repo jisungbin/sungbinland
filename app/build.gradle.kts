@@ -1,7 +1,5 @@
 plugins {
   alias(libs.plugins.android.application)
-  alias(libs.plugins.hilt)
-  alias(libs.plugins.ksp)
   kotlin("plugin.compose")
 }
 
@@ -30,20 +28,22 @@ kotlin {
 }
 
 dependencies {
-  implementation(projects.core)
+  implementation(projects.coreDatabase)
+  implementation(projects.uikit)
   implementation(projects.featureNutrition)
   implementation(projects.featureStudy)
   implementation(projects.featureWorkout)
 
+  implementation(libs.dev.chrisbanes.haze)
+
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.navigation3.runtime)
   implementation(libs.androidx.navigation3.ui)
+  implementation(libs.androidx.room.runtime)
 
+  implementation(libs.compose.animation)
+  implementation(libs.compose.foundation)
   implementation(libs.compose.material.icons.extended)
-  implementation(libs.compose.material3)
+  implementation(libs.compose.ui)
   implementation(libs.compose.ui.util)
-
-  implementation(libs.hilt.android)
-
-  ksp(libs.hilt.compiler)
 }

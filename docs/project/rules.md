@@ -37,7 +37,7 @@
 - In the version catalog, declare libraries with `module = "group:name"`.
 - In the version catalog, use the same prefix rule across versions, libraries, and plugins.
 - Use `android-*` for Android Gradle Plugin entries, `androidx-*` for AndroidX, `kotlinx-*` for Kotlinx, and keep Compose entries under `compose-*`.
-- Keep Google ecosystem aliases as existing names such as `hilt-*` and `ksp`; do not add a `google-*` prefix.
+- Keep Google ecosystem aliases as existing names such as `ksp`; do not add a `google-*` prefix.
 - Sort version catalog entries by artifact group and then alphabetically.
 - Separate version catalog prefix blocks with blank lines.
 - In Gradle `dependencies` blocks, keep project dependencies in their own block and sort external dependencies with the same prefix-block and alphabetical rules used by the version catalog.
@@ -58,12 +58,15 @@
 - Real app features live only in root-level feature modules.
 - There should be no parent feature module.
 - There are exactly three root feature modules: `feature-nutrition`, `feature-workout`, and `feature-study`.
-- Shared core logic belongs only in `core`.
-- Feature modules depend on `core`.
+- Shared reusable Compose UI belongs in `uikit`.
+- `uikit` must not contain feature-specific business state, DAO access, or navigation entry wiring.
+- Shared core logic belongs only in core modules (`core-alarm`, `core-database`).
+- Feature modules depend on core modules.
 
 ## Core Rules
 
-- `core` is limited to Room-based app database setup and notification logic.
+- `core-database` is limited to Room-based app database setup.
+- `core-alarm` is limited to notification logic.
 - Core must not contain `@Composable` APIs or Navigation 3 contracts.
 - Core non-UI logic uses Kotlin Coroutines and Kotlinx Immutable Collections.
 - Prefer extensions outside classes for sugar or convenience APIs.
@@ -82,11 +85,12 @@
 - Every UI `@Composable` function definition must declare `modifier: Modifier = Modifier`.
 - Do not add `@Preview`.
 - Use AndroidX Navigation 3.
-- Navigation UI contracts belong outside `core`.
+- Navigation UI contracts belong outside core modules.
 - The three bottom-navigation tabs should share one Navigation 3 back stack.
 - The app targets a Galaxy S25 FE phone form factor only.
 - Foldables, tablets, and other adaptive large-screen layouts are out of scope.
-- Use Hilt for DI.
+- Do not use a DI framework.
+- Resolve core module dependencies directly in `app` and pass them explicitly to feature entry points.
 - Do not use ViewModel.
 - Use Compose Retained API with Molecule when real state logic is introduced.
 
@@ -110,8 +114,12 @@
 
 - App module base path: `app/src/main/kotlin/sungbinland/app`
 - App module Android namespace and application ID: `sungbinland.app`
-- Core module base path: `core/src/main/kotlin/sungbinland/core`
+- Core module base paths:
+- `core-database/src/main/kotlin/sungbinland/core`
+- `core-alarm/src/main/kotlin/sungbinland/core/alarm`
 - Feature module base paths:
 - `feature-nutrition/src/main/kotlin/sungbinland/nutrition`
 - `feature-workout/src/main/kotlin/sungbinland/workout`
 - `feature-study/src/main/kotlin/sungbinland/study`
+- UI toolkit module base path:
+- `uikit/src/main/kotlin/sungbinland/uikit`
