@@ -124,7 +124,7 @@ import sungbinland.uikit.UiKitTypography
       UiKitDeltaBadge(
         delta = state.trendDelta,
         meta = "지난주 대비",
-        modifier = Modifier,
+        modifier = Modifier.align(Alignment.CenterVertically),
       )
     }
     NutritionTrendValueBoxes(

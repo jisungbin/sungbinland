@@ -13,10 +13,17 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -83,6 +90,30 @@ import sungbinland.uikit.UiKitTypography
   val titleColor: Color = Color(0xCCFFFFFF)
   val valueColor: Color = Color.White
   val metaColor: Color = Color(0xE0FFFFFF)
+  var textFieldValue by remember {
+    mutableStateOf(
+      TextFieldValue(
+        text = weightInput,
+        selection = TextRange(weightInput.length),
+      ),
+    )
+  }
+
+  LaunchedEffect(weightInput) {
+    if (weightInput != textFieldValue.text) {
+      textFieldValue = TextFieldValue(
+        text = weightInput,
+        selection = TextRange(weightInput.length),
+      )
+    }
+  }
+  LaunchedEffect(isEditing) {
+    if (isEditing && textFieldValue.text.isNotEmpty()) {
+      textFieldValue = textFieldValue.copy(
+        selection = TextRange(0, textFieldValue.text.length),
+      )
+    }
+  }
 
   Column(
     modifier = modifier
@@ -109,9 +140,14 @@ import sungbinland.uikit.UiKitTypography
         verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
       ) {
         BasicTextField(
-          value = weightInput,
-          onValueChange = { input ->
-            onWeightInputChange(input.filter(Char::isDigit).take(3))
+          value = textFieldValue,
+          onValueChange = { value ->
+            val filteredText = value.text.filter(Char::isDigit).take(3)
+            textFieldValue = value.copy(
+              text = filteredText,
+              selection = TextRange(filteredText.length),
+            )
+            onWeightInputChange(filteredText)
           },
           modifier = Modifier
             .focusRequester(focusRequester)
