@@ -1,0 +1,17 @@
+**/.idea/*
+!/.idea/icon.png
+!/.idea/vcs.xml
+!/.idea/copyright
+!/.idea/codeStyleSettings.xml
+!/.idea/codeStyles
+!/.idea/dictionaries
+!/.idea/inspectionProfiles
+*.iml
+.gradle
+.kotlin
+.codex
+.DS_Store
+build
+release
+local.properties
+secrets.properties
