@@ -1,0 +1,3929 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "mv1nL",
+      "x": 2,
+      "y": -2,
+      "name": "탭/영양",
+      "width": 402,
+      "height": 874,
+      "fill": "#FAF8F5",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "akmYC",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "height": 62,
+          "fill": "#FAF8F5",
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "CSMmd",
+              "name": "Status Time",
+              "fill": "#1C1C1C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "hEnEo",
+              "name": "Status Icons",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "j70vU",
+                  "name": "Status Signal Icon",
+                  "width": 18,
+                  "height": 10,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "SY3ya",
+                  "name": "Status WiFi Icon",
+                  "width": 14,
+                  "height": 10,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 3,
+                  "id": "1zLQR",
+                  "name": "Status Battery Icon",
+                  "width": 24,
+                  "height": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "FuoBN",
+          "name": "Screen Content",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            20,
+            28
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "uLOx1",
+              "name": "Daily Summary Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "c3Ig1",
+                  "name": "Daily Calories Card",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#EFEFEF"
+                  },
+                  "layout": "vertical",
+                  "gap": 15,
+                  "padding": [
+                    20,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "9GyvW",
+                      "name": "Date Navigation",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "yNCM4",
+                          "name": "Date Prev Button",
+                          "width": 30,
+                          "height": 30,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "xQEBz",
+                              "name": "Date Prev Icon",
+                              "fill": "#8A8A8A",
+                              "content": "<",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "FVSVK",
+                          "name": "Date Center Info",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "gkRGm",
+                              "name": "Date Today Label",
+                              "fill": "#E85A4F",
+                              "content": "TODAY",
+                              "fontFamily": "Outfit",
+                              "fontSize": 9,
+                              "fontWeight": "600",
+                              "letterSpacing": 1.2
+                            },
+                            {
+                              "type": "text",
+                              "id": "kViPB",
+                              "name": "Date Value",
+                              "fill": "#1E2432",
+                              "content": "3월 8일",
+                              "fontFamily": "Outfit",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "GrP3s",
+                          "name": "Date Next Button",
+                          "width": 30,
+                          "height": 30,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "jcBAo",
+                              "name": "Date Next Icon",
+                              "fill": "#8A8A8A",
+                              "content": ">",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Hhkad",
+                      "name": "Calories Header",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fDnMk",
+                          "name": "Calories Title Group",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "yI1Yo",
+                              "name": "Calories Total Text",
+                              "fill": "#1E2432",
+                              "content": "오늘 1,860 kcal",
+                              "fontFamily": "Outfit",
+                              "fontSize": 24,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "pvIgc",
+                          "name": "Calories Graph Button",
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "gap": 6,
+                          "padding": [
+                            8,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "OBlEw",
+                              "name": "Calories Graph Button Text",
+                              "fill": "#1E2432",
+                              "content": "전체 그래프",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "YIoew",
+                      "name": "Calories Progress Row",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Ebopm",
+                          "name": "Calories Metric Group",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zEq1z",
+                              "name": "Calories Metric Label",
+                              "fill": "#8A8A8A",
+                              "content": "총 칼로리",
+                              "fontFamily": "Outfit",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "E5LOP",
+                              "name": "metricValueRow",
+                              "gap": 6,
+                              "alignItems": "end",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "NUr7P",
+                                  "name": "Calories Metric Value",
+                                  "fill": "#1E2432",
+                                  "content": "1,860",
+                                  "lineHeight": 0.9,
+                                  "fontFamily": "Outfit",
+                                  "fontSize": 32,
+                                  "fontWeight": "700"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ikSNv",
+                                  "name": "Calories Metric Unit",
+                                  "fill": "#8A8A8A",
+                                  "content": "kcal",
+                                  "fontFamily": "Outfit",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "HGtSb",
+                          "name": "Goal Progress Group",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "alignItems": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "zLVMe",
+                              "name": "Goal Progress Label",
+                              "fill": "#8A8A8A",
+                              "content": "목표 대비 진행률",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "mSG2S",
+                              "name": "Goal Progress Value",
+                              "fill": "#1E2432",
+                              "content": "78%",
+                              "fontFamily": "Outfit",
+                              "fontSize": 24,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Da1ER",
+                              "name": "Goal Progress Meta",
+                              "fill": "#ABABAB",
+                              "content": "목표 2,400 kcal",
+                              "fontFamily": "Outfit",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qWwAA",
+                      "name": "Goal Progress Track",
+                      "width": "fill_container",
+                      "height": 8,
+                      "fill": "#F5F4F2",
+                      "cornerRadius": 999,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "DjK7K",
+                          "x": 0,
+                          "y": 0,
+                          "name": "Goal Progress Fill",
+                          "width": 242,
+                          "height": 8,
+                          "fill": "#E85A4F",
+                          "cornerRadius": 999,
+                          "layout": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SW5Pc",
+                      "name": "Weekly Trend Row",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "TCGNm",
+                          "name": "Weekly Trend Label",
+                          "fill": "#8A8A8A",
+                          "textGrowth": "fixed-width",
+                          "width": 120,
+                          "content": "최근 7일 트렌드",
+                          "fontFamily": "Outfit",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ad5Yf",
+                          "name": "Weekly Delta Badge",
+                          "fill": "#E8F5E9",
+                          "cornerRadius": 4,
+                          "gap": 4,
+                          "padding": [
+                            4,
+                            8
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "eBXwy",
+                              "name": "Weekly Delta Value",
+                              "fill": "#2E7D32",
+                              "content": "+6.2%",
+                              "fontFamily": "Outfit",
+                              "fontSize": 10,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "rZL9S",
+                              "name": "Weekly Delta Meta",
+                              "fill": "#2E7D32",
+                              "content": "vs last week",
+                              "fontFamily": "Outfit",
+                              "fontSize": 10,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mGRP7",
+                      "name": "Weekly Trend Mini Chart",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "#FAFAF8",
+                      "cornerRadius": 12,
+                      "gap": 6,
+                      "padding": 8,
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "leOsl",
+                          "name": "Weekly Bar Mon",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 12
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "Pbau2",
+                          "name": "Weekly Bar Tue",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 18
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "82pqV",
+                          "name": "Weekly Bar Wed",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "nVkqj",
+                          "name": "Weekly Bar Thu",
+                          "fill": "#1E2432",
+                          "width": "fill_container",
+                          "height": 24
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "XjF6x",
+                          "name": "Weekly Bar Fri",
+                          "fill": "#E85A4F",
+                          "width": "fill_container",
+                          "height": 34
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "8SD8u",
+              "name": "Macro Weight Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "EuqWf",
+                  "name": "Macro Weight Cards",
+                  "width": "fill_container",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "8vo32",
+                      "name": "Carbs Card",
+                      "width": "fill_container",
+                      "height": 96,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#EFEFEF"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "4GEBI",
+                          "name": "Carbs Label",
+                          "fill": "#8A8A8A",
+                          "content": "탄수화물",
+                          "fontFamily": "Outfit",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.6
+                        },
+                        {
+                          "type": "text",
+                          "id": "oxTpw",
+                          "name": "Carbs Value",
+                          "fill": "#1E2432",
+                          "content": "142g",
+                          "fontFamily": "Outfit",
+                          "fontSize": 26,
+                          "fontWeight": "700",
+                          "letterSpacing": -0.2
+                        },
+                        {
+                          "type": "text",
+                          "id": "FS0bD",
+                          "name": "Carbs Target Meta",
+                          "fill": "#8A8A8A",
+                          "content": "목표 160g",
+                          "fontFamily": "Outfit",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "qCl8l",
+                      "name": "Protein Card",
+                      "width": "fill_container",
+                      "height": 96,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#EFEFEF"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "BhJSB",
+                          "name": "Protein Label",
+                          "fill": "#8A8A8A",
+                          "content": "단백질",
+                          "fontFamily": "Outfit",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.6
+                        },
+                        {
+                          "type": "text",
+                          "id": "8E4n8",
+                          "name": "Protein Value",
+                          "fill": "#1E2432",
+                          "content": "96g",
+                          "fontFamily": "Outfit",
+                          "fontSize": 26,
+                          "fontWeight": "700",
+                          "letterSpacing": -0.2
+                        },
+                        {
+                          "type": "text",
+                          "id": "yKrdJ",
+                          "name": "Protein Target Meta",
+                          "fill": "#8A8A8A",
+                          "content": "목표 110g",
+                          "fontFamily": "Outfit",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "3YxMy",
+                      "name": "Weight Card",
+                      "width": "fill_container",
+                      "height": 96,
+                      "fill": "#E85A4F",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E85A4F"
+                      },
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ul3OS",
+                          "name": "Weight Label",
+                          "fill": "#FFFFFFCC",
+                          "content": "체중",
+                          "fontFamily": "Outfit",
+                          "fontSize": 11,
+                          "fontWeight": "600",
+                          "letterSpacing": 0.6
+                        },
+                        {
+                          "type": "text",
+                          "id": "DKwhi",
+                          "name": "Weight Value",
+                          "fill": "#FFFFFF",
+                          "content": "71.4kg",
+                          "fontFamily": "Outfit",
+                          "fontSize": 26,
+                          "fontWeight": "700",
+                          "letterSpacing": -0.2
+                        },
+                        {
+                          "type": "text",
+                          "id": "3Qhni",
+                          "name": "Weight Change Meta",
+                          "fill": "#FFFFFFE0",
+                          "content": "어제보다 -0.3kg",
+                          "fontFamily": "Outfit",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Dh3J4",
+              "name": "Food Timeline Section",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                4,
+                0,
+                20,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "5ISVX",
+                  "name": "Food List Header",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "XM3jY",
+                      "name": "Food List Title",
+                      "fill": "#1C1C1C",
+                      "content": "먹은 음식",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "roahZ",
+                      "name": "Food List Count",
+                      "fill": "#9A9A9A",
+                      "content": "오늘 4건",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Ryq52",
+                  "name": "Food Entry List",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "K22kn",
+                      "name": "Food Entry Breakfast",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "3tmef",
+                          "name": "Breakfast Info",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "9kR2z",
+                              "name": "Breakfast Menu",
+                              "fill": "#1C1C1C",
+                              "content": "07:40  오트밀 + 바나나",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "xqOP3",
+                              "name": "Breakfast Meal Type",
+                              "fill": "#9A9A9A",
+                              "content": "아침",
+                              "fontFamily": "Inter",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "UfJga",
+                          "name": "Breakfast Calories",
+                          "fill": "#1E3A5F",
+                          "content": "420 kcal",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XKLlO",
+                      "name": "Food Entry Lunch",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qKFj2",
+                          "name": "Lunch Info",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "AfuKF",
+                              "name": "Lunch Menu",
+                              "fill": "#1C1C1C",
+                              "content": "12:20  닭가슴살 샐러드",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "0E2s4",
+                              "name": "Lunch Meal Type",
+                              "fill": "#9A9A9A",
+                              "content": "점심",
+                              "fontFamily": "Inter",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "T7aTm",
+                          "name": "Lunch Calories",
+                          "fill": "#1E3A5F",
+                          "content": "510 kcal",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ayUcT",
+                      "name": "Food Entry Snack",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ImcFb",
+                          "name": "Snack Info",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ko5ts",
+                              "name": "Snack Menu",
+                              "fill": "#1C1C1C",
+                              "content": "16:10  그릭요거트",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "jq8ZD",
+                              "name": "Snack Meal Type",
+                              "fill": "#9A9A9A",
+                              "content": "간식",
+                              "fontFamily": "Inter",
+                              "fontSize": 11,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "1yIOJ",
+                          "name": "Snack Calories",
+                          "fill": "#1E3A5F",
+                          "content": "180 kcal",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YAknd",
+          "name": "FAB Row",
+          "width": "fill_container",
+          "padding": [
+            0,
+            28,
+            12,
+            28
+          ],
+          "justifyContent": "end",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "6u3n2",
+              "name": "Add Food FAB",
+              "width": 56,
+              "height": 56,
+              "fill": "#1E3A5F",
+              "cornerRadius": 28,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#1E3A5F33",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 20
+              },
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "8QHIR",
+                  "name": "FAB Plus Icon",
+                  "fill": "#FFFFFF",
+                  "content": "+",
+                  "fontFamily": "Inter",
+                  "fontSize": 28,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "S1gIO",
+          "name": "Bottom Navigation Container",
+          "width": "fill_container",
+          "height": 93,
+          "layout": "vertical",
+          "padding": [
+            10,
+            21,
+            21,
+            21
+          ],
+          "justifyContent": "end",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "xft6Z",
+              "name": "Bottom Navigation Bar",
+              "width": "fill_container",
+              "height": 62,
+              "fill": "#FFFFFF",
+              "cornerRadius": 32,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#E8E8E8"
+              },
+              "gap": 4,
+              "padding": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "A4xlD",
+                  "name": "Tab Nutrition Active",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#E85A4F",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "6cFLk",
+                      "name": "Tab Nutrition Icon Wrapper",
+                      "width": 22,
+                      "height": 22,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "R6iIz",
+                          "name": "Tab Nutrition Icon",
+                          "fill": "#FFFFFF",
+                          "width": 14,
+                          "height": 14
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "BpEjA",
+                      "name": "Tab Nutrition Label",
+                      "fill": "#FFFFFF",
+                      "content": "영양",
+                      "fontFamily": "Outfit",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "huzCt",
+                  "name": "Tab Exercise",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "NHpss",
+                      "name": "Tab Exercise Icon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "dumbbell",
+                      "iconFontFamily": "lucide",
+                      "fill": "$--muted-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tXaaw",
+                      "name": "Tab Exercise Label",
+                      "fill": "$--muted-foreground",
+                      "content": "운동",
+                      "fontFamily": "Geist",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rdQL0",
+                  "name": "Tab Dictionary",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "wLr30",
+                      "name": "Tab Dictionary Icon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "book-open",
+                      "iconFontFamily": "phosphor",
+                      "fill": "$--muted-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "13Hly",
+                      "name": "Tab Dictionary Label",
+                      "fill": "$--muted-foreground",
+                      "content": "사전",
+                      "fontFamily": "Geist",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "lSedc",
+      "x": 524,
+      "y": -2,
+      "name": "화면/운동탭",
+      "width": 402,
+      "height": 874,
+      "fill": "#FAF8F5",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "ARmRw",
+          "name": "영역/상단상태바",
+          "width": "fill_container",
+          "height": 62,
+          "fill": "#FAF8F5",
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "jryGF",
+              "name": "텍스트/상태바시간",
+              "fill": "#1C1C1C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "K1q9R",
+              "name": "그룹/상태아이콘",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "yMI4D",
+                  "name": "아이콘/신호",
+                  "width": 18,
+                  "height": 10,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "HfsJU",
+                  "name": "아이콘/와이파이",
+                  "width": 14,
+                  "height": 10,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 3,
+                  "id": "L02ft",
+                  "name": "아이콘/배터리",
+                  "width": 24,
+                  "height": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IvR2m",
+          "name": "영역/메인콘텐츠",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            20,
+            28
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "bzy7A",
+              "name": "섹션/오늘루틴요약",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "qBxzr",
+                  "name": "카드/루틴요약",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#EFEFEF"
+                  },
+                  "layout": "vertical",
+                  "gap": 15,
+                  "padding": [
+                    20,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "S6hPi",
+                      "name": "행/날짜네비게이션",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "xOuCX",
+                          "name": "leftBtn",
+                          "width": 30,
+                          "height": 30,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "2DqLb",
+                              "name": "leftChevron",
+                              "fill": "#8A8A8A",
+                              "content": "<",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Esc0d",
+                          "name": "centerDate",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "0PH63",
+                              "name": "centerLabel",
+                              "fill": "#E85A4F",
+                              "content": "TODAY",
+                              "fontFamily": "Outfit",
+                              "fontSize": 9,
+                              "fontWeight": "600",
+                              "letterSpacing": 1.2
+                            },
+                            {
+                              "type": "text",
+                              "id": "X8GPp",
+                              "name": "centerValue",
+                              "fill": "#1E2432",
+                              "content": "3월 8일",
+                              "fontFamily": "Outfit",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "cgOCf",
+                          "name": "rightBtn",
+                          "width": 30,
+                          "height": 30,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "qe64S",
+                              "name": "rightChevron",
+                              "fill": "#8A8A8A",
+                              "content": ">",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "mweB6",
+                      "name": "행/루틴헤더",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TN57X",
+                          "name": "titleWrap",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "sasXE",
+                              "name": "mainMetric",
+                              "fill": "#1E2432",
+                              "content": "상체",
+                              "fontFamily": "Outfit",
+                              "fontSize": 24,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "WPjjT",
+                          "name": "graphEntry",
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "gap": 6,
+                          "padding": [
+                            8,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "l4YW1",
+                              "name": "graphEntryText",
+                              "fill": "#1E2432",
+                              "content": "루틴 상세",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Xu336",
+                      "name": "행/메인종목최고중량",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "A1lHd",
+                          "name": "metricStack",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "fxsEK",
+                              "name": "metricLabel",
+                              "fill": "#8A8A8A",
+                              "content": "메인 종목",
+                              "fontFamily": "Outfit",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "JPkFS",
+                              "name": "metricValueRow",
+                              "gap": 6,
+                              "alignItems": "end",
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "fHkfb",
+                                  "name": "mainLiftInput",
+                                  "width": 170,
+                                  "height": 40,
+                                  "fill": "#FCFBF9",
+                                  "cornerRadius": 10,
+                                  "stroke": {
+                                    "thickness": 1,
+                                    "fill": "#E8E8E8"
+                                  },
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "ajMWS",
+                                      "name": "mainInputText",
+                                      "fill": "#9A9A9A",
+                                      "content": "[...]",
+                                      "fontFamily": "Outfit",
+                                      "fontSize": 16,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "nkVna",
+                          "name": "progressWrap",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "alignItems": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KU0LX",
+                              "name": "progressLabel",
+                              "fill": "#8A8A8A",
+                              "content": "최고 중량",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "sKC2n",
+                              "name": "maxWeightInput",
+                              "width": 120,
+                              "height": 40,
+                              "fill": "#FCFBF9",
+                              "cornerRadius": 10,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "#E8E8E8"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "va3nV",
+                                  "name": "maxInputText",
+                                  "fill": "#9A9A9A",
+                                  "content": "[...]",
+                                  "fontFamily": "Outfit",
+                                  "fontSize": 16,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "1XWZh",
+                      "name": "행/최근트렌드",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DxBQE",
+                          "name": "trendLabel",
+                          "fill": "#8A8A8A",
+                          "textGrowth": "fixed-width",
+                          "width": 120,
+                          "content": "최근 무게 트렌드",
+                          "fontFamily": "Outfit",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "i1Ps0",
+                          "name": "deltaPill",
+                          "fill": "#E8F5E9",
+                          "cornerRadius": 4,
+                          "gap": 4,
+                          "padding": [
+                            4,
+                            8
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "s7faP",
+                              "name": "deltaValue",
+                              "fill": "#2E7D32",
+                              "content": "최고 중량 105kg",
+                              "fontFamily": "Outfit",
+                              "fontSize": 10,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "piKUk",
+                              "name": "deltaMeta",
+                              "fill": "#2E7D32",
+                              "content": "지난주 100kg",
+                              "fontFamily": "Outfit",
+                              "fontSize": 10,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "zkjH4",
+                      "name": "차트/최근기록",
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "#FAFAF8",
+                      "cornerRadius": 12,
+                      "gap": 6,
+                      "padding": 8,
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "kUZfq",
+                          "name": "bar1",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 12
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "tTWE4",
+                          "name": "bar2",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 18
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "h2RK2",
+                          "name": "bar3",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "68nHQ",
+                          "name": "bar4",
+                          "fill": "#1E2432",
+                          "width": "fill_container",
+                          "height": 24
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "EFoeh",
+                          "name": "bar5",
+                          "fill": "#E85A4F",
+                          "width": "fill_container",
+                          "height": 34
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "XSIuL",
+                      "name": "행/전체트렌드버튼",
+                      "width": "fill_container",
+                      "height": 32,
+                      "justifyContent": "end",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "IEFoW",
+                          "name": "버튼/전체트렌드확인",
+                          "width": 110,
+                          "height": 32,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "padding": [
+                            8,
+                            10
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "vkCS6",
+                              "name": "텍스트/전체트렌드확인",
+                              "fill": "#1E2432",
+                              "content": "전체 트렌드 확인",
+                              "fontFamily": "Outfit",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SgmlU",
+              "name": "섹션/영양제체크리스트",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                4,
+                0,
+                20,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AsDsV",
+                  "name": "행/체크리스트헤더",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "TquJd",
+                      "name": "headerTitle",
+                      "fill": "#1C1C1C",
+                      "content": "보충제 복용 체크리스트",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "h6gJQ",
+                      "name": "버튼/복용제관리",
+                      "width": 98,
+                      "height": 28,
+                      "fill": "#FCFBF9",
+                      "cornerRadius": 10,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "gap": 4,
+                      "padding": [
+                        6,
+                        10
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "9PwB5",
+                          "name": "텍스트/복용제관리",
+                          "fill": "#1E3A5F",
+                          "content": "보충제 관리",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "1uJLc",
+                  "name": "리스트/체크리스트아이템",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "o8znd",
+                      "name": "item1",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "5RQaO",
+                          "name": "item1Left",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "AkoT5",
+                              "name": "supplementName",
+                              "fill": "#1C1C1C",
+                              "content": "오메가3",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "i08S2",
+                              "name": "supplementMeta",
+                              "fill": "#9A9A9A",
+                              "content": "아침 식후 · 1캡슐",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PKZ29",
+                          "name": "item1Check",
+                          "width": 24,
+                          "height": 24,
+                          "fill": "#FF8400",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#FF8400"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "cAbGn",
+                              "name": "checkIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "check",
+                              "iconFontFamily": "lucide",
+                              "fill": "#111111"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "jdvgR",
+                      "name": "item2",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "P3kZZ",
+                          "name": "item2Left",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "EgeBf",
+                              "name": "supplementName",
+                              "fill": "#1C1C1C",
+                              "content": "비타민D",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "LGxWt",
+                              "name": "supplementMeta",
+                              "fill": "#9A9A9A",
+                              "content": "점심 후 · 1정",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Kl4rY",
+                          "name": "item2Check",
+                          "width": 24,
+                          "height": 24,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#CBCCC9"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "D5EOA",
+                      "name": "item3",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "AgzsB",
+                          "name": "item3Left",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "9g2Fl",
+                              "name": "supplementName",
+                              "fill": "#1C1C1C",
+                              "content": "마그네슘",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "ESkJ3",
+                              "name": "supplementMeta",
+                              "fill": "#9A9A9A",
+                              "content": "취침 전 · 1정",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "3zaJs",
+                          "name": "item3Check",
+                          "width": 24,
+                          "height": 24,
+                          "fill": "#FF8400",
+                          "cornerRadius": 8,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#FF8400"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "qKklq",
+                              "name": "checkIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "check",
+                              "iconFontFamily": "lucide",
+                              "fill": "#111111"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "USRYM",
+          "name": "영역/플로팅액션",
+          "width": "fill_container",
+          "padding": [
+            0,
+            28,
+            12,
+            28
+          ],
+          "justifyContent": "end",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "mTdrj",
+              "name": "버튼/FAB-타이머시작",
+              "width": 56,
+              "height": 56,
+              "fill": "#1E3A5F",
+              "cornerRadius": 28,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#1E3A5F33",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 20
+              },
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "4oSQv",
+                  "name": "아이콘/타이머",
+                  "width": 22,
+                  "height": 22,
+                  "iconFontName": "timer",
+                  "iconFontFamily": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Cd8LY",
+          "name": "영역/하단탭바",
+          "width": "fill_container",
+          "height": 93,
+          "layout": "vertical",
+          "padding": [
+            10,
+            21,
+            21,
+            21
+          ],
+          "justifyContent": "end",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "taCBN",
+              "name": "탭바/컨테이너",
+              "width": "fill_container",
+              "height": 62,
+              "fill": "#FFFFFF",
+              "cornerRadius": 32,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#E8E8E8"
+              },
+              "gap": 4,
+              "padding": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JlHol",
+                  "name": "탭/영양-비활성",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "00ZsC",
+                      "name": "iconWrap",
+                      "width": 22,
+                      "height": 22,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "GbsXQ",
+                          "name": "iconPlate",
+                          "fill": "#666666",
+                          "width": 14,
+                          "height": 14
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "fdvAT",
+                      "name": "labelNutri",
+                      "fill": "#666666",
+                      "content": "영양",
+                      "fontFamily": "Outfit",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "gcmo5",
+                  "name": "탭/운동-활성",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#E85A4F",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "6bMdh",
+                      "name": "exerciseIcon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "dumbbell",
+                      "iconFontFamily": "lucide",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YZ8SZ",
+                      "name": "exerciseLabel",
+                      "fill": "#FFFFFF",
+                      "content": "운동",
+                      "fontFamily": "Geist",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "7sDAd",
+                  "name": "탭/스터디-비활성",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "SJdea",
+                      "name": "studyIcon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "book-open",
+                      "iconFontFamily": "phosphor",
+                      "fill": "$--muted-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "9i7K8",
+                      "name": "studyLabel",
+                      "fill": "$--muted-foreground",
+                      "content": "사전",
+                      "fontFamily": "Geist",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "heElK",
+      "x": 1046,
+      "y": -2,
+      "name": "탭/스터디",
+      "width": 402,
+      "height": 874,
+      "fill": "#FAF8F5",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "oRjW0",
+          "name": "영역/상태바",
+          "width": "fill_container",
+          "height": 62,
+          "fill": "#FAF8F5",
+          "padding": [
+            0,
+            20
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "OiJuk",
+              "name": "텍스트/현재시간",
+              "fill": "#1C1C1C",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "V8eQT",
+              "name": "아이콘/상태바",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "njhzX",
+                  "name": "아이콘/신호",
+                  "width": 18,
+                  "height": 10,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 2,
+                  "id": "lbjHh",
+                  "name": "아이콘/와이파이",
+                  "width": 14,
+                  "height": 10,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 3,
+                  "id": "11UHn",
+                  "name": "아이콘/배터리",
+                  "width": 24,
+                  "height": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#1C1C1C"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "yPO8N",
+          "name": "영역/콘텐츠",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            20,
+            28
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "92Ep8",
+              "name": "섹션/스터디헤더",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bDolo",
+                  "name": "카드/스터디헤더",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#EFEFEF"
+                  },
+                  "layout": "vertical",
+                  "gap": 15,
+                  "padding": [
+                    20,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "23NEe",
+                      "name": "Date Navigation Row",
+                      "enabled": false,
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "GOZxU",
+                          "name": "leftBtn",
+                          "width": 30,
+                          "height": 30,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "wfIkv",
+                              "name": "leftChevron",
+                              "fill": "#8A8A8A",
+                              "content": "<",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "iLRYQ",
+                          "name": "centerDate",
+                          "layout": "vertical",
+                          "gap": 1,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "WobgQ",
+                              "name": "centerLabel",
+                              "fill": "#E85A4F",
+                              "content": "TODAY",
+                              "fontFamily": "Outfit",
+                              "fontSize": 9,
+                              "fontWeight": "600",
+                              "letterSpacing": 1.2
+                            },
+                            {
+                              "type": "text",
+                              "id": "0L5e1",
+                              "name": "centerValue",
+                              "fill": "#1E2432",
+                              "content": "3월 8일",
+                              "fontFamily": "Outfit",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "9mrPk",
+                          "name": "rightBtn",
+                          "width": 30,
+                          "height": 30,
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "dQLsR",
+                              "name": "rightChevron",
+                              "fill": "#8A8A8A",
+                              "content": ">",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "q8Ycm",
+                      "name": "Row - Header Search",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 10,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "TeFd5",
+                          "name": "titleWrap",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ajRt8",
+                              "name": "mainMetric",
+                              "fill": "#1E2432",
+                              "content": "스터디",
+                              "fontFamily": "Outfit",
+                              "fontSize": 24,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "MWxzD",
+                          "name": "Search Bar",
+                          "width": "fill_container",
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "align": "inside",
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "gap": 8,
+                          "padding": [
+                            8,
+                            12
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "y3pHC",
+                              "name": "searchIcon",
+                              "width": 14,
+                              "height": 14,
+                              "iconFontName": "search",
+                              "iconFontFamily": "lucide",
+                              "fill": "#8A8A8A"
+                            },
+                            {
+                              "type": "text",
+                              "id": "g5yau",
+                              "name": "graphEntryText",
+                              "fill": "#9A9A9A",
+                              "content": "항목 검색",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Exs8h",
+                      "name": "Intake Progress Row",
+                      "enabled": false,
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "XeJ7o",
+                          "name": "metricStack",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "lZXbu",
+                              "name": "metricLabel",
+                              "fill": "#8A8A8A",
+                              "content": "총 칼로리",
+                              "fontFamily": "Outfit",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "k7zJo",
+                              "name": "metricValueRow",
+                              "gap": 6,
+                              "alignItems": "end",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "ARXmC",
+                                  "name": "metricValue",
+                                  "fill": "#1E2432",
+                                  "content": "1,860",
+                                  "lineHeight": 0.9,
+                                  "fontFamily": "Outfit",
+                                  "fontSize": 32,
+                                  "fontWeight": "700"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "dm11e",
+                                  "name": "metricUnit",
+                                  "fill": "#8A8A8A",
+                                  "content": "kcal",
+                                  "fontFamily": "Outfit",
+                                  "fontSize": 13,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "l5tjX",
+                          "name": "progressWrap",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "alignItems": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "rJOgM",
+                              "name": "progressLabel",
+                              "fill": "#8A8A8A",
+                              "content": "목표 대비 진행률",
+                              "fontFamily": "Outfit",
+                              "fontSize": 12,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "7d2Wu",
+                              "name": "progressValue",
+                              "fill": "#1E2432",
+                              "content": "78%",
+                              "fontFamily": "Outfit",
+                              "fontSize": 24,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "4cd6k",
+                              "name": "progressMeta",
+                              "fill": "#ABABAB",
+                              "content": "목표 2,400 kcal",
+                              "fontFamily": "Outfit",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZcfIq",
+                      "name": "barTrack",
+                      "enabled": false,
+                      "width": "fill_container",
+                      "height": 8,
+                      "fill": "#F5F4F2",
+                      "cornerRadius": 999,
+                      "layout": "none",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Eo8Ct",
+                          "x": 0,
+                          "y": 0,
+                          "name": "barFill",
+                          "width": 242,
+                          "height": 8,
+                          "fill": "#E85A4F",
+                          "cornerRadius": 999,
+                          "layout": "none"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "eh5Me",
+                      "name": "trendRow",
+                      "enabled": false,
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "z7IXo",
+                          "name": "trendLabel",
+                          "fill": "#8A8A8A",
+                          "textGrowth": "fixed-width",
+                          "width": 120,
+                          "content": "최근 7일 트렌드",
+                          "fontFamily": "Outfit",
+                          "fontSize": 12,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "9zu9I",
+                          "name": "deltaPill",
+                          "fill": "#E8F5E9",
+                          "cornerRadius": 4,
+                          "gap": 4,
+                          "padding": [
+                            4,
+                            8
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "O9JeY",
+                              "name": "deltaValue",
+                              "fill": "#2E7D32",
+                              "content": "+6.2%",
+                              "fontFamily": "Outfit",
+                              "fontSize": 10,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "2XOIA",
+                              "name": "deltaMeta",
+                              "fill": "#2E7D32",
+                              "content": "vs last week",
+                              "fontFamily": "Outfit",
+                              "fontSize": 10,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Itefm",
+                      "name": "Weekly Trend Mini Chart",
+                      "enabled": false,
+                      "width": "fill_container",
+                      "height": 56,
+                      "fill": "#FAFAF8",
+                      "cornerRadius": 12,
+                      "gap": 6,
+                      "padding": 8,
+                      "alignItems": "end",
+                      "children": [
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "26sht",
+                          "name": "bar1",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 12
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "TINzv",
+                          "name": "bar2",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 18
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "iGvRs",
+                          "name": "bar3",
+                          "fill": "#E85A4F1A",
+                          "width": "fill_container",
+                          "height": 16
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "EPLAX",
+                          "name": "bar4",
+                          "fill": "#1E2432",
+                          "width": "fill_container",
+                          "height": 24
+                        },
+                        {
+                          "type": "rectangle",
+                          "cornerRadius": 6,
+                          "id": "BVSpU",
+                          "name": "bar5",
+                          "fill": "#E85A4F",
+                          "width": "fill_container",
+                          "height": 34
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Lzyru",
+                      "name": "Category Chips",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "0KxFS",
+                          "name": "Category Chip - 전체",
+                          "fill": "#E85A4F",
+                          "cornerRadius": 10,
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "7VdW8",
+                              "name": "chipTextAll",
+                              "fill": "#FFFFFF",
+                              "content": "전체",
+                              "fontFamily": "Outfit",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Q8C90",
+                          "name": "Category Chip - 컴파일러",
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "HSL69",
+                              "name": "chipTextCompiler",
+                              "fill": "#666666",
+                              "content": "컴파일러",
+                              "fontFamily": "Outfit",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "VZCFV",
+                          "name": "Category Chip - 안드로이드",
+                          "fill": "#FCFBF9",
+                          "cornerRadius": 10,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "#E8E8E8"
+                          },
+                          "padding": [
+                            6,
+                            10
+                          ],
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "ArDXY",
+                              "name": "chipTextAndroid",
+                              "fill": "#666666",
+                              "content": "안드로이드",
+                              "fontFamily": "Outfit",
+                              "fontSize": 11,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tNGXO",
+              "name": "섹션/스터디목록",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                4,
+                0,
+                20,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "HPRii",
+                  "name": "행/스터디목록헤더",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xO0Vd",
+                      "name": "headerTitle",
+                      "fill": "#1C1C1C",
+                      "content": "컴파일러",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "O0T8K",
+                  "name": "리스트/스터디항목",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "RTcsh",
+                      "name": "Study Card - Kotlin Compiler",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "JydxJ",
+                          "name": "left1",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "g1nVZ",
+                              "name": "t1",
+                              "fill": "#1C1C1C",
+                              "content": "K2 Frontend IR 트래킹",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Nh0lm",
+                              "name": "s1",
+                              "fill": "#8D8D8D",
+                              "content": "최근 변경점과 플러그인 영향도를 정리합니다.",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "BKMBs",
+                      "name": "Study Card - KSP Deep Dive",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "gap": 12,
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "bzrVp",
+                          "name": "left2",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "acp3m",
+                              "name": "t2",
+                              "fill": "#1C1C1C",
+                              "content": "KSP 심화: Symbol 해석",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "cWOWe",
+                              "name": "s2",
+                              "fill": "#8D8D8D",
+                              "content": "Resolver와 Incremental 처리 전략을 비교합니다.",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "QlEQl",
+                          "name": "thumb2",
+                          "width": 72,
+                          "height": 72,
+                          "fill": "#ECEAE6",
+                          "cornerRadius": 12,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "kirmt",
+                              "name": "thumb2txt",
+                              "fill": "#9A9A9A",
+                              "content": "썸네일",
+                              "fontFamily": "Inter",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "FTXDe",
+                      "name": "Study Card - Compiler Plugin",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "9NVkL",
+                          "name": "left3",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "NRKSx",
+                              "name": "t3",
+                              "fill": "#1C1C1C",
+                              "content": "컴파일러 플러그인 샘플 구현",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "w5puH",
+                              "name": "s3",
+                              "fill": "#8D8D8D",
+                              "content": "diagnostic 리포팅과 테스트 픽스처를 다룹니다.",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "gFPmY",
+                      "name": "Study Card - PSI/AST",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "gap": 12,
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "FLOvg",
+                          "name": "left4",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Ah2SR",
+                              "name": "t4",
+                              "fill": "#1C1C1C",
+                              "content": "PSI/AST 구조 읽기 스터디",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "K9IHP",
+                              "name": "s4",
+                              "fill": "#8D8D8D",
+                              "content": "IDE 플러그인 관점의 트리 탐색 팁을 공유합니다.",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "PJ4Cs",
+                          "name": "thumb4",
+                          "width": 72,
+                          "height": 72,
+                          "fill": "#ECEAE6",
+                          "cornerRadius": 12,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "QpJg2",
+                              "name": "thumb4txt",
+                              "fill": "#9A9A9A",
+                              "content": "썸네일",
+                              "fontFamily": "Inter",
+                              "fontSize": 11,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "pLldg",
+              "name": "섹션/스터디목록보조",
+              "width": "fill_container",
+              "height": 169,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                4,
+                0,
+                20,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CKnLn",
+                  "name": "행/스터디목록헤더보조",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "whDtO",
+                      "name": "headerTitle",
+                      "fill": "#1C1C1C",
+                      "content": "컴파일러",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OBR2N",
+                  "name": "리스트/스터디항목보조",
+                  "width": "fill_container",
+                  "height": 108,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "4vtjy",
+                      "name": "Study Card - Kotlin Compiler",
+                      "width": "fill_container",
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 16,
+                      "stroke": {
+                        "thickness": 1,
+                        "fill": "#E8E5E0"
+                      },
+                      "padding": [
+                        14,
+                        16
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "ojxtk",
+                          "name": "left1",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KWq1H",
+                              "name": "t1",
+                              "fill": "#1C1C1C",
+                              "content": "K2 Frontend IR 트래킹",
+                              "fontFamily": "Inter",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "dTL5K",
+                              "name": "s1",
+                              "fill": "#8D8D8D",
+                              "content": "최근 변경점과 플러그인 영향도를 정리합니다.",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "461mU",
+                          "name": "meta1",
+                          "fill": "#1E3A5F",
+                          "content": "D-2",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "2nIDm",
+          "name": "영역/플로팅버튼",
+          "width": "fill_container",
+          "height": 69,
+          "padding": [
+            0,
+            28,
+            12,
+            28
+          ],
+          "justifyContent": "end",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "tVNPO",
+              "name": "버튼/관리",
+              "width": 56,
+              "height": 56,
+              "fill": "#1E3A5F",
+              "cornerRadius": 28,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#1E3A5F33",
+                "offset": {
+                  "x": 0,
+                  "y": 8
+                },
+                "blur": 20
+              },
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "ENWgC",
+                  "name": "아이콘/관리",
+                  "width": 22,
+                  "height": 22,
+                  "iconFontName": "settings",
+                  "iconFontFamily": "lucide",
+                  "fill": "#FFFFFF"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rT2uM",
+              "name": "데코/분리선",
+              "clip": true,
+              "width": 3,
+              "height": 13,
+              "fill": "#FFFFFF",
+              "layout": "none"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "KfpuD",
+          "name": "영역/하단탭",
+          "width": "fill_container",
+          "height": 93,
+          "layout": "vertical",
+          "padding": [
+            10,
+            21,
+            21,
+            21
+          ],
+          "justifyContent": "end",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "J6Rcb",
+              "name": "탭바/메인",
+              "width": "fill_container",
+              "height": 62,
+              "fill": "#FFFFFF",
+              "cornerRadius": 32,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#E8E8E8"
+              },
+              "gap": 4,
+              "padding": 4,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "5lrz7",
+                  "name": "탭/영양",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "iFK3a",
+                      "name": "iconWrap",
+                      "width": 22,
+                      "height": 22,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "ellipse",
+                          "id": "3Un1E",
+                          "name": "nutritionIcon",
+                          "fill": "#666666",
+                          "width": 14,
+                          "height": 14
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "XqxRW",
+                      "name": "nutritionLabel",
+                      "fill": "#666666",
+                      "content": "영양",
+                      "fontFamily": "Outfit",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xYFK1",
+                  "name": "탭/운동",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "9bdwz",
+                      "name": "exerciseIcon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "dumbbell",
+                      "iconFontFamily": "lucide",
+                      "fill": "$--muted-foreground"
+                    },
+                    {
+                      "type": "text",
+                      "id": "QKVbW",
+                      "name": "exerciseLabel",
+                      "fill": "$--muted-foreground",
+                      "content": "운동",
+                      "fontFamily": "Geist",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "DpQuB",
+                  "name": "탭/스터디/활성",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#E85A4F",
+                  "cornerRadius": 26,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "159rw",
+                      "name": "studyIcon",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "book-open",
+                      "iconFontFamily": "phosphor",
+                      "fill": "#FFFFFF"
+                    },
+                    {
+                      "type": "text",
+                      "id": "m2Yfr",
+                      "name": "studyLabel",
+                      "fill": "#FFFFFF",
+                      "content": "사전",
+                      "fontFamily": "Geist",
+                      "fontSize": 10,
+                      "fontWeight": "600",
+                      "letterSpacing": 0.5
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "themes": {
+    "Mode": [
+      "Light",
+      "Dark"
+    ]
+  },
+  "variables": {
+    "--sidebar": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E7E8E5"
+        },
+        {
+          "value": "#18181b",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#18181b"
+        },
+        {
+          "value": "#18181b",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-primary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#fafafa"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-border": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#ffffff1a",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2a2a30",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-accent-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#18181b"
+        },
+        {
+          "value": "#fafafa",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--sidebar-ring": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#71717a"
+        },
+        {
+          "value": "#71717a",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--background": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--card": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF"
+        },
+        {
+          "value": "#1A1A1A",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--card-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--popover": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FFFFFF"
+        },
+        {
+          "value": "#1A1A1A",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--popover-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--primary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#FF8400"
+        },
+        {
+          "value": "#FF8400",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--primary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--secondary": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E7E8E5"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--secondary-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#FFFFFF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--muted": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--muted-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#B8B9B6",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--accent": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#F2F3F0"
+        },
+        {
+          "value": "#111111",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--accent-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#111111"
+        },
+        {
+          "value": "#F2F3F0",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--destructive": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#D93C15"
+        },
+        {
+          "value": "#FF5C33",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--border": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--input": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#CBCCC9"
+        },
+        {
+          "value": "#2E2E2E",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--ring": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#666666"
+        },
+        {
+          "value": "#666666",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--white": {
+      "type": "color",
+      "value": "#FFFFFF"
+    },
+    "--black": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "--font-primary": {
+      "type": "string",
+      "value": "JetBrains Mono"
+    },
+    "--font-secondary": {
+      "type": "string",
+      "value": "Geist"
+    },
+    "--radius-none": {
+      "type": "number",
+      "value": 0
+    },
+    "--radius-pill": {
+      "type": "number",
+      "value": 999
+    },
+    "--color-success": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#DFE6E1"
+        },
+        {
+          "value": "#222924",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-success-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#004D1A"
+        },
+        {
+          "value": "#B6FFCE",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-warning": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E9E3D8"
+        },
+        {
+          "value": "#291C0F",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-warning-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#804200"
+        },
+        {
+          "value": "#FF8400",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-error": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#E5DCDA"
+        },
+        {
+          "value": "#24100B",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-error-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#8C1C00"
+        },
+        {
+          "value": "#FF5C33",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-info": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#DFDFE6"
+        },
+        {
+          "value": "#222229",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--color-info-foreground": {
+      "type": "color",
+      "value": [
+        {
+          "value": "#000066"
+        },
+        {
+          "value": "#B2B2FF",
+          "theme": {
+            "Mode": "Dark"
+          }
+        }
+      ]
+    },
+    "--radius-m": {
+      "type": "number",
+      "value": 16
+    }
+  }
+}
