@@ -21,8 +21,8 @@ import sungbinland.core.workout.entity.WorkoutSessionEntity
     endOfDayExclusive: Date,
   ): List<WorkoutSessionEntity>
 
-  @Query("SELECT * FROM workout_sessions ORDER BY performed_at DESC")
-  public suspend fun getAllWorkoutSessions(): List<WorkoutSessionEntity>
+  @Query("SELECT * FROM workout_sessions WHERE performed_at = :date")
+  public suspend fun getWorkoutSessionsByExactDate(date: Date): List<WorkoutSessionEntity>
 
   @Delete
   public suspend fun deleteWorkoutSession(session: WorkoutSessionEntity)

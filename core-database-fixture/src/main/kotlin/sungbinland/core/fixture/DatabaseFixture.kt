@@ -133,7 +133,9 @@ public class DatabaseFixture(
     val routineDao = workoutDatabase.workoutRoutineDao()
     val exerciseDao = workoutDatabase.workoutExerciseDao()
 
-    if (workoutSessionDao.getAllWorkoutSessions().isNotEmpty()) return false
+    val now = java.util.Date()
+    val dayAgo = java.util.Date(now.time - 86_400_000L)
+    if (workoutSessionDao.getWorkoutSessionsByDate(startOfDay = dayAgo, endOfDayExclusive = now).isNotEmpty()) return false
 
     val routines = mapOf(
       "상체" to listOf("벤치프레스", "오버헤드프레스", "풀업", "덤벨 플라이", "바벨 로우"),

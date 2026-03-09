@@ -3,7 +3,6 @@ package sungbinland.core.workout.entity
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
 import dev.drewhamilton.poko.Poko
 import java.util.Date
@@ -11,18 +10,6 @@ import java.util.Date
 @Entity(
   tableName = "supplement_intake_items",
   primaryKeys = ["intake_at", "supplement_name"],
-  foreignKeys = [
-    ForeignKey(
-      entity = SupplementIntakeEntity::class,
-      parentColumns = ["intake_at"],
-      childColumns = ["intake_at"],
-    ),
-    ForeignKey(
-      entity = SupplementEntity::class,
-      parentColumns = ["name"],
-      childColumns = ["supplement_name"],
-    ),
-  ],
   indices = [
     Index("supplement_name"),
   ],

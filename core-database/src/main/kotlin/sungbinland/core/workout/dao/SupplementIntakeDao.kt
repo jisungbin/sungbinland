@@ -39,8 +39,8 @@ import sungbinland.core.workout.entity.SupplementIntakeItemEntity
   ): List<SupplementIntakeWithItems>
 
   @Transaction
-  @Query("SELECT * FROM supplement_intakes ORDER BY intake_at DESC")
-  public abstract suspend fun getAllSupplementIntakes(): List<SupplementIntakeWithItems>
+  @Query("SELECT * FROM supplement_intakes WHERE intake_at = :date")
+  public abstract suspend fun getSupplementIntakeByExactDate(date: Date): SupplementIntakeWithItems?
 
   @Query("DELETE FROM supplement_intake_items WHERE intake_at = :intakeAt")
   public abstract suspend fun deleteSupplementIntakeItemsByDate(intakeAt: Date)

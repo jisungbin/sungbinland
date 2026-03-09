@@ -13,6 +13,9 @@ import sungbinland.core.study.entity.StudyEntryEntity
   @Query("SELECT * FROM study_entries ORDER BY category ASC, name ASC")
   public suspend fun getAllStudyEntries(): List<StudyEntryEntity>
 
+  @Query("SELECT * FROM study_entries WHERE category = :category AND name = :name LIMIT 1")
+  public suspend fun getStudyEntry(category: String, name: String): StudyEntryEntity?
+
   @Delete
   public suspend fun deleteStudyEntry(entry: StudyEntryEntity)
 }

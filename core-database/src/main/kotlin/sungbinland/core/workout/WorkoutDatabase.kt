@@ -31,7 +31,7 @@ import sungbinland.core.workout.entity.WorkoutSessionEntity
     SupplementIntakeEntity::class,
     SupplementIntakeItemEntity::class,
   ],
-  version = 5,
+  version = 7,
   exportSchema = true,
 )
 @TypeConverters(DateEpochMillisTypeConverter::class)

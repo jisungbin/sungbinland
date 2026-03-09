@@ -21,8 +21,8 @@ import sungbinland.core.nutrition.entity.BodyInfoEntity
     endOfDayExclusive: Date,
   ): List<BodyInfoEntity>
 
-  @Query("SELECT * FROM body_infos ORDER BY recorded_at DESC")
-  public suspend fun getAllBodyInfos(): List<BodyInfoEntity>
+  @Query("SELECT * FROM body_infos WHERE recorded_at = :date LIMIT 1")
+  public suspend fun getBodyInfoByExactDate(date: Date): BodyInfoEntity?
 
   @Delete
   public suspend fun deleteBodyInfo(bodyInfo: BodyInfoEntity)

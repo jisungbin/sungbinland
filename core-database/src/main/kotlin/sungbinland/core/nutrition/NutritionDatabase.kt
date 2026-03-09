@@ -16,7 +16,7 @@ import sungbinland.core.nutrition.entity.FoodEntity
 
 @Database(
   entities = [FoodEntity::class, EatenFoodEntity::class, BodyInfoEntity::class],
-  version = 1,
+  version = 2,
   exportSchema = true,
 )
 @TypeConverters(DateEpochMillisTypeConverter::class)
@@ -36,6 +36,7 @@ public abstract class NutritionDatabase internal constructor() : RoomDatabase() 
           NutritionDatabase::class.java,
           DATABASE_NAME,
         )
+          .fallbackToDestructiveMigration(dropAllTables = true)
           .build()
           .also { created -> instance = created }
       }

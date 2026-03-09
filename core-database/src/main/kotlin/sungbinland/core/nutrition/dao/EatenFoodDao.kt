@@ -21,8 +21,8 @@ import sungbinland.core.nutrition.entity.EatenFoodEntity
     endOfDayExclusive: Date,
   ): List<EatenFoodEntity>
 
-  @Query("SELECT * FROM eaten_foods ORDER BY consumed_at DESC")
-  public suspend fun getAllEatenFoods(): List<EatenFoodEntity>
+  @Query("SELECT * FROM eaten_foods WHERE consumed_at = :date")
+  public suspend fun getEatenFoodsByExactDate(date: Date): List<EatenFoodEntity>
 
   @Delete
   public suspend fun deleteEatenFood(food: EatenFoodEntity)

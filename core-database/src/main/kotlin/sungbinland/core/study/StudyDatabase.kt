@@ -10,7 +10,7 @@ import sungbinland.core.study.entity.StudyEntryEntity
 
 @Database(
   entities = [StudyEntryEntity::class],
-  version = 1,
+  version = 2,
   exportSchema = true,
 )
 public abstract class StudyDatabase internal constructor() : RoomDatabase() {
@@ -27,6 +27,7 @@ public abstract class StudyDatabase internal constructor() : RoomDatabase() {
           StudyDatabase::class.java,
           DATABASE_NAME,
         )
+          .fallbackToDestructiveMigration(dropAllTables = true)
           .build()
           .also { created -> instance = created }
       }

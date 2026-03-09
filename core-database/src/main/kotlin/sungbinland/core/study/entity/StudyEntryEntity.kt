@@ -14,5 +14,4 @@ import dev.drewhamilton.poko.Poko
   @ColumnInfo(name = "category") public val category: String,
   @ColumnInfo(name = "name") public val name: String,
   @ColumnInfo(name = "content") public val content: String,
-  @ColumnInfo(name = "image_url") public val imageUrl: String? = null,
 )

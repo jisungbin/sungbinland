@@ -21,8 +21,8 @@ import sungbinland.core.workout.entity.TimerRecordEntity
     endOfDayExclusive: Date,
   ): List<TimerRecordEntity>
 
-  @Query("SELECT * FROM timer_records ORDER BY started_at DESC")
-  public suspend fun getAllTimerRecords(): List<TimerRecordEntity>
+  @Query("SELECT * FROM timer_records WHERE started_at = :date")
+  public suspend fun getTimerRecordsByExactDate(date: Date): List<TimerRecordEntity>
 
   @Delete
   public suspend fun deleteTimerRecord(record: TimerRecordEntity)
