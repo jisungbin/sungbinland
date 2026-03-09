@@ -41,6 +41,8 @@ dependencies {
   implementation(libs.androidx.navigation3.ui)
   implementation(libs.androidx.room.runtime)
 
+  implementation(libs.kotlinx.collections.immutable)
+
   implementation(libs.compose.animation)
   implementation(libs.compose.foundation)
   implementation(libs.compose.material.icons.extended)

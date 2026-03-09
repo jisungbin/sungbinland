@@ -31,4 +31,6 @@ dependencies {
   implementation(libs.compose.runtime)
   implementation(libs.compose.ui)
   implementation(libs.compose.ui.util)
+
+  implementation(libs.kotlinx.collections.immutable)
 }
