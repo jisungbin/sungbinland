@@ -3,7 +3,6 @@ package sungbinland.study
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,12 +16,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
+import kotlinx.collections.immutable.ImmutableList
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitSectionHeader
 import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun StudySectionList(
-  sections: List<StudySectionState>,
+  sections: ImmutableList<StudySectionState>,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -102,7 +102,8 @@ import sungbinland.uikit.UiKitTypography
       )
     }
     if (state.thumbnailLabel != null) {
-      Box(
+      BasicText(
+        text = state.thumbnailLabel,
         modifier = Modifier
           .padding(start = 12.dp)
           .background(
@@ -110,13 +111,8 @@ import sungbinland.uikit.UiKitTypography
             shape = RoundedCornerShape(14.dp),
           )
           .padding(horizontal = 18.dp, vertical = 24.dp),
-        contentAlignment = Alignment.Center,
-      ) {
-        BasicText(
-          text = state.thumbnailLabel,
-          style = UiKitTypography.Label.copy(color = UiKitColors.MutedText),
-        )
-      }
+        style = UiKitTypography.Label.copy(color = UiKitColors.MutedText),
+      )
     }
   }
 }

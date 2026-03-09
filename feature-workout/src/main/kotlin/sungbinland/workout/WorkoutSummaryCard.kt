@@ -21,7 +21,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import kotlinx.collections.immutable.ImmutableList
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitDateNavigator
 import sungbinland.uikit.UiKitDeltaBadge
@@ -219,12 +222,14 @@ import sungbinland.uikit.UiKitTypography
 }
 
 @Composable private fun WorkoutTrendValueBoxes(
-  trendValues: List<WorkoutTrendValueState>,
+  trendValues: ImmutableList<WorkoutTrendValueState>,
   modifier: Modifier = Modifier,
 ) {
   val scrollState = rememberScrollState()
-  LaunchedEffect(scrollState.maxValue) {
-    scrollState.scrollTo(scrollState.maxValue)
+  LaunchedEffect(scrollState) {
+    snapshotFlow { scrollState.maxValue }.collect { maxValue ->
+      scrollState.scrollTo(maxValue)
+    }
   }
   Row(
     modifier = modifier
@@ -243,15 +248,13 @@ import sungbinland.uikit.UiKitTypography
         previousDayIndex -> UiKitColors.Primary
         else -> UiKitColors.Background
       }
-      val valueColor = if (index >= previousDayIndex) {
-        UiKitColors.Surface
-      } else {
-        UiKitColors.Primary
+      val valueColor = when {
+        index >= previousDayIndex -> UiKitColors.Surface
+        else -> UiKitColors.Primary
       }
-      val labelColor = if (index >= previousDayIndex) {
-        UiKitColors.Surface
-      } else {
-        UiKitColors.MutedText
+      val labelColor = when {
+        index >= previousDayIndex -> UiKitColors.Surface
+        else -> UiKitColors.MutedText
       }
       val showBorder: Boolean = index != selectedDayIndex && index != previousDayIndex
       Column(
@@ -297,7 +300,9 @@ import sungbinland.uikit.UiKitTypography
   onClick: () -> Unit,
   onInputChange: (String) -> Unit,
 ) {
-  var textFieldValue by remember {
+  val currentInputValue = rememberUpdatedState(inputValue)
+  val currentIsEditing = rememberUpdatedState(isEditing)
+  val textFieldValueState = remember {
     mutableStateOf(
       TextFieldValue(
         text = inputValue,
@@ -305,31 +310,39 @@ import sungbinland.uikit.UiKitTypography
       ),
     )
   }
+  var textFieldValue by textFieldValueState
 
-  LaunchedEffect(inputValue) {
-    if (inputValue != textFieldValue.text) {
-      textFieldValue = TextFieldValue(
-        text = inputValue,
-        selection = TextRange(inputValue.length),
-      )
+  LaunchedEffect(textFieldValueState) {
+    snapshotFlow { currentInputValue.value }.collect { input ->
+      if (input != textFieldValueState.value.text) {
+        textFieldValueState.value = TextFieldValue(
+          text = input,
+          selection = TextRange(input.length),
+        )
+      }
     }
   }
-  LaunchedEffect(isEditing) {
-    if (isEditing && textFieldValue.text.isNotEmpty()) {
-      textFieldValue = textFieldValue.copy(
-        selection = TextRange(0, textFieldValue.text.length),
-      )
+  LaunchedEffect(textFieldValueState) {
+    snapshotFlow { currentIsEditing.value }.collect { editing ->
+      if (editing && textFieldValueState.value.text.isNotEmpty()) {
+        textFieldValueState.value = textFieldValueState.value.copy(
+          selection = TextRange(0, textFieldValueState.value.text.length),
+        )
+      }
     }
   }
 
-  val inputFieldModifier = if (suffix == null) {
-    Modifier
-      .focusRequester(focusRequester)
-      .fillMaxWidth()
-  } else {
-    Modifier
-      .focusRequester(focusRequester)
-      .widthIn(min = 24.dp, max = 56.dp)
+  val inputFieldModifier = when {
+    suffix == null -> {
+      Modifier
+        .focusRequester(focusRequester)
+        .fillMaxWidth()
+    }
+    else -> {
+      Modifier
+        .focusRequester(focusRequester)
+        .widthIn(min = 24.dp, max = 56.dp)
+    }
   }
 
   Column(

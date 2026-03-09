@@ -18,8 +18,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -27,7 +29,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import sungbinland.uikit.UiKitColors
 
-@OptIn(ExperimentalLayoutApi::class) @Composable internal fun NutritionScreen(
+@OptIn(ExperimentalLayoutApi::class)
+@Composable internal fun NutritionScreen(
   stateHolder: NutritionStateHolder,
   modifier: Modifier = Modifier,
 ) {
@@ -36,31 +39,39 @@ import sungbinland.uikit.UiKitColors
   val keyboardController = LocalSoftwareKeyboardController.current
   val weightFocusRequester = remember { FocusRequester() }
   val imeVisible: Boolean = WindowInsets.isImeVisible
-  var wasImeVisible by remember { mutableStateOf(false) }
-  var isEditingWeight by rememberSaveable { mutableStateOf(false) }
-  var weightInput by rememberSaveable { mutableStateOf("") }
+  val wasImeVisibleState = remember { mutableStateOf(false) }
+  val isEditingWeightState = rememberSaveable { mutableStateOf(false) }
+  var isEditingWeight by isEditingWeightState
+  val weightInputState = rememberSaveable { mutableStateOf("") }
+  var weightInput by weightInputState
   val currentWeightInput = remember(state.macroCards) {
     state.macroCards.firstOrNull { item -> item.highlighted }?.value?.toWeightInput().orEmpty()
   }
+  val currentWeightInputRef = rememberUpdatedState(currentWeightInput)
+  val imeVisibleRef = rememberUpdatedState(imeVisible)
 
-  LaunchedEffect(currentWeightInput, isEditingWeight) {
-    if (!isEditingWeight) {
-      weightInput = currentWeightInput
+  LaunchedEffect(isEditingWeightState) {
+    snapshotFlow { currentWeightInputRef.value to isEditingWeightState.value }.collect { (currentWeight, isEditing) ->
+      if (!isEditing) weightInputState.value = currentWeight
     }
   }
-  LaunchedEffect(isEditingWeight) {
-    if (isEditingWeight) {
-      weightFocusRequester.requestFocus()
-      keyboardController?.show()
+  LaunchedEffect(isEditingWeightState) {
+    snapshotFlow { isEditingWeightState.value }.collect { isEditing ->
+      if (isEditing) {
+        weightFocusRequester.requestFocus()
+        keyboardController?.show()
+      }
     }
   }
-  LaunchedEffect(imeVisible, isEditingWeight, weightInput) {
-    if (wasImeVisible && !imeVisible && isEditingWeight) {
-      isEditingWeight = false
-      focusManager.clearFocus(force = true)
-      stateHolder.saveBodyWeight(weightInput = weightInput)
+  LaunchedEffect(isEditingWeightState) {
+    snapshotFlow { imeVisibleRef.value to isEditingWeightState.value }.collect { (imeVis, isEditing) ->
+      if (wasImeVisibleState.value && !imeVis && isEditing) {
+        isEditingWeightState.value = false
+        focusManager.clearFocus(force = true)
+        stateHolder.saveBodyWeight(weightInput = weightInputState.value)
+      }
+      wasImeVisibleState.value = imeVis
     }
-    wasImeVisible = imeVisible
   }
 
   NutritionScreen(
@@ -78,12 +89,8 @@ import sungbinland.uikit.UiKitColors
     onCurrentDateClick = stateHolder::moveToToday,
     onOpenGraphClick = {},
     onPreviousDateClick = stateHolder::moveToPreviousDate,
-    onWeightCardClick = {
-      isEditingWeight = true
-    },
-    onWeightInputChange = { input ->
-      weightInput = input
-    },
+    onWeightCardClick = { isEditingWeight = true },
+    onWeightInputChange = { input -> weightInput = input },
   )
 }
 

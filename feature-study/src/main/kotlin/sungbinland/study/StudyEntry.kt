@@ -29,11 +29,7 @@ public fun EntryProviderScope<NavKey>.studyEntry(
     val stateHolder = retain(mapper) {
       StudyStateHolder(mapper = mapper)
     }
-    RetainedEffect(stateHolder) {
-      onRetire {
-        stateHolder.close()
-      }
-    }
+    RetainedEffect(stateHolder) { onRetire(stateHolder::close) }
     StudyScreen(stateHolder = stateHolder)
   }
 }

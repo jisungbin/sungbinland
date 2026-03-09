@@ -45,11 +45,7 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
         nowProvider = { LocalDate.now() },
       )
     }
-    RetainedEffect(stateHolder) {
-      onRetire {
-        stateHolder.close()
-      }
-    }
+    RetainedEffect(stateHolder) { onRetire(stateHolder::close) }
     WorkoutScreen(
       stateHolder = stateHolder,
     )

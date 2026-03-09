@@ -17,7 +17,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -27,13 +30,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEach
+import kotlinx.collections.immutable.ImmutableList
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitMetricCard
 import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun NutritionMacroRow(
-  items: List<NutritionMacroCardState>,
+  items: ImmutableList<NutritionMacroCardState>,
   weightInput: String,
   isEditingWeight: Boolean,
   weightFocusRequester: FocusRequester,
@@ -41,15 +47,8 @@ import sungbinland.uikit.UiKitTypography
   onWeightCardClick: () -> Unit,
   onWeightInputChange: (String) -> Unit,
 ) {
-  val defaultItems = mutableListOf<NutritionMacroCardState>()
-  var weightItem: NutritionMacroCardState? = null
-  items.fastForEach { item ->
-    if (item.highlighted) {
-      weightItem = item
-    } else {
-      defaultItems.add(item)
-    }
-  }
+  val defaultItems = items.fastFilter { !it.highlighted }
+  val weightItem = items.fastFirstOrNull { it.highlighted }
 
   Row(
     modifier = modifier,
@@ -90,7 +89,9 @@ import sungbinland.uikit.UiKitTypography
   val titleColor: Color = Color(0xCCFFFFFF)
   val valueColor: Color = Color.White
   val metaColor: Color = Color(0xE0FFFFFF)
-  var textFieldValue by remember {
+  val currentWeightInput = rememberUpdatedState(weightInput)
+  val currentIsEditing = rememberUpdatedState(isEditing)
+  val textFieldValueState = remember {
     mutableStateOf(
       TextFieldValue(
         text = weightInput,
@@ -98,20 +99,25 @@ import sungbinland.uikit.UiKitTypography
       ),
     )
   }
+  var textFieldValue by textFieldValueState
 
-  LaunchedEffect(weightInput) {
-    if (weightInput != textFieldValue.text) {
-      textFieldValue = TextFieldValue(
-        text = weightInput,
-        selection = TextRange(weightInput.length),
-      )
+  LaunchedEffect(textFieldValueState) {
+    snapshotFlow { currentWeightInput.value }.collect { input ->
+      if (input != textFieldValueState.value.text) {
+        textFieldValueState.value = TextFieldValue(
+          text = input,
+          selection = TextRange(input.length),
+        )
+      }
     }
   }
-  LaunchedEffect(isEditing) {
-    if (isEditing && textFieldValue.text.isNotEmpty()) {
-      textFieldValue = textFieldValue.copy(
-        selection = TextRange(0, textFieldValue.text.length),
-      )
+  LaunchedEffect(textFieldValueState) {
+    snapshotFlow { currentIsEditing.value }.collect { editing ->
+      if (editing && textFieldValueState.value.text.isNotEmpty()) {
+        textFieldValueState.value = textFieldValueState.value.copy(
+          selection = TextRange(0, textFieldValueState.value.text.length),
+        )
+      }
     }
   }
 
@@ -137,7 +143,7 @@ import sungbinland.uikit.UiKitTypography
     if (isEditing) {
       Row(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically,
       ) {
         BasicTextField(
           value = textFieldValue,

@@ -40,11 +40,7 @@ public fun EntryProviderScope<NavKey>.nutritionEntry(
         nowProvider = { LocalDate.now() },
       )
     }
-    RetainedEffect(stateHolder) {
-      onRetire {
-        stateHolder.close()
-      }
-    }
+    RetainedEffect(stateHolder) { onRetire(stateHolder::close) }
     NutritionScreen(
       stateHolder = stateHolder,
     )

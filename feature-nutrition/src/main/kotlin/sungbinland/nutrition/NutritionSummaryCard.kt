@@ -13,12 +13,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import kotlinx.collections.immutable.ImmutableList
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitDateNavigator
 import sungbinland.uikit.UiKitDeltaBadge
@@ -137,12 +139,14 @@ import sungbinland.uikit.UiKitTypography
 }
 
 @Composable private fun NutritionTrendValueBoxes(
-  trendValues: List<NutritionTrendValueState>,
+  trendValues: ImmutableList<NutritionTrendValueState>,
   modifier: Modifier = Modifier,
 ) {
   val scrollState = rememberScrollState()
-  LaunchedEffect(scrollState.maxValue) {
-    scrollState.scrollTo(scrollState.maxValue)
+  LaunchedEffect(scrollState) {
+    snapshotFlow { scrollState.maxValue }.collect { maxValue ->
+      scrollState.scrollTo(maxValue)
+    }
   }
   Row(
     modifier = modifier
@@ -161,15 +165,13 @@ import sungbinland.uikit.UiKitTypography
         previousDayIndex -> UiKitColors.Primary
         else -> UiKitColors.Background
       }
-      val textColor = if (index >= previousDayIndex) {
-        UiKitColors.Surface
-      } else {
-        UiKitColors.Primary
+      val textColor = when {
+        index >= previousDayIndex -> UiKitColors.Surface
+        else -> UiKitColors.Primary
       }
-      val labelColor = if (index >= previousDayIndex) {
-        UiKitColors.Surface
-      } else {
-        UiKitColors.MutedText
+      val labelColor = when {
+        index >= previousDayIndex -> UiKitColors.Surface
+        else -> UiKitColors.MutedText
       }
       val showBorder: Boolean = index != selectedDayIndex && index != previousDayIndex
       Column(
