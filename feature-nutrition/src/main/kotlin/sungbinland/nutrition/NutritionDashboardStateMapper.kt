@@ -1,17 +1,19 @@
 package sungbinland.nutrition
 
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
+import androidx.compose.ui.util.fastMapTo
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
-import androidx.compose.ui.util.fastMapTo
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import sungbinland.core.nutrition.dao.BodyInfoDao
 import sungbinland.core.nutrition.dao.EatenFoodDao
 import sungbinland.core.nutrition.dao.FoodDao
@@ -28,19 +30,62 @@ internal class NutritionDashboardStateMapper(
   private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
   internal suspend fun createState(selectedDate: LocalDate): NutritionDashboardState {
-    val nowDate: LocalDate = LocalDate.now(zoneId)
-    val foods = foodDao.getAllFoods().associateBy { it.name }
-    val eatenFoodsOfDate = eatenFoodDao.getEatenFoodsByDate(
-      startOfDay = selectedDate.toStartOfDayDate(zoneId = zoneId),
-      endOfDayExclusive = selectedDate.plusDays(1).toStartOfDayDate(zoneId = zoneId),
-    )
-    val bodyInfoOfDate = bodyInfoDao.getBodyInfoByExactDate(
-      date = selectedDate.toStartOfDayDate(zoneId = zoneId),
-    )
-    val previousWeekBodyInfos = bodyInfoDao.getBodyInfosByDate(
-      startOfDay = selectedDate.minusDays(14).toStartOfDayDate(zoneId = zoneId),
-      endOfDayExclusive = selectedDate.minusDays(6).toStartOfDayDate(zoneId = zoneId),
-    )
+    val nowDate = LocalDate.now(zoneId)
+    val selectedStartOfDay = selectedDate.toStartOfDayDate(zoneId = zoneId)
+    val selectedEndOfDayExclusive = selectedDate.plusDays(1).toStartOfDayDate(zoneId = zoneId)
+    val previousWeekStartOfDay = selectedDate.minusDays(14).toStartOfDayDate(zoneId = zoneId)
+    val previousWeekEndOfDayExclusive = selectedDate.minusDays(6).toStartOfDayDate(zoneId = zoneId)
+    val recentTrendStartOfDay = nowDate.minusDays(6).toStartOfDayDate(zoneId = zoneId)
+    val recentTrendEndOfDayExclusive = nowDate.plusDays(1).toStartOfDayDate(zoneId = zoneId)
+    val previousTrendStartOfDay = nowDate.minusDays(13).toStartOfDayDate(zoneId = zoneId)
+    val previousTrendEndOfDayExclusive = nowDate.minusDays(6).toStartOfDayDate(zoneId = zoneId)
+
+    val snapshot = coroutineScope {
+      val foodsDeferred = async { foodDao.getAllFoods().associateBy { it.name } }
+      val eatenFoodsOfDateDeferred = async {
+        eatenFoodDao.getEatenFoodsByDate(
+          startOfDay = selectedStartOfDay,
+          endOfDayExclusive = selectedEndOfDayExclusive,
+        )
+      }
+      val bodyInfoOfDateDeferred = async {
+        bodyInfoDao.getBodyInfoByExactDate(
+          date = selectedStartOfDay,
+        )
+      }
+      val previousWeekBodyInfosDeferred = async {
+        bodyInfoDao.getBodyInfosByDate(
+          startOfDay = previousWeekStartOfDay,
+          endOfDayExclusive = previousWeekEndOfDayExclusive,
+        )
+      }
+      val recentEatenFoodsDeferred = async {
+        eatenFoodDao.getEatenFoodsByDate(
+          startOfDay = recentTrendStartOfDay,
+          endOfDayExclusive = recentTrendEndOfDayExclusive,
+        )
+      }
+      val previousEatenFoodsDeferred = async {
+        eatenFoodDao.getEatenFoodsByDate(
+          startOfDay = previousTrendStartOfDay,
+          endOfDayExclusive = previousTrendEndOfDayExclusive,
+        )
+      }
+      NutritionQuerySnapshot(
+        foodsByName = foodsDeferred.await(),
+        eatenFoodsOfDate = eatenFoodsOfDateDeferred.await(),
+        bodyInfoOfDate = bodyInfoOfDateDeferred.await(),
+        previousWeekBodyInfos = previousWeekBodyInfosDeferred.await(),
+        recentEatenFoods = recentEatenFoodsDeferred.await(),
+        previousEatenFoods = previousEatenFoodsDeferred.await(),
+      )
+    }
+    val foods = snapshot.foodsByName
+    val eatenFoodsOfDate = snapshot.eatenFoodsOfDate
+    val bodyInfoOfDate = snapshot.bodyInfoOfDate
+    val previousWeekBodyInfos = snapshot.previousWeekBodyInfos
+    val recentEatenFoods = snapshot.recentEatenFoods
+    val previousEatenFoods = snapshot.previousEatenFoods
 
     var totalCalories = 0
     var totalCarbohydrate = 0
@@ -75,14 +120,6 @@ internal class NutritionDashboardStateMapper(
     val previousDates: List<LocalDate> = (13 downTo 7).map { daysAgo ->
       nowDate.minusDays(daysAgo.toLong())
     }
-    val recentEatenFoods = eatenFoodDao.getEatenFoodsByDate(
-      startOfDay = nowDate.minusDays(6).toStartOfDayDate(zoneId = zoneId),
-      endOfDayExclusive = nowDate.plusDays(1).toStartOfDayDate(zoneId = zoneId),
-    )
-    val previousEatenFoods = eatenFoodDao.getEatenFoodsByDate(
-      startOfDay = nowDate.minusDays(13).toStartOfDayDate(zoneId = zoneId),
-      endOfDayExclusive = nowDate.minusDays(6).toStartOfDayDate(zoneId = zoneId),
-    )
     val recentDailyCalories = dailyCalories(
       allEatenFoods = recentEatenFoods,
       foodsByName = foods,
@@ -221,4 +258,13 @@ internal class NutritionDashboardStateMapper(
     val sign = when { delta >= 0 -> "+"; else -> "-" }
     return "이번 주 ${sign}${delta.absoluteValue}kg"
   }
+
+  private class NutritionQuerySnapshot(
+    val foodsByName: Map<String, FoodEntity>,
+    val eatenFoodsOfDate: List<EatenFoodEntity>,
+    val bodyInfoOfDate: BodyInfoEntity?,
+    val previousWeekBodyInfos: List<BodyInfoEntity>,
+    val recentEatenFoods: List<EatenFoodEntity>,
+    val previousEatenFoods: List<EatenFoodEntity>,
+  )
 }

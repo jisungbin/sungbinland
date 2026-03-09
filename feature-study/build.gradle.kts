@@ -29,6 +29,7 @@ dependencies {
   implementation(projects.coreDatabase)
   implementation(projects.uikit)
 
+  implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.navigation3.runtime)
 

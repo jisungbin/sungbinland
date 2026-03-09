@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import sungbinland.uikit.UiKitColors
 
 @Composable internal fun StudyScreen(
@@ -24,7 +24,7 @@ import sungbinland.uikit.UiKitColors
   onEntryClick: (category: String, name: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val state by viewModel.state.collectAsState()
+  val state by viewModel.state.collectAsStateWithLifecycle()
   var searchQuery by rememberSaveable { mutableStateOf("") }
 
   StudyScreen(

@@ -23,6 +23,7 @@ import java.util.Date
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sungbinland.core.alarm.HapticFeedback
 import sungbinland.core.workout.dao.SupplementDao
@@ -80,21 +81,20 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
     val fabProgressState = remember { mutableStateOf(0f) }
 
     LaunchedEffect(restTimer.startNanos) {
-      if (restTimer.isRunning) {
-        while (restTimer.isRunning) {
-          withFrameNanos { now ->
-            val elapsedMillis = (now - restTimer.startNanos) / 1_000_000
-            if (elapsedMillis >= 80_000L) {
-              restTimer.stop()
-              fabProgressState.value = 0f
-              HapticFeedback.vibrateHeavy(context)
-            } else {
-              fabProgressState.value = elapsedMillis / 80_000f
-            }
-          }
-        }
-      } else {
+      if (!restTimer.isRunning) {
         fabProgressState.value = 0f
+        return@LaunchedEffect
+      }
+      while (restTimer.isRunning) {
+        val elapsedMillis = (System.nanoTime() - restTimer.startNanos) / 1_000_000L
+        if (elapsedMillis >= 80_000L) {
+          restTimer.stop()
+          fabProgressState.value = 0f
+          HapticFeedback.vibrateHeavy(context)
+          break
+        }
+        fabProgressState.value = elapsedMillis / 80_000f
+        delay(100L)
       }
     }
 

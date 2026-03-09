@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,12 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
-import sungbinland.nutrition.NutritionGraphPeriod.MONTH
-import sungbinland.nutrition.NutritionGraphPeriod.SIX_MONTHS
-import sungbinland.nutrition.NutritionGraphPeriod.THREE_MONTHS
-import sungbinland.nutrition.NutritionGraphPeriod.WEEK
-import sungbinland.nutrition.NutritionGraphPeriod.YEAR
 import sungbinland.uikit.UiKitColors
 
 @Composable internal fun NutritionGraphScreen(
@@ -53,7 +48,7 @@ import sungbinland.uikit.UiKitColors
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val state by viewModel.state.collectAsState()
+  val state by viewModel.state.collectAsStateWithLifecycle()
   NutritionGraphScreen(
     state = state,
     modifier = modifier
