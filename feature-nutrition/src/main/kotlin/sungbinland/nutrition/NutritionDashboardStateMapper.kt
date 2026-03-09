@@ -7,10 +7,14 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import androidx.compose.ui.util.fastMapTo
+import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.nutrition.dao.BodyInfoDao
 import sungbinland.core.nutrition.dao.EatenFoodDao
 import sungbinland.core.nutrition.dao.FoodDao
 import sungbinland.core.nutrition.entity.BodyInfoEntity
+import sungbinland.core.nutrition.entity.EatenFoodEntity
+import sungbinland.core.nutrition.entity.FoodEntity
 
 internal class NutritionDashboardStateMapper(
   private val bodyInfoDao: BodyInfoDao,
@@ -47,12 +51,13 @@ internal class NutritionDashboardStateMapper(
       (weightKg.toDouble() * 2.0 * 1.2).roundToInt()
     } ?: 160
     val goalProtein = bodyWeightKg?.times(2) ?: 110
-    val progressPercent = if (goalCalories == 0) {
-      0
-    } else {
-      ((totalCalories.toDouble() / goalCalories.toDouble()) * 100.0)
-        .roundToInt()
-        .coerceAtLeast(0)
+    val progressPercent = when {
+      goalCalories == 0 -> 0
+      else -> {
+        ((totalCalories.toDouble() / goalCalories.toDouble()) * 100.0)
+          .roundToInt()
+          .coerceAtLeast(0)
+      }
     }
 
     val recentDates: List<LocalDate> = (6 downTo 0).map { daysAgo ->
@@ -79,19 +84,19 @@ internal class NutritionDashboardStateMapper(
     )
     val recentTrendValues = recentDates.map { date -> recentDailyCalories[date] ?: 0 }
     val previousTrendValues = previousDates.map { date -> previousDailyCalories[date] ?: 0 }
-    val trendValues = recentDates.map { date ->
+    val trendValues = recentDates.fastMapTo(persistentListOf<NutritionTrendValueState>().builder()) { date ->
       val calories = recentDailyCalories[date] ?: 0
       NutritionTrendValueState(
         label = "${date.monthValue}/${date.dayOfMonth}",
         value = "${formatWithThousands(value = calories)} kcal",
       )
-    }
+    }.build()
     val trendDelta = formatTrendDelta(
       previousAverage = previousTrendValues.average(),
       recentAverage = recentTrendValues.average(),
     )
 
-    val timelineItems = eatenFoodsOfDate.map { eatenFood ->
+    val timelineItems = eatenFoodsOfDate.fastMapTo(persistentListOf<NutritionTimelineItemState>().builder()) { eatenFood ->
       val calories = (foods[eatenFood.foodName]?.calories ?: 0) * eatenFood.quantity
       val consumedAt = eatenFood.consumedAt.toInstant().atZone(zoneId).toLocalDateTime()
       NutritionTimelineItemState(
@@ -99,16 +104,15 @@ internal class NutritionDashboardStateMapper(
         subtitle = consumedAt.hour.toMealLabel(),
         calorieText = "$calories kcal",
       )
-    }
+    }.build()
 
     return NutritionDashboardState(
       summary = NutritionSummaryState(
         dayTag = if (selectedDate == nowDate) "TODAY" else "DAY",
         displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
-        headline = if (selectedDate == nowDate) {
-          "오늘 ${formatWithThousands(value = totalCalories)} kcal"
-        } else {
-          "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 ${formatWithThousands(value = totalCalories)} kcal"
+        headline = when {
+          selectedDate == nowDate -> "오늘 ${formatWithThousands(value = totalCalories)} kcal"
+          else -> "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일 ${formatWithThousands(value = totalCalories)} kcal"
         },
         totalCaloriesValue = formatWithThousands(value = totalCalories),
         progressPercent = progressPercent,
@@ -116,7 +120,7 @@ internal class NutritionDashboardStateMapper(
         trendDelta = trendDelta,
         trendValues = trendValues,
       ),
-      macroCards = listOf(
+      macroCards = persistentListOf(
         NutritionMacroCardState(
           title = "탄수화물",
           value = "${totalCarbohydrate}g",
@@ -141,10 +145,9 @@ internal class NutritionDashboardStateMapper(
         ),
       ),
       timeline = NutritionTimelineState(
-        meta = if (selectedDate == nowDate) {
-          "오늘 ${timelineItems.size}건"
-        } else {
-          "${timelineItems.size}건"
+        meta = when {
+          selectedDate == nowDate -> "오늘 ${timelineItems.size}건"
+          else -> "${timelineItems.size}건"
         },
         items = timelineItems,
       ),
@@ -152,8 +155,8 @@ internal class NutritionDashboardStateMapper(
   }
 
   private fun dailyCalories(
-    allEatenFoods: List<sungbinland.core.nutrition.entity.EatenFoodEntity>,
-    foodsByName: Map<String, sungbinland.core.nutrition.entity.FoodEntity>,
+    allEatenFoods: List<EatenFoodEntity>,
+    foodsByName: Map<String, FoodEntity>,
   ): Map<LocalDate, Int> {
     val caloriesByDate = mutableMapOf<LocalDate, Int>()
     allEatenFoods.forEach { eatenFood ->
@@ -218,5 +221,4 @@ internal class NutritionDashboardStateMapper(
     val sign = if (delta >= 0) "+" else "-"
     return "이번 주 ${sign}${delta.absoluteValue}kg"
   }
-
 }

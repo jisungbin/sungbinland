@@ -13,9 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-internal class StudyStateHolder(
-  private val mapper: StudyDashboardStateMapper,
-) {
+internal class StudyStateHolder(private val mapper: StudyDashboardStateMapper) {
   private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
   private val selectedCategoryState: MutableStateFlow<String> = MutableStateFlow(ALL_CATEGORY)
   private val searchQueryState: MutableStateFlow<String> = MutableStateFlow("")

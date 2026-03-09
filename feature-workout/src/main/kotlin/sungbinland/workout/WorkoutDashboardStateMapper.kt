@@ -5,10 +5,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.util.fastMapTo
+import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.workout.dao.SupplementDao
 import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
+import sungbinland.core.workout.entity.WorkoutSessionEntity
 
 internal class WorkoutDashboardStateMapper(
   private val supplementDao: SupplementDao,
@@ -59,13 +62,13 @@ internal class WorkoutDashboardStateMapper(
     val previousMaxByDate = previousSessions.dailyMaxByDate()
     val recentMaxes = recentDates.map { date -> recentMaxByDate[date] ?: 0 }
     val previousMaxes = previousDates.map { date -> previousMaxByDate[date] ?: 0 }
-    val trendValues = recentDates.map { date ->
+    val trendValues = recentDates.fastMapTo(persistentListOf<WorkoutTrendValueState>().builder()) { date ->
       val maxWeight = recentMaxByDate[date] ?: 0
       WorkoutTrendValueState(
         label = "${date.monthValue}/${date.dayOfMonth}",
         value = "${maxWeight}kg",
       )
-    }
+    }.build()
     val recentPeak = recentMaxes.maxOrNull() ?: 0
     val previousPeak = previousMaxes.maxOrNull() ?: 0
 
@@ -78,10 +81,9 @@ internal class WorkoutDashboardStateMapper(
       .toSet()
     val registeredSupplements = supplementDao.getAllSupplements()
       .map { supplement -> supplement.name }
-    val supplementNames = if (registeredSupplements.isNotEmpty()) {
-      registeredSupplements
-    } else {
-      consumedNames.toList().sorted()
+    val supplementNames = when {
+      registeredSupplements.isNotEmpty() -> registeredSupplements
+      else -> consumedNames.toList().sorted()
     }
 
     return WorkoutDashboardState(
@@ -99,18 +101,18 @@ internal class WorkoutDashboardStateMapper(
         trendValues = trendValues,
       ),
       supplements = WorkoutSupplementChecklistState(
-        items = supplementNames.map { name ->
+        items = supplementNames.fastMapTo(persistentListOf<WorkoutSupplementItemState>().builder()) { name ->
           WorkoutSupplementItemState(
             name = name,
             meta = "복용 기록",
             checked = consumedNames.contains(name),
           )
-        },
+        }.build(),
       ),
     )
   }
 
-  private fun List<sungbinland.core.workout.entity.WorkoutSessionEntity>.dailyMaxByDate(): Map<LocalDate, Int> {
+  private fun List<WorkoutSessionEntity>.dailyMaxByDate(): Map<LocalDate, Int> {
     val maxByDate = mutableMapOf<LocalDate, Int>()
     forEach { session ->
       val date = session.performedAt.toInstant().atZone(zoneId).toLocalDate()

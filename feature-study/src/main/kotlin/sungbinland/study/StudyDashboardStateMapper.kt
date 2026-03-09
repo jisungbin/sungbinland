@@ -1,12 +1,13 @@
 package sungbinland.study
 
+import androidx.compose.ui.util.fastMapTo
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import sungbinland.core.study.dao.StudyEntryDao
 import sungbinland.core.study.entity.StudyEntryEntity
 import sungbinland.uikit.UiKitChipState
 
-internal class StudyDashboardStateMapper(
-  private val studyEntryDao: StudyEntryDao,
-) {
+internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDao) {
   internal suspend fun createState(
     selectedCategory: String,
     searchQuery: String,
@@ -21,15 +22,14 @@ internal class StudyDashboardStateMapper(
       categories.forEach { category ->
         add(UiKitChipState(id = category, label = category, selected = selectedCategory == category))
       }
-    }
+    }.toImmutableList()
     val filteredEntries = entries.filterBy(
       selectedCategory = selectedCategory,
       searchQuery = searchQuery,
     )
-    val groupedEntries = if (selectedCategory == ALL_CATEGORY) {
-      filteredEntries.groupBy { entry -> entry.category }.toSortedMap()
-    } else {
-      sortedMapOf(selectedCategory to filteredEntries)
+    val groupedEntries = when {
+      selectedCategory == ALL_CATEGORY -> filteredEntries.groupBy { entry -> entry.category }.toSortedMap()
+      else -> sortedMapOf(selectedCategory to filteredEntries)
     }
 
     return StudyDashboardState(
@@ -42,15 +42,15 @@ internal class StudyDashboardStateMapper(
           title = category,
           entries = sectionEntries
             .sortedBy { entry -> entry.name }
-            .map { entry ->
+            .fastMapTo(persistentListOf<StudyCardState>().builder()) { entry ->
               StudyCardState(
                 name = entry.name,
                 contentPreview = entry.content.previewText(),
                 thumbnailLabel = if (entry.imageUrl.isNullOrBlank()) null else "썸네일",
               )
-            },
+            }.build(),
         )
-      },
+      }.toImmutableList(),
     )
   }
 
@@ -61,12 +61,13 @@ internal class StudyDashboardStateMapper(
     val normalizedQuery = searchQuery.trim()
     return filter { entry ->
       val categoryMatches = selectedCategory == ALL_CATEGORY || entry.category == selectedCategory
-      val queryMatches = if (normalizedQuery.isBlank()) {
-        true
-      } else {
-        entry.category.contains(normalizedQuery, ignoreCase = true) ||
-          entry.name.contains(normalizedQuery, ignoreCase = true) ||
-          entry.content.contains(normalizedQuery, ignoreCase = true)
+      val queryMatches = when {
+        normalizedQuery.isBlank() -> true
+        else -> {
+          entry.category.contains(normalizedQuery, ignoreCase = true) ||
+            entry.name.contains(normalizedQuery, ignoreCase = true) ||
+            entry.content.contains(normalizedQuery, ignoreCase = true)
+        }
       }
       categoryMatches && queryMatches
     }
