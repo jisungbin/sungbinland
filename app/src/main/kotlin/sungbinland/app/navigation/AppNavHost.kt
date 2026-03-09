@@ -52,6 +52,7 @@ import sungbinland.study.studyEntry
 import sungbinland.uikit.FloatingButtonState
 import sungbinland.uikit.UiKitFloatingActionButton
 import sungbinland.workout.WorkoutRoute
+import kotlinx.collections.immutable.persistentListOf
 import sungbinland.workout.workoutEntry
 
 @Composable internal fun AppNavHost(
@@ -65,7 +66,7 @@ import sungbinland.workout.workoutEntry
   workoutSessionDao: WorkoutSessionDao,
   modifier: Modifier = Modifier,
 ) {
-  val tabs = remember { listOf(NutritionRoute, WorkoutRoute, StudyRoute) }
+  val tabs = remember { persistentListOf(NutritionRoute, WorkoutRoute, StudyRoute) }
   val backStack = rememberNavBackStack(NutritionRoute)
   val stateHolderDecorator = rememberSaveableStateHolderNavEntryDecorator<NavKey>()
   val entryProvider = remember {
@@ -116,7 +117,7 @@ import sungbinland.workout.workoutEntry
         .fillMaxSize()
         .hazeSource(state = hazeState),
       backStack = backStack,
-      entryDecorators = listOf(stateHolderDecorator),
+      entryDecorators = persistentListOf(stateHolderDecorator),
       transitionSpec = {
         ContentTransform(
           targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),

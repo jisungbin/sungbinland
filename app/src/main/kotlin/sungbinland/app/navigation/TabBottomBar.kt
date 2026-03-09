@@ -42,10 +42,11 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable internal fun TabBottomBar(
   hazeState: HazeState,
-  tabs: List<NavKey>,
+  tabs: ImmutableList<NavKey>,
   selectedTab: NavKey,
   accentOf: (NavKey) -> Color,
   iconOf: (NavKey) -> ImageVector,
