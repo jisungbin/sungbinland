@@ -26,16 +26,15 @@ kotlin {
 }
 
 dependencies {
+  implementation(projects.coreAlarm)
   implementation(projects.coreDatabase)
   implementation(projects.uikit)
 
-  implementation(libs.molecule.runtime)
-
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.navigation3.runtime)
 
   implementation(libs.compose.foundation)
   implementation(libs.compose.material.icons.extended)
-  implementation(libs.compose.runtime.retain)
   implementation(libs.compose.ui)
   implementation(libs.compose.ui.util)
 

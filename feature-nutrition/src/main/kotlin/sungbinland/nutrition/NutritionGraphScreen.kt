@@ -49,11 +49,11 @@ import sungbinland.nutrition.NutritionGraphPeriod.YEAR
 import sungbinland.uikit.UiKitColors
 
 @Composable internal fun NutritionGraphScreen(
-  stateHolder: NutritionGraphStateHolder,
+  viewModel: NutritionGraphViewModel,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val state by stateHolder.state.collectAsState()
+  val state by viewModel.state.collectAsState()
   NutritionGraphScreen(
     state = state,
     modifier = modifier
@@ -61,7 +61,7 @@ import sungbinland.uikit.UiKitColors
       .background(UiKitColors.Background)
       .systemBarsPadding(),
     onBack = onBack,
-    onPeriodClick = stateHolder::selectPeriod,
+    onPeriodClick = viewModel::selectPeriod,
   )
 }
 
@@ -291,7 +291,7 @@ import sungbinland.uikit.UiKitColors
 
     drawLinePath(weightPoints, Color(0xFFE85A4F))
     drawLinePath(caloriesPoints, Color(0xFF1E3A5F))
-    drawLinePath(carbsPoints, Color(0xFFFF8400))
+    drawLinePath(carbsPoints, Color(0xFF20B07A))
   }
 }
 
@@ -303,7 +303,7 @@ import sungbinland.uikit.UiKitColors
   ) {
     NutritionGraphLegendItem(color = Color(0xFFE85A4F), label = "체중")
     NutritionGraphLegendItem(color = Color(0xFF1E3A5F), label = "칼로리")
-    NutritionGraphLegendItem(color = Color(0xFFFF8400), label = "탄수화물")
+    NutritionGraphLegendItem(color = Color(0xFF20B07A), label = "탄수화물")
   }
 }
 

@@ -11,12 +11,14 @@ import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.workout.dao.SupplementDao
 import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
+import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
 
 internal class WorkoutDashboardStateMapper(
   private val supplementDao: SupplementDao,
   private val supplementIntakeDao: SupplementIntakeDao,
   private val timerRecordDao: TimerRecordDao,
+  private val workoutExerciseDao: WorkoutExerciseDao,
   private val workoutSessionDao: WorkoutSessionDao,
   private val nowProvider: () -> LocalDate,
 ) {
@@ -31,6 +33,9 @@ internal class WorkoutDashboardStateMapper(
       endOfDayExclusive = endOfDayExclusive,
     )
     val latestSession = sessionsOfDate.maxByOrNull { session -> session.performedAt.time }
+    val mainExerciseSuggestions = workoutExerciseDao.getAllWorkoutExercises()
+      .fastMapTo(persistentListOf<String>().builder()) { exercise -> exercise.name }
+      .build()
     val timerRecordsOfDate = timerRecordDao.getTimerRecordsByDate(
       startOfDay = startOfDay,
       endOfDayExclusive = endOfDayExclusive,
@@ -49,22 +54,24 @@ internal class WorkoutDashboardStateMapper(
         }
       }
     }
-    val registeredSupplements = supplementDao.getAllSupplements()
-      .fastMap { supplement -> supplement.name }
     val supplementNames = when {
-      registeredSupplements.isNotEmpty() -> registeredSupplements
-      else -> consumedNames.toList().sorted()
+      selectedDate < nowDate -> consumedNames.toList().sorted()
+      else -> {
+        val registered = supplementDao.getAllSupplements().fastMap { supplement -> supplement.name }
+        when {
+          registered.isNotEmpty() -> registered
+          else -> consumedNames.toList().sorted()
+        }
+      }
     }
 
     return WorkoutDashboardState(
       summary = WorkoutSummaryState(
-        dayTag = when {
-          selectedDate == nowDate -> "TODAY"
-          else -> "DAY"
-        },
+        dayTag = dayTag(selectedDate = selectedDate, nowDate = nowDate),
         displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
         routineTitle = latestSession?.routineName ?: "상체",
         mainExerciseValue = latestSession?.mainExerciseName ?: "[...]",
+        mainExerciseSuggestions = mainExerciseSuggestions,
         firstTimerStartedAt = firstTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,
         lastTimerStartedAt = lastTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,
         timerSpan = timerSpanValue(
@@ -82,6 +89,15 @@ internal class WorkoutDashboardStateMapper(
         }.build(),
       ),
     )
+  }
+
+  private fun dayTag(selectedDate: LocalDate, nowDate: LocalDate): String {
+    val diff = java.time.temporal.ChronoUnit.DAYS.between(nowDate, selectedDate)
+    return when {
+      diff == 0L -> "오늘"
+      diff > 0L -> "${diff}일 후"
+      else -> "${-diff}일 전"
+    }
   }
 
   private fun LocalDate.toStartOfDayDate(): Date =

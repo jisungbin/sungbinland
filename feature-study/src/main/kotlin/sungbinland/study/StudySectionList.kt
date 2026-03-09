@@ -2,6 +2,7 @@ package sungbinland.study
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import sungbinland.uikit.UiKitTypography
 @Composable internal fun StudySectionList(
   sections: ImmutableList<StudySectionState>,
   modifier: Modifier = Modifier,
+  onEntryClick: (category: String, name: String) -> Unit,
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -33,6 +35,7 @@ import sungbinland.uikit.UiKitTypography
       StudySection(
         state = section,
         modifier = Modifier,
+        onEntryClick = onEntryClick,
       )
     }
   }
@@ -41,6 +44,7 @@ import sungbinland.uikit.UiKitTypography
 @Composable private fun StudySection(
   state: StudySectionState,
   modifier: Modifier = Modifier,
+  onEntryClick: (category: String, name: String) -> Unit,
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -59,6 +63,7 @@ import sungbinland.uikit.UiKitTypography
         StudyCard(
           state = entry,
           modifier = Modifier,
+          onClick = { onEntryClick(entry.category, entry.name) },
         )
       }
     }
@@ -68,10 +73,12 @@ import sungbinland.uikit.UiKitTypography
 @Composable private fun StudyCard(
   state: StudyCardState,
   modifier: Modifier = Modifier,
+  onClick: () -> Unit,
 ) {
   Row(
     modifier = modifier
       .fillMaxWidth()
+      .clickable(onClick = onClick)
       .background(
         color = UiKitColors.Surface,
         shape = RoundedCornerShape(16.dp),
@@ -99,19 +106,6 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = state.contentPreview,
         style = UiKitTypography.Value.copy(color = UiKitColors.MutedText),
-      )
-    }
-    if (state.thumbnailLabel != null) {
-      BasicText(
-        text = state.thumbnailLabel,
-        modifier = Modifier
-          .padding(start = 12.dp)
-          .background(
-            color = Color(0xFFF0EEEB),
-            shape = RoundedCornerShape(14.dp),
-          )
-          .padding(horizontal = 18.dp, vertical = 24.dp),
-        style = UiKitTypography.Label.copy(color = UiKitColors.MutedText),
       )
     }
   }

@@ -20,12 +20,11 @@ poko = { id = "dev.drewhamilton.poko", version = "0.21.3" }
 
 
 [libraries]
-molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
-
 dev-chrisbanes-haze = { module = "dev.chrisbanes.haze:haze", version = "1.5.3" }
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0-rc01" }
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.9.1" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.0" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidx-navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "androidx-navigation3" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }

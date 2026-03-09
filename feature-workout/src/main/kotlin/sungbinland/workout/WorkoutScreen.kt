@@ -2,7 +2,6 @@ package sungbinland.workout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
@@ -28,18 +27,16 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import sungbinland.uikit.UiKitColors
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable internal fun WorkoutScreen(
-  stateHolder: WorkoutStateHolder,
-  showTimerSheet: Boolean,
-  onDismissTimerSheet: () -> Unit,
+  viewModel: WorkoutViewModel,
+  onOpenRoutineDetailClick: () -> Unit,
+  onManageSupplementClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val state by stateHolder.state.collectAsState()
+  val state by viewModel.state.collectAsState()
   val focusManager = LocalFocusManager.current
   val keyboardController = LocalSoftwareKeyboardController.current
   val mainExerciseFocusRequester = remember { FocusRequester() }
@@ -52,7 +49,14 @@ import sungbinland.uikit.UiKitColors
   val currentMainExercise = remember(state.summary.mainExerciseValue) {
     state.summary.mainExerciseValue.toMainExerciseInput()
   }
+  val mainExerciseAutocomplete = remember(mainExerciseInput, state.summary.mainExerciseSuggestions) {
+    findMainExerciseSuggestion(
+      input = mainExerciseInput,
+      suggestions = state.summary.mainExerciseSuggestions,
+    )
+  }
   val currentMainExerciseRef = rememberUpdatedState(currentMainExercise)
+  val mainExerciseAutocompleteRef = rememberUpdatedState(mainExerciseAutocomplete)
   val imeVisibleRef = rememberUpdatedState(imeVisible)
   LaunchedEffect(isEditingState) {
     snapshotFlow { currentMainExerciseRef.value to isEditingState.value }.collect { (mainExercise, editing) ->
@@ -72,50 +76,46 @@ import sungbinland.uikit.UiKitColors
   LaunchedEffect(isEditingState) {
     snapshotFlow { imeVisibleRef.value to isEditingState.value }.collect { (imeVis, editing) ->
       if (wasImeVisibleState.value && !imeVis && editing) {
+        val nextMainExercise = mainExerciseAutocompleteRef.value ?: mainExerciseInputState.value
+        mainExerciseInputState.value = nextMainExercise
         isEditingState.value = false
         focusManager.clearFocus(force = true)
-        stateHolder.saveSession(
+        viewModel.saveSession(
           routineName = state.summary.routineTitle,
-          mainExerciseName = mainExerciseInputState.value,
+          mainExerciseName = nextMainExercise,
         )
       }
       wasImeVisibleState.value = imeVis
     }
   }
 
-  Box(modifier = modifier.fillMaxSize()) {
-    WorkoutScreen(
-      state = state,
-      mainExerciseInput = mainExerciseInput,
-      isEditingMainExercise = isEditing,
-      mainExerciseFocusRequester = mainExerciseFocusRequester,
-      modifier = Modifier
-        .fillMaxSize()
-        .background(UiKitColors.Background)
-        .systemBarsPadding()
-        .padding(all = 16.dp),
-      onNextDateClick = stateHolder::moveToNextDate,
-      onCurrentDateClick = stateHolder::moveToToday,
-      onPreviousDateClick = stateHolder::moveToPreviousDate,
-      onSupplementClick = stateHolder::toggleSupplement,
-      onMainExerciseClick = { isEditing = true },
-      onMainExerciseInputChange = { input -> mainExerciseInput = input },
-    )
-    if (showTimerSheet) {
-      Popup(properties = PopupProperties(focusable = true)) {
-        WorkoutTimerSheet(
-          visible = true,
-          onDismiss = onDismissTimerSheet,
-          onStart = stateHolder::startTimer,
-        )
-      }
-    }
-  }
+  WorkoutScreen(
+    state = state,
+    mainExerciseInput = mainExerciseInput,
+    mainExerciseAutocomplete = mainExerciseAutocomplete,
+    isEditingMainExercise = isEditing,
+    mainExerciseFocusRequester = mainExerciseFocusRequester,
+    modifier = modifier
+      .fillMaxSize()
+      .background(UiKitColors.Background)
+      .verticalScroll(rememberScrollState())
+      .systemBarsPadding()
+      .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 92.dp),
+    onNextDateClick = viewModel::moveToNextDate,
+    onCurrentDateClick = viewModel::moveToToday,
+    onPreviousDateClick = viewModel::moveToPreviousDate,
+    onSupplementClick = viewModel::toggleSupplement,
+    onMainExerciseClick = { isEditing = true },
+    onMainExerciseInputChange = { input -> mainExerciseInput = input },
+    onOpenRoutineDetailClick = onOpenRoutineDetailClick,
+    onManageSupplementClick = onManageSupplementClick,
+  )
 }
 
 @Composable private fun WorkoutScreen(
   state: WorkoutDashboardState,
   mainExerciseInput: String,
+  mainExerciseAutocomplete: String?,
   isEditingMainExercise: Boolean,
   mainExerciseFocusRequester: FocusRequester,
   onPreviousDateClick: () -> Unit,
@@ -124,18 +124,18 @@ import sungbinland.uikit.UiKitColors
   onSupplementClick: (String) -> Unit,
   onMainExerciseClick: () -> Unit,
   onMainExerciseInputChange: (String) -> Unit,
+  onOpenRoutineDetailClick: () -> Unit,
+  onManageSupplementClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .verticalScroll(rememberScrollState())
-      .padding(bottom = 92.dp),
+    modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     WorkoutSummaryCard(
       state = state.summary,
       mainExerciseInput = mainExerciseInput,
+      mainExerciseAutocomplete = mainExerciseAutocomplete,
       isEditingMainExercise = isEditingMainExercise,
       mainExerciseFocusRequester = mainExerciseFocusRequester,
       modifier = Modifier.fillMaxWidth(),
@@ -144,16 +144,25 @@ import sungbinland.uikit.UiKitColors
       onCurrentDateClick = onCurrentDateClick,
       onMainExerciseClick = onMainExerciseClick,
       onMainExerciseInputChange = onMainExerciseInputChange,
-      onOpenRoutineDetailClick = {},
+      onOpenRoutineDetailClick = onOpenRoutineDetailClick,
     )
     WorkoutSupplementChecklistSection(
       state = state.supplements,
       modifier = Modifier.fillMaxWidth(),
       onItemClick = onSupplementClick,
-      onManageSupplementClick = {},
+      onManageSupplementClick = onManageSupplementClick,
     )
   }
 }
 
 private fun String.toMainExerciseInput(): String =
   if (this == "[...]") "" else this
+
+private fun findMainExerciseSuggestion(input: String, suggestions: List<String>): String? {
+  val normalizedInput = input.trim()
+  if (normalizedInput.isEmpty()) return null
+  val suggestion = suggestions.firstOrNull { candidate ->
+    candidate.startsWith(normalizedInput, ignoreCase = true)
+  } ?: return null
+  return if (suggestion.equals(normalizedInput, ignoreCase = true)) null else suggestion
+}

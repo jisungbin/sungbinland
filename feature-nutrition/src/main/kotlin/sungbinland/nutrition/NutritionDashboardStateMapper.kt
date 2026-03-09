@@ -2,12 +2,12 @@ package sungbinland.nutrition
 
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
-import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapTo
@@ -34,7 +34,13 @@ internal class NutritionDashboardStateMapper(
       startOfDay = selectedDate.toStartOfDayDate(zoneId = zoneId),
       endOfDayExclusive = selectedDate.plusDays(1).toStartOfDayDate(zoneId = zoneId),
     )
-    val allBodyInfos = bodyInfoDao.getAllBodyInfos()
+    val bodyInfoOfDate = bodyInfoDao.getBodyInfoByExactDate(
+      date = selectedDate.toStartOfDayDate(zoneId = zoneId),
+    )
+    val previousWeekBodyInfos = bodyInfoDao.getBodyInfosByDate(
+      startOfDay = selectedDate.minusDays(14).toStartOfDayDate(zoneId = zoneId),
+      endOfDayExclusive = selectedDate.minusDays(6).toStartOfDayDate(zoneId = zoneId),
+    )
 
     var totalCalories = 0
     var totalCarbohydrate = 0
@@ -46,7 +52,7 @@ internal class NutritionDashboardStateMapper(
       totalProtein += food.proteinGrams * eatenFood.quantity
     }
 
-    val bodyWeightKg = allBodyInfos.bodyWeightOf(date = selectedDate, zoneId = zoneId)
+    val bodyWeightKg = bodyInfoOfDate?.bodyWeightKg
     val goalCalories = bodyWeightKg?.let { weightKg ->
       (weightKg.toDouble() * 30.0 * 1.2).roundToInt()
     } ?: 2400
@@ -114,7 +120,7 @@ internal class NutritionDashboardStateMapper(
 
     return NutritionDashboardState(
       summary = NutritionSummaryState(
-        dayTag = if (selectedDate == nowDate) "TODAY" else "DAY",
+        dayTag = dayTag(selectedDate = selectedDate, nowDate = nowDate),
         displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
         headline = when {
           selectedDate == nowDate -> "오늘 ${formatWithThousands(value = totalCalories)} kcal"
@@ -142,10 +148,9 @@ internal class NutritionDashboardStateMapper(
         NutritionMacroCardState(
           title = "체중",
           value = bodyWeightKg?.let { weight -> "${weight}kg" } ?: "--kg",
-          meta = allBodyInfos.weightDeltaMeta(
-            selectedDate = selectedDate,
+          meta = weightDeltaMeta(
             currentWeightKg = bodyWeightKg,
-            zoneId = zoneId,
+            previousWeekBodyInfos = previousWeekBodyInfos,
           ),
           highlighted = true,
         ),
@@ -191,33 +196,29 @@ internal class NutritionDashboardStateMapper(
   private fun Date.toLocalDate(zoneId: ZoneId): LocalDate =
     toInstant().atZone(zoneId).toLocalDate()
 
+  private fun dayTag(selectedDate: LocalDate, nowDate: LocalDate): String {
+    val diff = ChronoUnit.DAYS.between(nowDate, selectedDate)
+    return when {
+      diff == 0L -> "오늘"
+      diff > 0L -> "${diff}일 후"
+      else -> "${-diff}일 전"
+    }
+  }
+
   private fun LocalDate.toStartOfDayDate(zoneId: ZoneId): Date =
     Date.from(atStartOfDay(zoneId).toInstant())
 
-  private fun List<BodyInfoEntity>.bodyWeightOf(
-    date: LocalDate,
-    zoneId: ZoneId,
-  ): Int? = fastFilter { bodyInfo ->
-    bodyInfo.recordedAt.toLocalDate(zoneId = zoneId) == date
-  }.maxByOrNull { bodyInfo ->
-    bodyInfo.recordedAt.time
-  }?.bodyWeightKg
-
-  private fun List<BodyInfoEntity>.weightDeltaMeta(
-    selectedDate: LocalDate,
+  private fun weightDeltaMeta(
     currentWeightKg: Int?,
-    zoneId: ZoneId,
+    previousWeekBodyInfos: List<BodyInfoEntity>,
   ): String {
-    if (currentWeightKg == null) {
-      return "기록 없음"
-    }
-    val previousWeekWeight = fastFilter { bodyInfo ->
-      bodyInfo.recordedAt.toLocalDate(zoneId = zoneId) <= selectedDate.minusDays(7)
-    }.maxByOrNull { bodyInfo ->
-      bodyInfo.recordedAt.time
-    }?.bodyWeightKg ?: return "비교 데이터 없음"
+    if (currentWeightKg == null) return "기록 없음"
+    val previousWeekWeight = previousWeekBodyInfos
+      .maxByOrNull { it.recordedAt.time }
+      ?.bodyWeightKg
+      ?: return "비교 데이터 없음"
     val delta = currentWeightKg - previousWeekWeight
-    val sign = if (delta >= 0) "+" else "-"
+    val sign = when { delta >= 0 -> "+"; else -> "-" }
     return "이번 주 ${sign}${delta.absoluteValue}kg"
   }
 }

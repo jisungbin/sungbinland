@@ -1,19 +1,17 @@
 package sungbinland.nutrition
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import sungbinland.core.nutrition.dao.BodyInfoDao
@@ -23,51 +21,44 @@ import sungbinland.core.nutrition.entity.BodyInfoEntity
 import sungbinland.core.nutrition.entity.EatenFoodEntity
 import sungbinland.core.nutrition.entity.FoodEntity
 
-internal class NutritionStateHolder(
+@OptIn(ExperimentalCoroutinesApi::class)
+internal class NutritionViewModel(
   private val mapper: NutritionDashboardStateMapper,
   private val bodyInfoDao: BodyInfoDao,
   private val eatenFoodDao: EatenFoodDao,
   private val foodDao: FoodDao,
-  private val nowProvider: () -> LocalDate,
-) {
-  private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-  private val refreshState: MutableStateFlow<Long> = MutableStateFlow(0L)
-  private val selectedDateState: MutableStateFlow<LocalDate> = MutableStateFlow(nowProvider())
+) : ViewModel() {
   private val zoneId: ZoneId = ZoneId.systemDefault()
+  private val selectedDateState: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
+  private val refreshState: MutableStateFlow<Long> = MutableStateFlow(0L)
 
-  internal val state: StateFlow<NutritionDashboardState> = scope.launchMolecule(
-    mode = RecompositionMode.Immediate,
-  ) {
-    val selectedDate by selectedDateState.collectAsState()
-    val refreshKey by refreshState.collectAsState()
-    val dashboardState by produceState(
-      initialValue = nutritionDashboardLoadingState(selectedDate = selectedDate),
-      selectedDate,
-      refreshKey,
-    ) {
-      value = mapper.createState(selectedDate = selectedDate)
-    }
-    dashboardState
-  }
+  internal val selectedDate: LocalDate get() = selectedDateState.value
+
+  internal val state: StateFlow<NutritionDashboardState> =
+    combine(selectedDateState, refreshState) { date, _ -> date }
+      .mapLatest { date -> mapper.createState(selectedDate = date) }
+      .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = nutritionDashboardLoadingState(selectedDate = selectedDateState.value),
+      )
 
   internal fun moveToNextDate() {
-    selectedDateState.update { selectedDate -> selectedDate.plusDays(1) }
+    selectedDateState.update { it.plusDays(1) }
   }
 
   internal fun moveToPreviousDate() {
-    selectedDateState.update { selectedDate -> selectedDate.minusDays(1) }
+    selectedDateState.update { it.minusDays(1) }
   }
 
   internal fun moveToToday() {
-    selectedDateState.update { nowProvider() }
+    selectedDateState.update { LocalDate.now() }
   }
 
   internal fun saveBodyWeight(weightInput: String) {
     val weightKg = weightInput.toIntOrNull() ?: return
-    if (weightKg <= 0) {
-      return
-    }
-    scope.launch {
+    if (weightKg <= 0) return
+    viewModelScope.launch {
       val selectedDate = selectedDateState.value
       bodyInfoDao.upsertBodyInfo(
         bodyInfo = BodyInfoEntity(
@@ -80,7 +71,7 @@ internal class NutritionStateHolder(
   }
 
   internal fun refresh() {
-    refreshState.update { key -> key + 1L }
+    refreshState.update { it + 1L }
   }
 
   internal suspend fun getRegisteredFoods(): List<FoodEntity> =
@@ -94,7 +85,7 @@ internal class NutritionStateHolder(
     carbohydrateGrams: Int,
     proteinGrams: Int,
   ) {
-    scope.launch {
+    viewModelScope.launch {
       foodDao.upsertFood(
         FoodEntity(
           name = foodName,
@@ -112,10 +103,6 @@ internal class NutritionStateHolder(
       )
       refresh()
     }
-  }
-
-  internal fun close() {
-    scope.cancel()
   }
 
   private fun parseConsumedAt(timeInput: String): Date {

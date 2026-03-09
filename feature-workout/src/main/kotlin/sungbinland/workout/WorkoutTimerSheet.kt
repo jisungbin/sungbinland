@@ -1,15 +1,7 @@
 package sungbinland.workout
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,59 +31,17 @@ import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun WorkoutTimerSheet(
-  visible: Boolean,
+  restTimer: WorkoutRestTimer,
   modifier: Modifier = Modifier,
-  onDismiss: () -> Unit,
-  onStart: () -> Unit,
-) {
-  AnimatedVisibility(
-    visible = visible,
-    modifier = modifier.fillMaxSize(),
-    enter = fadeIn(animationSpec = tween(durationMillis = 200)),
-    exit = fadeOut(animationSpec = tween(durationMillis = 200)),
-  ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .background(Color.Black.copy(alpha = 0.4f))
-          .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = onDismiss,
-          ),
-      )
-      TimerSheetContent(
-        modifier = Modifier
-          .align(Alignment.BottomCenter)
-          .animateEnterExit(
-            enter = slideInVertically(
-              initialOffsetY = { fullHeight -> fullHeight },
-              animationSpec = tween(durationMillis = 300),
-            ),
-            exit = slideOutVertically(
-              targetOffsetY = { fullHeight -> fullHeight },
-              animationSpec = tween(durationMillis = 300),
-            ),
-          ),
-        onStart = onStart,
-      )
-    }
-  }
-}
-
-@Composable private fun TimerSheetContent(
-  modifier: Modifier = Modifier,
-  onStart: () -> Unit,
 ) {
   var elapsedMillis by remember { mutableLongStateOf(0L) }
 
-  LaunchedEffect(Unit) {
-    onStart()
-    val startNanos = withFrameNanos { it }
-    while (true) {
-      withFrameNanos { frameNanos ->
-        elapsedMillis = (frameNanos - startNanos) / 1_000_000
+  LaunchedEffect(restTimer.startNanos) {
+    if (restTimer.isRunning) {
+      while (restTimer.isRunning) {
+        withFrameNanos { now ->
+          elapsedMillis = (now - restTimer.startNanos) / 1_000_000
+        }
       }
     }
   }
@@ -112,15 +62,10 @@ import sungbinland.uikit.UiKitTypography
         color = Color.White,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
       )
-      .padding(top = 12.dp, bottom = 36.dp, start = 24.dp, end = 24.dp),
+      .padding(top = 24.dp, bottom = 36.dp, start = 24.dp, end = 24.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(28.dp),
   ) {
-    Box(
-      modifier = Modifier
-        .size(width = 40.dp, height = 4.dp)
-        .background(color = Color(0xFFD9D9D9), shape = RoundedCornerShape(2.dp)),
-    )
     BasicText(
       text = "휴식 타이머",
       modifier = Modifier.fillMaxWidth(),

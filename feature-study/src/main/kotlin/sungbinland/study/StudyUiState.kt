@@ -26,9 +26,9 @@ import sungbinland.uikit.UiKitChipState
 
 @Immutable
 @Poko internal class StudyCardState(
+  internal val category: String,
   internal val name: String,
   internal val contentPreview: String,
-  internal val thumbnailLabel: String?,
 )
 
 internal fun studyLoadingState(): StudyDashboardState =

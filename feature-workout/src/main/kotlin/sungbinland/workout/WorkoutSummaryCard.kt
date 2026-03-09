@@ -43,6 +43,7 @@ import sungbinland.uikit.UiKitTypography
 @Composable internal fun WorkoutSummaryCard(
   state: WorkoutSummaryState,
   mainExerciseInput: String,
+  mainExerciseAutocomplete: String?,
   isEditingMainExercise: Boolean,
   mainExerciseFocusRequester: FocusRequester,
   modifier: Modifier = Modifier,
@@ -83,6 +84,7 @@ import sungbinland.uikit.UiKitTypography
     WorkoutMainExerciseField(
       value = state.mainExerciseValue,
       inputValue = mainExerciseInput,
+      autocompleteValue = mainExerciseAutocomplete,
       isEditing = isEditingMainExercise,
       focusRequester = mainExerciseFocusRequester,
       modifier = Modifier.fillMaxWidth(),
@@ -101,6 +103,7 @@ import sungbinland.uikit.UiKitTypography
 @Composable private fun WorkoutMainExerciseField(
   value: String,
   inputValue: String,
+  autocompleteValue: String?,
   isEditing: Boolean,
   focusRequester: FocusRequester,
   modifier: Modifier = Modifier,
@@ -108,6 +111,7 @@ import sungbinland.uikit.UiKitTypography
   onInputChange: (String) -> Unit,
 ) {
   val currentInputValue = rememberUpdatedState(inputValue)
+  val currentAutocompleteValue = rememberUpdatedState(autocompleteValue)
   val currentIsEditing = rememberUpdatedState(isEditing)
   val textFieldValueState = remember {
     mutableStateOf(
@@ -165,23 +169,35 @@ import sungbinland.uikit.UiKitTypography
       contentAlignment = Alignment.CenterStart,
     ) {
       if (isEditing) {
-        BasicTextField(
-          value = textFieldValue,
-          onValueChange = { fieldValue ->
-            textFieldValue = fieldValue
-            onInputChange(fieldValue.text)
-          },
-          modifier = Modifier
-            .focusRequester(focusRequester)
-            .fillMaxWidth(),
-          singleLine = true,
-          textStyle = TextStyle(
-            color = UiKitColors.Primary,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-          ),
-          keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        )
+        Box(modifier = Modifier.fillMaxWidth()) {
+          if (!currentAutocompleteValue.value.isNullOrEmpty()) {
+            BasicText(
+              text = currentAutocompleteValue.value.orEmpty(),
+              style = TextStyle(
+                color = Color(0xFFBDBDBD),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+              ),
+            )
+          }
+          BasicTextField(
+            value = textFieldValue,
+            onValueChange = { fieldValue ->
+              textFieldValue = fieldValue
+              onInputChange(fieldValue.text)
+            },
+            modifier = Modifier
+              .focusRequester(focusRequester)
+              .fillMaxWidth(),
+            singleLine = true,
+            textStyle = TextStyle(
+              color = UiKitColors.Primary,
+              fontSize = 16.sp,
+              fontWeight = FontWeight.SemiBold,
+            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+          )
+        }
       } else {
         BasicText(
           text = value,

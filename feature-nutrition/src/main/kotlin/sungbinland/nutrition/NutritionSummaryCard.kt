@@ -53,21 +53,6 @@ import sungbinland.uikit.UiKitTypography
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      BasicText(
-        text = state.headline,
-        style = UiKitTypography.Headline.copy(color = UiKitColors.Primary),
-      )
-      UiKitPillButton(
-        text = "전체 그래프",
-        modifier = Modifier,
-        onClick = onOpenGraphClick,
-      )
-    }
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.Bottom,
     ) {
       Column(
@@ -135,6 +120,16 @@ import sungbinland.uikit.UiKitTypography
         .fillMaxWidth()
         .padding(top = 2.dp),
     )
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.End,
+    ) {
+      UiKitPillButton(
+        text = "전체 그래프",
+        modifier = Modifier,
+        onClick = onOpenGraphClick,
+      )
+    }
   }
 }
 

@@ -2,149 +2,75 @@ package sungbinland.nutrition
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastFirstOrNull
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
-import sungbinland.core.nutrition.entity.FoodEntity
 import sungbinland.uikit.UiKitColors
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable internal fun NutritionScreen(
-  stateHolder: NutritionStateHolder,
-  showFoodRegistrationSheet: Boolean,
-  onDismissFoodRegistrationSheet: () -> Unit,
+  viewModel: NutritionViewModel,
   onOpenGraphClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val state by stateHolder.state.collectAsState()
-  val focusManager = LocalFocusManager.current
-  val keyboardController = LocalSoftwareKeyboardController.current
-  val weightFocusRequester = remember { FocusRequester() }
-  val imeVisible: Boolean = WindowInsets.isImeVisible
-  val wasImeVisibleState = remember { mutableStateOf(false) }
-  val isEditingWeightState = rememberSaveable { mutableStateOf(false) }
-  var isEditingWeight by isEditingWeightState
-  val weightInputState = rememberSaveable { mutableStateOf("") }
-  var weightInput by weightInputState
-  val currentWeightInput = remember(state.macroCards) {
-    state.macroCards.fastFirstOrNull { item -> item.highlighted }?.value?.toWeightInput().orEmpty()
-  }
-  val currentWeightInputRef = rememberUpdatedState(currentWeightInput)
-  val imeVisibleRef = rememberUpdatedState(imeVisible)
+  val state by viewModel.state.collectAsState()
+  var isEditingWeight by rememberSaveable { mutableStateOf(false) }
+  var weightEditText by rememberSaveable { mutableStateOf("") }
+  val stateWeight = state.macroCards.fastFirstOrNull { it.highlighted }?.value?.toWeightDigits().orEmpty()
 
-  var registeredFoods: ImmutableList<FoodEntity> by remember { mutableStateOf(persistentListOf()) }
-  LaunchedEffect(showFoodRegistrationSheet) {
-    if (showFoodRegistrationSheet) {
-      registeredFoods = stateHolder.getRegisteredFoods().toImmutableList()
-    }
-  }
-
-  LaunchedEffect(isEditingWeightState) {
-    snapshotFlow { currentWeightInputRef.value to isEditingWeightState.value }.collect { (currentWeight, isEditing) ->
-      if (!isEditing) weightInputState.value = currentWeight
-    }
-  }
-  LaunchedEffect(isEditingWeightState) {
-    snapshotFlow { isEditingWeightState.value }.collect { isEditing ->
-      if (isEditing) {
-        weightFocusRequester.requestFocus()
-        keyboardController?.show()
-      }
-    }
-  }
-  LaunchedEffect(isEditingWeightState) {
-    snapshotFlow { imeVisibleRef.value to isEditingWeightState.value }.collect { (imeVis, isEditing) ->
-      if (wasImeVisibleState.value && !imeVis && isEditing) {
-        isEditingWeightState.value = false
-        focusManager.clearFocus(force = true)
-        stateHolder.saveBodyWeight(weightInput = weightInputState.value)
-      }
-      wasImeVisibleState.value = imeVis
-    }
-  }
-
-  Box(modifier = modifier.fillMaxSize()) {
-    NutritionScreen(
-      state = state,
-      isEditingWeight = isEditingWeight,
-      weightFocusRequester = weightFocusRequester,
-      weightInput = weightInput,
-      modifier = Modifier
-        .fillMaxSize()
-        .background(UiKitColors.Background)
-        .verticalScroll(rememberScrollState())
-        .systemBarsPadding()
-        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 92.dp),
-      onNextDateClick = stateHolder::moveToNextDate,
-      onCurrentDateClick = stateHolder::moveToToday,
-      onOpenGraphClick = onOpenGraphClick,
-      onPreviousDateClick = stateHolder::moveToPreviousDate,
-      onWeightCardClick = { isEditingWeight = true },
-      onWeightInputChange = { input -> weightInput = input },
-    )
-    if (showFoodRegistrationSheet) {
-      Popup(properties = PopupProperties(focusable = true)) {
-        NutritionFoodRegistrationSheet(
-          visible = true,
-          registeredFoods = registeredFoods,
-          onDismiss = onDismissFoodRegistrationSheet,
-          onSubmit = { foodName, quantity, timeInput, calories, carbs, protein ->
-            stateHolder.registerFood(
-              foodName = foodName,
-              quantity = quantity,
-              timeInput = timeInput,
-              calories = calories,
-              carbohydrateGrams = carbs,
-              proteinGrams = protein,
-            )
-            onDismissFoodRegistrationSheet()
-          },
-        )
-      }
-    }
-  }
+  NutritionScreen(
+    state = state,
+    isEditingWeight = isEditingWeight,
+    weightDisplayText = when {
+      isEditingWeight -> weightEditText
+      stateWeight.isNotBlank() -> stateWeight
+      else -> ""
+    },
+    modifier = modifier
+      .fillMaxSize()
+      .background(UiKitColors.Background)
+      .verticalScroll(rememberScrollState())
+      .systemBarsPadding()
+      .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 92.dp),
+    onNextDateClick = viewModel::moveToNextDate,
+    onCurrentDateClick = viewModel::moveToToday,
+    onOpenGraphClick = onOpenGraphClick,
+    onPreviousDateClick = viewModel::moveToPreviousDate,
+    onWeightCardClick = {
+      weightEditText = stateWeight
+      isEditingWeight = true
+    },
+    onWeightInputChange = { weightEditText = it },
+    onWeightDone = {
+      isEditingWeight = false
+      viewModel.saveBodyWeight(weightEditText)
+    },
+  )
 }
 
 @Composable private fun NutritionScreen(
   state: NutritionDashboardState,
-  weightInput: String,
   isEditingWeight: Boolean,
-  weightFocusRequester: FocusRequester,
+  weightDisplayText: String,
   onPreviousDateClick: () -> Unit,
   onNextDateClick: () -> Unit,
   onCurrentDateClick: () -> Unit,
   onOpenGraphClick: () -> Unit,
   onWeightCardClick: () -> Unit,
   onWeightInputChange: (String) -> Unit,
+  onWeightDone: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -162,11 +88,11 @@ import sungbinland.uikit.UiKitColors
     NutritionMacroRow(
       modifier = Modifier.fillMaxWidth(),
       items = state.macroCards,
-      weightInput = weightInput,
+      weightDisplayText = weightDisplayText,
       isEditingWeight = isEditingWeight,
-      weightFocusRequester = weightFocusRequester,
       onWeightCardClick = onWeightCardClick,
       onWeightInputChange = onWeightInputChange,
+      onWeightDone = onWeightDone,
     )
     NutritionFoodTimelineSection(
       modifier = Modifier.fillMaxWidth(),
@@ -175,4 +101,4 @@ import sungbinland.uikit.UiKitColors
   }
 }
 
-private fun String.toWeightInput(): String = removeSuffix("kg").filter(Char::isDigit)
+private fun String.toWeightDigits(): String = removeSuffix("kg").filter(Char::isDigit)

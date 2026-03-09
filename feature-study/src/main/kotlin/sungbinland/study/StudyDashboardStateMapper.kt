@@ -19,7 +19,7 @@ internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDa
     val categories = entries
       .fastMap { entry -> entry.category }
       .distinct()
-      .sorted()
+      .sortedWith(String.CASE_INSENSITIVE_ORDER)
     val chips = buildList {
       add(UiKitChipState(id = ALL_CATEGORY, label = ALL_CATEGORY, selected = selectedCategory == ALL_CATEGORY))
       categories.fastForEach { category ->
@@ -31,7 +31,7 @@ internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDa
       searchQuery = searchQuery,
     )
     val groupedEntries = when {
-      selectedCategory == ALL_CATEGORY -> filteredEntries.groupBy { entry -> entry.category }.toSortedMap()
+      selectedCategory == ALL_CATEGORY -> filteredEntries.groupBy { entry -> entry.category }.toSortedMap(String.CASE_INSENSITIVE_ORDER)
       else -> sortedMapOf(selectedCategory to filteredEntries)
     }
 
@@ -44,12 +44,12 @@ internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDa
         StudySectionState(
           title = category,
           entries = sectionEntries
-            .sortedBy { entry -> entry.name }
+            .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { entry -> entry.name })
             .fastMapTo(persistentListOf<StudyCardState>().builder()) { entry ->
               StudyCardState(
+                category = entry.category,
                 name = entry.name,
-                contentPreview = entry.content.previewText(),
-                thumbnailLabel = if (entry.imageUrl.isNullOrBlank()) null else "썸네일",
+                contentPreview = entry.content,
               )
             }.build(),
         )
@@ -75,9 +75,6 @@ internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDa
       categoryMatches && queryMatches
     }
   }
-
-  private fun String.previewText(): String =
-    if (length <= 44) this else "${take(44)}..."
 
   private companion object {
     private const val ALL_CATEGORY: String = "전체"

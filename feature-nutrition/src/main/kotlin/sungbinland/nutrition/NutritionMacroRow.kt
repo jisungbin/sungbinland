@@ -11,22 +11,17 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -40,12 +35,12 @@ import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun NutritionMacroRow(
   items: ImmutableList<NutritionMacroCardState>,
-  weightInput: String,
+  weightDisplayText: String,
   isEditingWeight: Boolean,
-  weightFocusRequester: FocusRequester,
   modifier: Modifier = Modifier,
   onWeightCardClick: () -> Unit,
   onWeightInputChange: (String) -> Unit,
+  onWeightDone: () -> Unit,
 ) {
   val defaultItems = items.fastFilter { !it.highlighted }
   val weightItem = items.fastFirstOrNull { it.highlighted }
@@ -65,80 +60,50 @@ import sungbinland.uikit.UiKitTypography
     }
     if (weightItem != null) {
       NutritionWeightInputCard(
-        state = weightItem,
-        weightInput = weightInput,
+        title = weightItem.title,
+        meta = weightItem.meta,
+        displayText = weightDisplayText,
         isEditing = isEditingWeight,
-        focusRequester = weightFocusRequester,
         modifier = Modifier.weight(1f),
         onClick = onWeightCardClick,
-        onWeightInputChange = onWeightInputChange,
+        onInputChange = onWeightInputChange,
+        onDone = onWeightDone,
       )
     }
   }
 }
 
 @Composable private fun NutritionWeightInputCard(
-  state: NutritionMacroCardState,
-  weightInput: String,
+  title: String,
+  meta: String,
+  displayText: String,
   isEditing: Boolean,
-  focusRequester: FocusRequester,
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
-  onWeightInputChange: (String) -> Unit,
+  onInputChange: (String) -> Unit,
+  onDone: () -> Unit,
 ) {
-  val titleColor: Color = Color(0xCCFFFFFF)
-  val valueColor: Color = Color.White
-  val metaColor: Color = Color(0xE0FFFFFF)
-  val currentWeightInput = rememberUpdatedState(weightInput)
-  val currentIsEditing = rememberUpdatedState(isEditing)
-  val textFieldValueState = remember {
-    mutableStateOf(
-      TextFieldValue(
-        text = weightInput,
-        selection = TextRange(weightInput.length),
-      ),
-    )
-  }
-  var textFieldValue by textFieldValueState
+  val focusRequester = remember { FocusRequester() }
+  val keyboardController = LocalSoftwareKeyboardController.current
+  val valueColor = Color.White
 
-  LaunchedEffect(textFieldValueState) {
-    snapshotFlow { currentWeightInput.value }.collect { input ->
-      if (input != textFieldValueState.value.text) {
-        textFieldValueState.value = TextFieldValue(
-          text = input,
-          selection = TextRange(input.length),
-        )
-      }
-    }
-  }
-  LaunchedEffect(textFieldValueState) {
-    snapshotFlow { currentIsEditing.value }.collect { editing ->
-      if (editing && textFieldValueState.value.text.isNotEmpty()) {
-        textFieldValueState.value = textFieldValueState.value.copy(
-          selection = TextRange(0, textFieldValueState.value.text.length),
-        )
-      }
+  LaunchedEffect(isEditing) {
+    if (isEditing) {
+      focusRequester.requestFocus()
+      keyboardController?.show()
     }
   }
 
   Column(
     modifier = modifier
-      .background(
-        color = UiKitColors.Accent,
-        shape = RoundedCornerShape(16.dp),
-      )
-      .border(
-        width = 1.dp,
-        color = UiKitColors.Accent,
-        shape = RoundedCornerShape(16.dp),
-      )
+      .background(color = UiKitColors.Accent, shape = RoundedCornerShape(16.dp))
       .clickable(onClick = onClick)
       .padding(horizontal = 12.dp, vertical = 10.dp),
     verticalArrangement = Arrangement.spacedBy(6.dp),
   ) {
     BasicText(
-      text = state.title,
-      style = UiKitTypography.Micro.copy(color = titleColor),
+      text = title,
+      style = UiKitTypography.Micro.copy(color = Color(0xCCFFFFFF)),
     )
     if (isEditing) {
       Row(
@@ -146,14 +111,9 @@ import sungbinland.uikit.UiKitTypography
         verticalAlignment = Alignment.CenterVertically,
       ) {
         BasicTextField(
-          value = textFieldValue,
+          value = displayText,
           onValueChange = { value ->
-            val filteredText = value.text.filter(Char::isDigit).take(3)
-            textFieldValue = value.copy(
-              text = filteredText,
-              selection = TextRange(filteredText.length),
-            )
-            onWeightInputChange(filteredText)
+            onInputChange(value.filter(Char::isDigit).take(3))
           },
           modifier = Modifier
             .focusRequester(focusRequester)
@@ -164,6 +124,7 @@ import sungbinland.uikit.UiKitTypography
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done,
           ),
+          keyboardActions = KeyboardActions(onDone = { onDone() }),
         )
         BasicText(
           text = "kg",
@@ -173,13 +134,16 @@ import sungbinland.uikit.UiKitTypography
       }
     } else {
       BasicText(
-        text = if (weightInput.isBlank()) "--kg" else "${weightInput}kg",
+        text = when {
+          displayText.isBlank() -> "--kg"
+          else -> "${displayText}kg"
+        },
         style = UiKitTypography.TitleLarge.copy(color = valueColor),
       )
     }
     BasicText(
-      text = state.meta,
-      style = UiKitTypography.Micro.copy(color = metaColor),
+      text = meta,
+      style = UiKitTypography.Micro.copy(color = Color(0xE0FFFFFF)),
     )
   }
 }

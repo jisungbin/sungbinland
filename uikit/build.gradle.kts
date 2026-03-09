@@ -27,6 +27,9 @@ kotlin {
 dependencies {
   implementation(libs.dev.chrisbanes.haze)
 
+  implementation(libs.androidx.navigation3.runtime)
+  implementation(libs.androidx.navigation3.ui)
+
   implementation(libs.compose.foundation)
   implementation(libs.compose.runtime)
   implementation(libs.compose.ui)

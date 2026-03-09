@@ -15,6 +15,7 @@ import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun StudyHeaderCard(
   state: StudyHeaderState,
+  searchQuery: String,
   modifier: Modifier = Modifier,
   onSearchQueryChange: (String) -> Unit,
   onCategoryClick: (String) -> Unit,
@@ -32,14 +33,14 @@ import sungbinland.uikit.UiKitTypography
         style = UiKitTypography.Headline.copy(color = UiKitColors.Primary),
       )
       UiKitSearchField(
-        value = state.searchQuery,
+        value = searchQuery,
         placeholder = "항목 검색",
         modifier = Modifier.fillMaxWidth(),
         onValueChange = onSearchQueryChange,
       )
       UiKitCategoryChipRow(
         chips = state.chips,
-        modifier = Modifier,
+        modifier = Modifier.fillMaxWidth(),
         onChipClick = onCategoryClick,
       )
     }

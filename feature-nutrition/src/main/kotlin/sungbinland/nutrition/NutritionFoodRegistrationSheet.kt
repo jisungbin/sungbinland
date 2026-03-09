@@ -1,15 +1,8 @@
 package sungbinland.nutrition
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -52,62 +46,10 @@ import sungbinland.core.nutrition.entity.FoodEntity
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable internal fun NutritionFoodRegistrationSheet(
-  visible: Boolean,
-  registeredFoods: ImmutableList<FoodEntity>,
-  modifier: Modifier = Modifier,
-  onDismiss: () -> Unit,
-  onSubmit: (
-    foodName: String,
-    quantity: Int,
-    timeInput: String,
-    calories: Int,
-    carbohydrateGrams: Int,
-    proteinGrams: Int,
-  ) -> Unit,
-) {
-  AnimatedVisibility(
-    visible = visible,
-    modifier = modifier.fillMaxSize(),
-    enter = fadeIn(animationSpec = tween(durationMillis = 200)),
-    exit = fadeOut(animationSpec = tween(durationMillis = 200)),
-  ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .background(Color.Black.copy(alpha = 0.4f))
-          .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = onDismiss,
-          ),
-      )
-      FoodRegistrationSheetContent(
-        registeredFoods = registeredFoods,
-        modifier = Modifier
-          .align(Alignment.BottomCenter)
-          .animateEnterExit(
-            enter = slideInVertically(
-              initialOffsetY = { fullHeight -> fullHeight },
-              animationSpec = tween(durationMillis = 300),
-            ),
-            exit = slideOutVertically(
-              targetOffsetY = { fullHeight -> fullHeight },
-              animationSpec = tween(durationMillis = 300),
-            ),
-          ),
-        onSubmit = onSubmit,
-      )
-    }
-  }
-}
-
 private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
 @OptIn(ExperimentalLayoutApi::class)
-@Composable private fun FoodRegistrationSheetContent(
+@Composable internal fun NutritionFoodRegistrationSheet(
   registeredFoods: ImmutableList<FoodEntity>,
   modifier: Modifier = Modifier,
   onSubmit: (
@@ -136,19 +78,9 @@ private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
       )
       .verticalScroll(rememberScrollState())
-      .padding(top = 12.dp, bottom = 32.dp, start = 24.dp, end = 24.dp),
+      .padding(top = 24.dp, bottom = 32.dp, start = 24.dp, end = 24.dp),
     verticalArrangement = Arrangement.spacedBy(24.dp),
   ) {
-    Box(
-      modifier = Modifier.fillMaxWidth(),
-      contentAlignment = Alignment.Center,
-    ) {
-      Box(
-        modifier = Modifier
-          .size(width = 40.dp, height = 4.dp)
-          .background(color = Color(0xFFD9D9D9), shape = RoundedCornerShape(2.dp)),
-      )
-    }
     BasicText(
       text = "음식 등록",
       style = UiKitTypography.TitleLarge.copy(color = UiKitColors.Text),
@@ -265,7 +197,8 @@ private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
       modifier = Modifier
         .fillMaxWidth()
         .height(52.dp)
-        .background(UiKitColors.BrandBlue, RoundedCornerShape(14.dp))
+        .clip(RoundedCornerShape(14.dp))
+        .background(UiKitColors.BrandBlue)
         .clickable {
           val foodName = when {
             isCustomInput -> customFoodName
@@ -320,7 +253,8 @@ private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
   BasicText(
     text = text,
     modifier = modifier
-      .background(containerColor, CircleShape)
+      .clip(CircleShape)
+      .background(containerColor)
       .border(1.dp, borderColor, CircleShape)
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
@@ -365,7 +299,12 @@ private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
   SheetInputRow(label = label, modifier = modifier) {
     BasicTextField(
       value = value,
-      onValueChange = onValueChange,
+      onValueChange = { input ->
+        when (keyboardType) {
+          KeyboardType.Number -> onValueChange(input.filter(Char::isDigit))
+          else -> onValueChange(input)
+        }
+      },
       singleLine = true,
       textStyle = UiKitTypography.Value.copy(color = UiKitColors.Text),
       modifier = Modifier
@@ -418,7 +357,8 @@ private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
     Box(
       modifier = Modifier
         .size(36.dp)
-        .background(Color(0xFFF0F0F0), RoundedCornerShape(10.dp))
+        .clip(RoundedCornerShape(10.dp))
+        .background(Color(0xFFF0F0F0))
         .clickable(onClick = onMinus),
       contentAlignment = Alignment.Center,
     ) {
@@ -454,7 +394,8 @@ private val sheetTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(
     Box(
       modifier = Modifier
         .size(36.dp)
-        .background(Color(0xFFF0F0F0), RoundedCornerShape(10.dp))
+        .clip(RoundedCornerShape(10.dp))
+        .background(Color(0xFFF0F0F0))
         .clickable(onClick = onPlus),
       contentAlignment = Alignment.Center,
     ) {

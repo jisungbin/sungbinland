@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,7 +52,9 @@ import kotlinx.collections.immutable.ImmutableList
       onClick = onPreviousClick,
     )
     Column(
-      modifier = Modifier.clickable(onClick = onCurrentDateClick),
+      modifier = Modifier
+        .defaultMinSize(minHeight = 48.dp)
+        .clickable(onClick = onCurrentDateClick),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(1.dp),
     ) {
@@ -80,20 +83,26 @@ import kotlinx.collections.immutable.ImmutableList
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
 ) {
-  BasicText(
-    text = text,
+  Box(
     modifier = modifier
-      .clip(RoundedCornerShape(12.dp))
-      .background(Color(0xFFFCFBF9))
-      .border(
-        width = 1.dp,
-        color = UiKitColors.BorderSoft,
-        shape = RoundedCornerShape(12.dp),
-      )
-      .clickable(onClick = onClick)
-      .padding(horizontal = 14.dp, vertical = 8.dp),
-    style = UiKitTypography.Value.copy(color = UiKitColors.MutedTextStrong),
-  )
+      .defaultMinSize(minHeight = 48.dp, minWidth = 48.dp)
+      .clickable(onClick = onClick),
+    contentAlignment = Alignment.Center,
+  ) {
+    BasicText(
+      text = text,
+      modifier = Modifier
+        .clip(RoundedCornerShape(12.dp))
+        .background(Color(0xFFFCFBF9))
+        .border(
+          width = 1.dp,
+          color = UiKitColors.BorderSoft,
+          shape = RoundedCornerShape(12.dp),
+        )
+        .padding(horizontal = 14.dp, vertical = 8.dp),
+      style = UiKitTypography.Value.copy(color = UiKitColors.MutedTextStrong),
+    )
+  }
 }
 
 @Composable public fun UiKitProgressBar(

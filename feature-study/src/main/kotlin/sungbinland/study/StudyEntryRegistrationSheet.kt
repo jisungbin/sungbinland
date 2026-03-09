@@ -1,15 +1,8 @@
 package sungbinland.study
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,63 +42,12 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable internal fun StudyEntryRegistrationSheet(
-  visible: Boolean,
-  categories: ImmutableList<String>,
-  modifier: Modifier = Modifier,
-  onDismiss: () -> Unit,
-  onSubmit: (
-    category: String,
-    name: String,
-    content: String,
-    imageUrl: String?,
-  ) -> Unit,
-) {
-  AnimatedVisibility(
-    visible = visible,
-    modifier = modifier.fillMaxSize(),
-    enter = fadeIn(animationSpec = tween(durationMillis = 200)),
-    exit = fadeOut(animationSpec = tween(durationMillis = 200)),
-  ) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .background(Color.Black.copy(alpha = 0.4f))
-          .clickable(
-            interactionSource = remember { MutableInteractionSource() },
-            indication = null,
-            onClick = onDismiss,
-          ),
-      )
-      RegistrationSheetContent(
-        categories = categories,
-        modifier = Modifier
-          .align(Alignment.BottomCenter)
-          .animateEnterExit(
-            enter = slideInVertically(
-              initialOffsetY = { fullHeight -> fullHeight },
-              animationSpec = tween(durationMillis = 300),
-            ),
-            exit = slideOutVertically(
-              targetOffsetY = { fullHeight -> fullHeight },
-              animationSpec = tween(durationMillis = 300),
-            ),
-          ),
-        onSubmit = onSubmit,
-      )
-    }
-  }
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable private fun RegistrationSheetContent(
   categories: ImmutableList<String>,
   modifier: Modifier = Modifier,
   onSubmit: (
     category: String,
     name: String,
     content: String,
-    imageUrl: String?,
   ) -> Unit,
 ) {
   var selectedCategory by remember { mutableStateOf<String?>(null) }
@@ -112,7 +55,6 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
   var customCategoryInput by remember { mutableStateOf("") }
   var nameInput by remember { mutableStateOf("") }
   var contentInput by remember { mutableStateOf("") }
-  var imageLinkInput by remember { mutableStateOf("") }
 
   Column(
     modifier = modifier
@@ -122,19 +64,9 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
       )
       .verticalScroll(rememberScrollState())
-      .padding(top = 12.dp, bottom = 32.dp, start = 24.dp, end = 24.dp),
+      .padding(top = 24.dp, bottom = 32.dp, start = 24.dp, end = 24.dp),
     verticalArrangement = Arrangement.spacedBy(20.dp),
   ) {
-    Box(
-      modifier = Modifier.fillMaxWidth(),
-      contentAlignment = Alignment.Center,
-    ) {
-      Box(
-        modifier = Modifier
-          .size(width = 40.dp, height = 4.dp)
-          .background(color = Color(0xFFD9D9D9), shape = RoundedCornerShape(2.dp)),
-      )
-    }
     BasicText(
       text = "자료 등록",
       style = UiKitTypography.TitleLarge.copy(color = UiKitColors.Text),
@@ -214,59 +146,12 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       height = 88,
       onValueChange = { contentInput = it },
     )
-    Column(
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        BasicText(
-          text = "이미지 링크",
-          style = UiKitTypography.Value.copy(
-            color = UiKitColors.Text,
-            fontWeight = FontWeight.SemiBold,
-          ),
-        )
-        BasicText(
-          text = "(선택)",
-          style = TextStyle(
-            color = Color(0xFFBBBBBB),
-            fontSize = 12.sp,
-          ),
-        )
-      }
-      BasicTextField(
-        value = imageLinkInput,
-        onValueChange = { imageLinkInput = it },
-        singleLine = true,
-        textStyle = UiKitTypography.Value.copy(color = UiKitColors.Text),
-        modifier = Modifier
-          .fillMaxWidth()
-          .height(44.dp)
-          .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
-          .padding(horizontal = 14.dp),
-        decorationBox = { innerTextField ->
-          Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.CenterStart,
-          ) {
-            if (imageLinkInput.isEmpty()) {
-              BasicText(
-                text = "https://",
-                style = UiKitTypography.Value.copy(color = Color(0xFFBBBBBB)),
-              )
-            }
-            innerTextField()
-          }
-        },
-      )
-    }
     Box(
       modifier = Modifier
         .fillMaxWidth()
         .height(52.dp)
-        .background(UiKitColors.BrandBlue, RoundedCornerShape(14.dp))
+        .clip(RoundedCornerShape(14.dp))
+        .background(UiKitColors.BrandBlue)
         .clickable {
           val category = when {
             isCustomCategory -> customCategoryInput
@@ -277,7 +162,6 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
             category,
             nameInput,
             contentInput,
-            imageLinkInput.ifBlank { null },
           )
         },
       contentAlignment = Alignment.Center,
@@ -319,7 +203,8 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
   BasicText(
     text = text,
     modifier = modifier
-      .background(containerColor, CircleShape)
+      .clip(CircleShape)
+      .background(containerColor)
       .border(1.dp, borderColor, CircleShape)
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
