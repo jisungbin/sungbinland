@@ -30,6 +30,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable public fun UiKitDateNavigator(
   dayTag: String,
@@ -79,7 +80,8 @@ import dev.chrisbanes.haze.hazeEffect
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
 ) {
-  Box(
+  BasicText(
+    text = text,
     modifier = modifier
       .clip(RoundedCornerShape(12.dp))
       .background(Color(0xFFFCFBF9))
@@ -90,13 +92,8 @@ import dev.chrisbanes.haze.hazeEffect
       )
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
-    contentAlignment = Alignment.Center,
-  ) {
-    BasicText(
-      text = text,
-      style = UiKitTypography.Value.copy(color = UiKitColors.MutedTextStrong),
-    )
-  }
+    style = UiKitTypography.Value.copy(color = UiKitColors.MutedTextStrong),
+  )
 }
 
 @Composable public fun UiKitProgressBar(
@@ -151,7 +148,7 @@ import dev.chrisbanes.haze.hazeEffect
 }
 
 @Composable public fun UiKitMiniTrendBars(
-  values: List<Float>,
+  values: ImmutableList<Float>,
   modifier: Modifier = Modifier,
   activeStartIndex: Int = 3,
 ) {

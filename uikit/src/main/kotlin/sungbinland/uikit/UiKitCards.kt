@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -189,7 +188,8 @@ import androidx.compose.ui.unit.dp
         style = UiKitTypography.Value.copy(color = UiKitColors.MutedText),
       )
     }
-    Box(
+    BasicText(
+      text = if (checked) "✓" else "",
       modifier = Modifier
         .clip(RoundedCornerShape(12.dp))
         .background(if (checked) Color(0xFFFF9800) else Color.Transparent)
@@ -199,12 +199,7 @@ import androidx.compose.ui.unit.dp
           shape = RoundedCornerShape(12.dp),
         )
         .padding(horizontal = 11.dp, vertical = 8.dp),
-      contentAlignment = Alignment.Center,
-    ) {
-      BasicText(
-        text = if (checked) "✓" else "",
-        style = UiKitTypography.Value.copy(color = Color.Black),
-      )
-    }
+      style = UiKitTypography.Value.copy(color = Color.Black),
+    )
   }
 }

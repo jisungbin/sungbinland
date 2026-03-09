@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import dev.drewhamilton.poko.Poko
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable public fun UiKitSearchField(
   value: String,
@@ -72,7 +73,7 @@ import dev.drewhamilton.poko.Poko
 }
 
 @Composable public fun UiKitCategoryChipRow(
-  chips: List<UiKitChipState>,
+  chips: ImmutableList<UiKitChipState>,
   modifier: Modifier = Modifier,
   onChipClick: (String) -> Unit,
 ) {
@@ -99,7 +100,8 @@ import dev.drewhamilton.poko.Poko
   val containerColor: Color = if (state.selected) UiKitColors.Accent else Color(0xFFFCFBF9)
   val textColor: Color = if (state.selected) Color.White else UiKitColors.MutedTextStrong
 
-  Box(
+  BasicText(
+    text = state.label,
     modifier = modifier
       .background(
         color = containerColor,
@@ -112,20 +114,16 @@ import dev.drewhamilton.poko.Poko
       )
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
-    contentAlignment = Alignment.Center,
-  ) {
-    BasicText(
-      text = state.label,
-      style = TextStyle(
-        color = textColor,
-        fontSize = UiKitTypography.Value.fontSize,
-        fontWeight = FontWeight.SemiBold,
-      ),
-    )
-  }
+    style = TextStyle(
+      color = textColor,
+      fontSize = UiKitTypography.Value.fontSize,
+      fontWeight = FontWeight.SemiBold,
+    ),
+  )
 }
 
-@Immutable @Poko public class UiKitChipState(
+@Immutable
+@Poko public class UiKitChipState(
   public val id: String,
   public val label: String,
   public val selected: Boolean,
