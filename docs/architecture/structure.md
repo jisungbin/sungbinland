@@ -10,6 +10,10 @@
 - `feature-study`
 - `uikit`
 
+## Current Progress Reference
+
+- Project purpose, role boundaries, feature scope, and implementation progress are tracked in `docs/project/status.md`.
+
 ## Module Responsibilities
 
 ### `app`
