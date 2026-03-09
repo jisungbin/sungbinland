@@ -17,11 +17,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import sungbinland.core.nutrition.dao.BodyInfoDao
+import sungbinland.core.nutrition.dao.EatenFoodDao
+import sungbinland.core.nutrition.dao.FoodDao
 import sungbinland.core.nutrition.entity.BodyInfoEntity
+import sungbinland.core.nutrition.entity.EatenFoodEntity
+import sungbinland.core.nutrition.entity.FoodEntity
 
 internal class NutritionStateHolder(
   private val mapper: NutritionDashboardStateMapper,
   private val bodyInfoDao: BodyInfoDao,
+  private val eatenFoodDao: EatenFoodDao,
+  private val foodDao: FoodDao,
   private val nowProvider: () -> LocalDate,
 ) {
   private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -77,8 +83,48 @@ internal class NutritionStateHolder(
     refreshState.update { key -> key + 1L }
   }
 
+  internal suspend fun getRegisteredFoods(): List<FoodEntity> =
+    foodDao.getAllFoods()
+
+  internal fun registerFood(
+    foodName: String,
+    quantity: Int,
+    timeInput: String,
+    calories: Int,
+    carbohydrateGrams: Int,
+    proteinGrams: Int,
+  ) {
+    scope.launch {
+      foodDao.upsertFood(
+        FoodEntity(
+          name = foodName,
+          calories = calories,
+          proteinGrams = proteinGrams,
+          carbohydrateGrams = carbohydrateGrams,
+        ),
+      )
+      eatenFoodDao.upsertEatenFood(
+        EatenFoodEntity(
+          foodName = foodName,
+          quantity = quantity,
+          consumedAt = parseConsumedAt(timeInput = timeInput),
+        ),
+      )
+      refresh()
+    }
+  }
+
   internal fun close() {
     scope.cancel()
+  }
+
+  private fun parseConsumedAt(timeInput: String): Date {
+    val selectedDate = selectedDateState.value
+    val parts = timeInput.split(":")
+    val hour = parts.getOrNull(0)?.toIntOrNull()?.coerceIn(0, 23) ?: 12
+    val minute = parts.getOrNull(1)?.toIntOrNull()?.coerceIn(0, 59) ?: 0
+    val dateTime = selectedDate.atTime(hour, minute)
+    return Date.from(dateTime.atZone(zoneId).toInstant())
   }
 
   private fun LocalDate.toStartOfDayDate(): Date =

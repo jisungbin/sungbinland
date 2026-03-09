@@ -7,6 +7,9 @@ import java.util.Date
 import java.util.Locale
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapTo
 import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.nutrition.dao.BodyInfoDao
@@ -36,8 +39,8 @@ internal class NutritionDashboardStateMapper(
     var totalCalories = 0
     var totalCarbohydrate = 0
     var totalProtein = 0
-    eatenFoodsOfDate.forEach { eatenFood ->
-      val food = foods[eatenFood.foodName] ?: return@forEach
+    eatenFoodsOfDate.fastForEach { eatenFood ->
+      val food = foods[eatenFood.foodName] ?: return@fastForEach
       totalCalories += food.calories * eatenFood.quantity
       totalCarbohydrate += food.carbohydrateGrams * eatenFood.quantity
       totalProtein += food.proteinGrams * eatenFood.quantity
@@ -82,8 +85,8 @@ internal class NutritionDashboardStateMapper(
       allEatenFoods = previousEatenFoods,
       foodsByName = foods,
     )
-    val recentTrendValues = recentDates.map { date -> recentDailyCalories[date] ?: 0 }
-    val previousTrendValues = previousDates.map { date -> previousDailyCalories[date] ?: 0 }
+    val recentTrendValues = recentDates.fastMap { date -> recentDailyCalories[date] ?: 0 }
+    val previousTrendValues = previousDates.fastMap { date -> previousDailyCalories[date] ?: 0 }
     val trendValues = recentDates.fastMapTo(persistentListOf<NutritionTrendValueState>().builder()) { date ->
       val calories = recentDailyCalories[date] ?: 0
       NutritionTrendValueState(
@@ -96,12 +99,15 @@ internal class NutritionDashboardStateMapper(
       recentAverage = recentTrendValues.average(),
     )
 
-    val timelineItems = eatenFoodsOfDate.fastMapTo(persistentListOf<NutritionTimelineItemState>().builder()) { eatenFood ->
-      val calories = (foods[eatenFood.foodName]?.calories ?: 0) * eatenFood.quantity
+    val timelineItems = eatenFoodsOfDate.asReversed().fastMapTo(persistentListOf<NutritionTimelineItemState>().builder()) { eatenFood ->
+      val food = foods[eatenFood.foodName]
+      val calories = (food?.calories ?: 0) * eatenFood.quantity
+      val carbs = (food?.carbohydrateGrams ?: 0) * eatenFood.quantity
+      val protein = (food?.proteinGrams ?: 0) * eatenFood.quantity
       val consumedAt = eatenFood.consumedAt.toInstant().atZone(zoneId).toLocalDateTime()
       NutritionTimelineItemState(
         title = "${consumedAt.format(timeFormatter)}  ${eatenFood.foodName} x${eatenFood.quantity}",
-        subtitle = consumedAt.hour.toMealLabel(),
+        subtitle = "탄 ${carbs}g · 단 ${protein}g",
         calorieText = "$calories kcal",
       )
     }.build()
@@ -159,8 +165,8 @@ internal class NutritionDashboardStateMapper(
     foodsByName: Map<String, FoodEntity>,
   ): Map<LocalDate, Int> {
     val caloriesByDate = mutableMapOf<LocalDate, Int>()
-    allEatenFoods.forEach { eatenFood ->
-      val food = foodsByName[eatenFood.foodName] ?: return@forEach
+    allEatenFoods.fastForEach { eatenFood ->
+      val food = foodsByName[eatenFood.foodName] ?: return@fastForEach
       val date = eatenFood.consumedAt.toLocalDate(zoneId = zoneId)
       val calories = food.calories * eatenFood.quantity
       caloriesByDate[date] = (caloriesByDate[date] ?: 0) + calories
@@ -188,17 +194,10 @@ internal class NutritionDashboardStateMapper(
   private fun LocalDate.toStartOfDayDate(zoneId: ZoneId): Date =
     Date.from(atStartOfDay(zoneId).toInstant())
 
-  private fun Int.toMealLabel(): String = when (this) {
-    in 5..10 -> "아침"
-    in 11..15 -> "점심"
-    in 16..20 -> "간식"
-    else -> "저녁"
-  }
-
   private fun List<BodyInfoEntity>.bodyWeightOf(
     date: LocalDate,
     zoneId: ZoneId,
-  ): Int? = filter { bodyInfo ->
+  ): Int? = fastFilter { bodyInfo ->
     bodyInfo.recordedAt.toLocalDate(zoneId = zoneId) == date
   }.maxByOrNull { bodyInfo ->
     bodyInfo.recordedAt.time
@@ -212,7 +211,7 @@ internal class NutritionDashboardStateMapper(
     if (currentWeightKg == null) {
       return "기록 없음"
     }
-    val previousWeekWeight = filter { bodyInfo ->
+    val previousWeekWeight = fastFilter { bodyInfo ->
       bodyInfo.recordedAt.toLocalDate(zoneId = zoneId) <= selectedDate.minusDays(7)
     }.maxByOrNull { bodyInfo ->
       bodyInfo.recordedAt.time

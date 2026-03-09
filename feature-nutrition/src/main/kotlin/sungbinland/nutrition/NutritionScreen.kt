@@ -2,6 +2,7 @@ package sungbinland.nutrition
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,11 +28,21 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastFirstOrNull
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import sungbinland.core.nutrition.entity.FoodEntity
 import sungbinland.uikit.UiKitColors
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable internal fun NutritionScreen(
   stateHolder: NutritionStateHolder,
+  showFoodRegistrationSheet: Boolean,
+  onDismissFoodRegistrationSheet: () -> Unit,
+  onOpenGraphClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val state by stateHolder.state.collectAsState()
@@ -45,10 +56,17 @@ import sungbinland.uikit.UiKitColors
   val weightInputState = rememberSaveable { mutableStateOf("") }
   var weightInput by weightInputState
   val currentWeightInput = remember(state.macroCards) {
-    state.macroCards.firstOrNull { item -> item.highlighted }?.value?.toWeightInput().orEmpty()
+    state.macroCards.fastFirstOrNull { item -> item.highlighted }?.value?.toWeightInput().orEmpty()
   }
   val currentWeightInputRef = rememberUpdatedState(currentWeightInput)
   val imeVisibleRef = rememberUpdatedState(imeVisible)
+
+  var registeredFoods: ImmutableList<FoodEntity> by remember { mutableStateOf(persistentListOf()) }
+  LaunchedEffect(showFoodRegistrationSheet) {
+    if (showFoodRegistrationSheet) {
+      registeredFoods = stateHolder.getRegisteredFoods().toImmutableList()
+    }
+  }
 
   LaunchedEffect(isEditingWeightState) {
     snapshotFlow { currentWeightInputRef.value to isEditingWeightState.value }.collect { (currentWeight, isEditing) ->
@@ -74,24 +92,46 @@ import sungbinland.uikit.UiKitColors
     }
   }
 
-  NutritionScreen(
-    state = state,
-    isEditingWeight = isEditingWeight,
-    weightFocusRequester = weightFocusRequester,
-    weightInput = weightInput,
-    modifier = modifier
-      .fillMaxSize()
-      .background(UiKitColors.Background)
-      .verticalScroll(rememberScrollState())
-      .systemBarsPadding()
-      .padding(all = 16.dp),
-    onNextDateClick = stateHolder::moveToNextDate,
-    onCurrentDateClick = stateHolder::moveToToday,
-    onOpenGraphClick = {},
-    onPreviousDateClick = stateHolder::moveToPreviousDate,
-    onWeightCardClick = { isEditingWeight = true },
-    onWeightInputChange = { input -> weightInput = input },
-  )
+  Box(modifier = modifier.fillMaxSize()) {
+    NutritionScreen(
+      state = state,
+      isEditingWeight = isEditingWeight,
+      weightFocusRequester = weightFocusRequester,
+      weightInput = weightInput,
+      modifier = Modifier
+        .fillMaxSize()
+        .background(UiKitColors.Background)
+        .verticalScroll(rememberScrollState())
+        .systemBarsPadding()
+        .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 92.dp),
+      onNextDateClick = stateHolder::moveToNextDate,
+      onCurrentDateClick = stateHolder::moveToToday,
+      onOpenGraphClick = onOpenGraphClick,
+      onPreviousDateClick = stateHolder::moveToPreviousDate,
+      onWeightCardClick = { isEditingWeight = true },
+      onWeightInputChange = { input -> weightInput = input },
+    )
+    if (showFoodRegistrationSheet) {
+      Popup(properties = PopupProperties(focusable = true)) {
+        NutritionFoodRegistrationSheet(
+          visible = true,
+          registeredFoods = registeredFoods,
+          onDismiss = onDismissFoodRegistrationSheet,
+          onSubmit = { foodName, quantity, timeInput, calories, carbs, protein ->
+            stateHolder.registerFood(
+              foodName = foodName,
+              quantity = quantity,
+              timeInput = timeInput,
+              calories = calories,
+              carbohydrateGrams = carbs,
+              proteinGrams = protein,
+            )
+            onDismissFoodRegistrationSheet()
+          },
+        )
+      }
+    }
+  }
 }
 
 @Composable private fun NutritionScreen(
