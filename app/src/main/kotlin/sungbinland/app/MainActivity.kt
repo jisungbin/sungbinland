@@ -1,7 +1,6 @@
 package sungbinland.app
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,12 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import sungbinland.app.navigation.AppNavHost
-import sungbinland.core.fixture.DatabaseFixture
+import sungbinland.core.alarm.DailyAlarmScheduler
 import sungbinland.core.nutrition.NutritionDatabase
 import sungbinland.core.study.StudyDatabase
 import sungbinland.core.workout.WorkoutDatabase
@@ -28,18 +23,12 @@ public class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
 
-    MainScope().launch {
-      val inserted = withContext(Dispatchers.IO) {
-        DatabaseFixture(
-          nutritionDatabase = nutritionDatabase,
-          studyDatabase = studyDatabase,
-          workoutDatabase = workoutDatabase,
-        ).populate()
-      }
-      if (inserted) {
-        Toast.makeText(applicationContext, "Fixture 데이터 삽입 완료", Toast.LENGTH_SHORT).show()
-      }
-    }
+    DailyAlarmScheduler.schedule(
+      context = applicationContext,
+      hour = 15,
+      minute = 0,
+      receiverClass = NutritionReminderReceiver::class.java,
+    )
 
     val bodyInfoDao = nutritionDatabase.bodyInfoDao()
     val eatenFoodDao = nutritionDatabase.eatenFoodDao()
@@ -51,6 +40,8 @@ public class MainActivity : ComponentActivity() {
     val supplementIntakeDao = workoutDatabase.supplementIntakeDao()
     val timerRecordDao = workoutDatabase.timerRecordDao()
     val workoutSessionDao = workoutDatabase.workoutSessionDao()
+    val workoutRoutineDao = workoutDatabase.workoutRoutineDao()
+    val workoutExerciseDao = workoutDatabase.workoutExerciseDao()
 
     setContent {
       AppNavHost(
@@ -65,6 +56,8 @@ public class MainActivity : ComponentActivity() {
         supplementIntakeDao = supplementIntakeDao,
         timerRecordDao = timerRecordDao,
         workoutSessionDao = workoutSessionDao,
+        workoutRoutineDao = workoutRoutineDao,
+        workoutExerciseDao = workoutExerciseDao,
       )
     }
   }

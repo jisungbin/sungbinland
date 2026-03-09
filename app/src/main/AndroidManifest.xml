@@ -15,6 +15,16 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
+
+    <activity
+      android:name="sungbinland.app.NutritionReminderActivity"
+      android:exported="false"
+      android:showWhenLocked="true"
+      android:turnScreenOn="true" />
+
+    <receiver
+      android:name="sungbinland.app.NutritionReminderReceiver"
+      android:exported="false" />
   </application>
 
 </manifest>
