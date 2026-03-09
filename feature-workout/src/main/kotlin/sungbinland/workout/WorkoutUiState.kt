@@ -5,7 +5,6 @@ import dev.drewhamilton.poko.Poko
 import java.time.LocalDate
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 @Poko internal class WorkoutDashboardState(
@@ -19,19 +18,15 @@ import kotlinx.collections.immutable.toImmutableList
   internal val displayDate: String,
   internal val routineTitle: String,
   internal val mainExerciseValue: String,
-  internal val maxWeightValue: String,
-  internal val firstTimerStartedAt: String,
-  internal val lastTimerStartedAt: String,
-  internal val timerSpan: String,
-  internal val trendDelta: String,
-  internal val trendDeltaMeta: String,
-  internal val trendValues: ImmutableList<WorkoutTrendValueState>,
+  internal val firstTimerStartedAt: WorkoutTimerValueState,
+  internal val lastTimerStartedAt: WorkoutTimerValueState,
+  internal val timerSpan: WorkoutTimerValueState,
 )
 
 @Immutable
-@Poko internal class WorkoutTrendValueState(
-  internal val label: String,
-  internal val value: String,
+@Poko internal class WorkoutTimerValueState(
+  internal val hours: String,
+  internal val minutes: String,
 )
 
 @Immutable
@@ -46,6 +41,8 @@ import kotlinx.collections.immutable.toImmutableList
   internal val checked: Boolean,
 )
 
+internal val emptyTimerValue = WorkoutTimerValueState(hours = "--", minutes = "--")
+
 internal fun workoutLoadingState(selectedDate: LocalDate): WorkoutDashboardState =
   WorkoutDashboardState(
     summary = WorkoutSummaryState(
@@ -53,19 +50,9 @@ internal fun workoutLoadingState(selectedDate: LocalDate): WorkoutDashboardState
       displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
       routineTitle = "기록 없음",
       mainExerciseValue = "[...]",
-      maxWeightValue = "[...]",
-      firstTimerStartedAt = "--:--",
-      lastTimerStartedAt = "--:--",
-      timerSpan = "--:--",
-      trendDelta = "0kg",
-      trendDeltaMeta = "지난주 0kg",
-      trendValues = (6 downTo 0).map { dayOffset ->
-        val date = selectedDate.minusDays(dayOffset.toLong())
-        WorkoutTrendValueState(
-          label = "${date.monthValue}/${date.dayOfMonth}",
-          value = "0kg",
-        )
-      }.toImmutableList(),
+      firstTimerStartedAt = emptyTimerValue,
+      lastTimerStartedAt = emptyTimerValue,
+      timerSpan = emptyTimerValue,
     ),
     supplements = WorkoutSupplementChecklistState(
       items = persistentListOf(),

@@ -2,16 +2,16 @@ package sungbinland.workout
 
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapTo
 import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.workout.dao.SupplementDao
 import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
-import sungbinland.core.workout.entity.WorkoutSessionEntity
 
 internal class WorkoutDashboardStateMapper(
   private val supplementDao: SupplementDao,
@@ -21,7 +21,6 @@ internal class WorkoutDashboardStateMapper(
   private val nowProvider: () -> LocalDate,
 ) {
   private val zoneId: ZoneId = ZoneId.systemDefault()
-  private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
   internal suspend fun createState(selectedDate: LocalDate): WorkoutDashboardState {
     val nowDate: LocalDate = nowProvider()
@@ -38,49 +37,20 @@ internal class WorkoutDashboardStateMapper(
     )
     val firstTimerRecord = timerRecordsOfDate.minByOrNull { record -> record.startedAt.time }
     val lastTimerRecord = timerRecordsOfDate.maxByOrNull { record -> record.startedAt.time }
-    val firstTimerStartedAt = firstTimerRecord?.startedAt?.toTimeText() ?: "--:--"
-    val lastTimerStartedAt = lastTimerRecord?.startedAt?.toTimeText() ?: "--:--"
-    val timerSpan = timerSpanText(
-      firstStartedAt = firstTimerRecord?.startedAt,
-      lastStartedAt = lastTimerRecord?.startedAt,
-    )
-    val recentDates: List<LocalDate> = (6 downTo 0).map { daysAgo ->
-      nowDate.minusDays(daysAgo.toLong())
-    }
-    val previousDates: List<LocalDate> = (13 downTo 7).map { daysAgo ->
-      nowDate.minusDays(daysAgo.toLong())
-    }
-    val recentSessions = workoutSessionDao.getWorkoutSessionsByDate(
-      startOfDay = nowDate.minusDays(6).toStartOfDayDate(),
-      endOfDayExclusive = nowDate.plusDays(1).toStartOfDayDate(),
-    )
-    val previousSessions = workoutSessionDao.getWorkoutSessionsByDate(
-      startOfDay = nowDate.minusDays(13).toStartOfDayDate(),
-      endOfDayExclusive = nowDate.minusDays(6).toStartOfDayDate(),
-    )
-    val recentMaxByDate = recentSessions.dailyMaxByDate()
-    val previousMaxByDate = previousSessions.dailyMaxByDate()
-    val recentMaxes = recentDates.map { date -> recentMaxByDate[date] ?: 0 }
-    val previousMaxes = previousDates.map { date -> previousMaxByDate[date] ?: 0 }
-    val trendValues = recentDates.fastMapTo(persistentListOf<WorkoutTrendValueState>().builder()) { date ->
-      val maxWeight = recentMaxByDate[date] ?: 0
-      WorkoutTrendValueState(
-        label = "${date.monthValue}/${date.dayOfMonth}",
-        value = "${maxWeight}kg",
-      )
-    }.build()
-    val recentPeak = recentMaxes.maxOrNull() ?: 0
-    val previousPeak = previousMaxes.maxOrNull() ?: 0
 
     val intakeWithItems = supplementIntakeDao.getSupplementIntakesByDate(
       startOfDay = startOfDay,
       endOfDayExclusive = endOfDayExclusive,
     )
-    val consumedNames = intakeWithItems
-      .flatMap { intake -> intake.items.map { item -> item.supplementName } }
-      .toSet()
+    val consumedNames = buildSet {
+      intakeWithItems.fastForEach { intake ->
+        intake.items.fastForEach { item ->
+          add(item.supplementName)
+        }
+      }
+    }
     val registeredSupplements = supplementDao.getAllSupplements()
-      .map { supplement -> supplement.name }
+      .fastMap { supplement -> supplement.name }
     val supplementNames = when {
       registeredSupplements.isNotEmpty() -> registeredSupplements
       else -> consumedNames.toList().sorted()
@@ -88,17 +58,19 @@ internal class WorkoutDashboardStateMapper(
 
     return WorkoutDashboardState(
       summary = WorkoutSummaryState(
-        dayTag = if (selectedDate == nowDate) "TODAY" else "DAY",
+        dayTag = when {
+          selectedDate == nowDate -> "TODAY"
+          else -> "DAY"
+        },
         displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
         routineTitle = latestSession?.routineName ?: "상체",
         mainExerciseValue = latestSession?.mainExerciseName ?: "[...]",
-        maxWeightValue = latestSession?.let { session -> "${session.heaviestWeightKg}kg" } ?: "[...]",
-        firstTimerStartedAt = firstTimerStartedAt,
-        lastTimerStartedAt = lastTimerStartedAt,
-        timerSpan = timerSpan,
-        trendDelta = "최고 중량 ${recentPeak}kg",
-        trendDeltaMeta = "지난주 ${previousPeak}kg",
-        trendValues = trendValues,
+        firstTimerStartedAt = firstTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,
+        lastTimerStartedAt = lastTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,
+        timerSpan = timerSpanValue(
+          firstStartedAt = firstTimerRecord?.startedAt,
+          lastStartedAt = lastTimerRecord?.startedAt,
+        ),
       ),
       supplements = WorkoutSupplementChecklistState(
         items = supplementNames.fastMapTo(persistentListOf<WorkoutSupplementItemState>().builder()) { name ->
@@ -112,35 +84,26 @@ internal class WorkoutDashboardStateMapper(
     )
   }
 
-  private fun List<WorkoutSessionEntity>.dailyMaxByDate(): Map<LocalDate, Int> {
-    val maxByDate = mutableMapOf<LocalDate, Int>()
-    forEach { session ->
-      val date = session.performedAt.toInstant().atZone(zoneId).toLocalDate()
-      val previous = maxByDate[date] ?: 0
-      if (session.heaviestWeightKg > previous) {
-        maxByDate[date] = session.heaviestWeightKg
-      }
-    }
-    return maxByDate
-  }
-
   private fun LocalDate.toStartOfDayDate(): Date =
     Date.from(atStartOfDay(zoneId).toInstant())
 
-  private fun Date.toTimeText(): String =
-    toInstant().atZone(zoneId).toLocalTime().format(timeFormatter)
+  private fun Date.toTimerValue(): WorkoutTimerValueState {
+    val time = toInstant().atZone(zoneId).toLocalTime()
+    return WorkoutTimerValueState(
+      hours = String.format(Locale.KOREA, "%02d", time.hour),
+      minutes = String.format(Locale.KOREA, "%02d", time.minute),
+    )
+  }
 
-  private fun timerSpanText(
+  private fun timerSpanValue(
     firstStartedAt: Date?,
     lastStartedAt: Date?,
-  ): String {
-    if (firstStartedAt == null || lastStartedAt == null) {
-      return "--:--"
-    }
-    val diffMinutes = ((lastStartedAt.time - firstStartedAt.time).coerceAtLeast(0L) / 60_000L)
-    val hours = diffMinutes / 60L
-    val minutes = diffMinutes % 60L
-    val span = String.format(Locale.KOREA, "%02d:%02d", hours, minutes)
-    return if (diffMinutes >= 120L) "$span 🔥" else span
+  ): WorkoutTimerValueState {
+    if (firstStartedAt == null || lastStartedAt == null) return emptyTimerValue
+    val diffMinutes = (lastStartedAt.time - firstStartedAt.time).coerceAtLeast(0L) / 60_000L
+    return WorkoutTimerValueState(
+      hours = String.format(Locale.KOREA, "%02d", diffMinutes / 60L),
+      minutes = String.format(Locale.KOREA, "%02d", diffMinutes % 60L),
+    )
   }
 }

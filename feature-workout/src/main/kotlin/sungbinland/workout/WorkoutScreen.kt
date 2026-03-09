@@ -2,6 +2,7 @@ package sungbinland.workout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,141 +28,123 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import sungbinland.uikit.UiKitColors
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable internal fun WorkoutScreen(
   stateHolder: WorkoutStateHolder,
+  showTimerSheet: Boolean,
+  onDismissTimerSheet: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val state by stateHolder.state.collectAsState()
   val focusManager = LocalFocusManager.current
   val keyboardController = LocalSoftwareKeyboardController.current
   val mainExerciseFocusRequester = remember { FocusRequester() }
-  val maxWeightFocusRequester = remember { FocusRequester() }
   val imeVisible: Boolean = WindowInsets.isImeVisible
   val wasImeVisibleState = remember { mutableStateOf(false) }
-  val editingFieldState = rememberSaveable { mutableStateOf<WorkoutEditingField?>(null) }
-  var editingField by editingFieldState
+  val isEditingState = rememberSaveable { mutableStateOf(false) }
+  var isEditing by isEditingState
   val mainExerciseInputState = rememberSaveable { mutableStateOf("") }
   var mainExerciseInput by mainExerciseInputState
-  val maxWeightInputState = rememberSaveable { mutableStateOf("") }
-  var maxWeightInput by maxWeightInputState
   val currentMainExercise = remember(state.summary.mainExerciseValue) {
     state.summary.mainExerciseValue.toMainExerciseInput()
   }
-  val currentMaxWeight = remember(state.summary.maxWeightValue) {
-    state.summary.maxWeightValue.toWeightInput()
-  }
   val currentMainExerciseRef = rememberUpdatedState(currentMainExercise)
-  val currentMaxWeightRef = rememberUpdatedState(currentMaxWeight)
   val imeVisibleRef = rememberUpdatedState(imeVisible)
-
-  LaunchedEffect(editingFieldState) {
-    snapshotFlow { Triple(currentMainExerciseRef.value, currentMaxWeightRef.value, editingFieldState.value) }.collect { (mainExercise, maxWeight, editing) ->
-      if (editing == null) {
+  LaunchedEffect(isEditingState) {
+    snapshotFlow { currentMainExerciseRef.value to isEditingState.value }.collect { (mainExercise, editing) ->
+      if (!editing) {
         mainExerciseInputState.value = mainExercise
-        maxWeightInputState.value = maxWeight
       }
     }
   }
-  LaunchedEffect(editingFieldState) {
-    snapshotFlow { editingFieldState.value }.collect { editing ->
-      when (editing) {
-        WorkoutEditingField.MainExercise -> {
-          mainExerciseFocusRequester.requestFocus()
-          keyboardController?.show()
-        }
-
-        WorkoutEditingField.MaxWeight -> {
-          maxWeightFocusRequester.requestFocus()
-          keyboardController?.show()
-        }
-
-        null -> Unit
+  LaunchedEffect(isEditingState) {
+    snapshotFlow { isEditingState.value }.collect { editing ->
+      if (editing) {
+        mainExerciseFocusRequester.requestFocus()
+        keyboardController?.show()
       }
     }
   }
-  LaunchedEffect(editingFieldState) {
-    snapshotFlow { imeVisibleRef.value to editingFieldState.value }.collect { (imeVis, editing) ->
-      if (wasImeVisibleState.value && !imeVis && editing != null) {
-        editingFieldState.value = null
+  LaunchedEffect(isEditingState) {
+    snapshotFlow { imeVisibleRef.value to isEditingState.value }.collect { (imeVis, editing) ->
+      if (wasImeVisibleState.value && !imeVis && editing) {
+        isEditingState.value = false
         focusManager.clearFocus(force = true)
         stateHolder.saveSession(
           routineName = state.summary.routineTitle,
           mainExerciseName = mainExerciseInputState.value,
-          heaviestWeightInput = maxWeightInputState.value,
         )
       }
       wasImeVisibleState.value = imeVis
     }
   }
 
-  WorkoutScreen(
-    state = state,
-    mainExerciseInput = mainExerciseInput,
-    maxWeightInput = maxWeightInput,
-    editingField = editingField,
-    mainExerciseFocusRequester = mainExerciseFocusRequester,
-    maxWeightFocusRequester = maxWeightFocusRequester,
-    modifier = modifier
-      .fillMaxSize()
-      .background(UiKitColors.Background)
-      .systemBarsPadding()
-      .padding(all = 16.dp),
-    onNextDateClick = stateHolder::moveToNextDate,
-    onCurrentDateClick = stateHolder::moveToToday,
-    onPreviousDateClick = stateHolder::moveToPreviousDate,
-    onSupplementClick = stateHolder::toggleSupplement,
-    onMainExerciseClick = { editingField = WorkoutEditingField.MainExercise },
-    onMainExerciseInputChange = { input -> mainExerciseInput = input },
-    onMaxWeightClick = { editingField = WorkoutEditingField.MaxWeight },
-    onMaxWeightInputChange = { input -> maxWeightInput = input.filter(Char::isDigit).take(3) },
-  )
+  Box(modifier = modifier.fillMaxSize()) {
+    WorkoutScreen(
+      state = state,
+      mainExerciseInput = mainExerciseInput,
+      isEditingMainExercise = isEditing,
+      mainExerciseFocusRequester = mainExerciseFocusRequester,
+      modifier = Modifier
+        .fillMaxSize()
+        .background(UiKitColors.Background)
+        .systemBarsPadding()
+        .padding(all = 16.dp),
+      onNextDateClick = stateHolder::moveToNextDate,
+      onCurrentDateClick = stateHolder::moveToToday,
+      onPreviousDateClick = stateHolder::moveToPreviousDate,
+      onSupplementClick = stateHolder::toggleSupplement,
+      onMainExerciseClick = { isEditing = true },
+      onMainExerciseInputChange = { input -> mainExerciseInput = input },
+    )
+    if (showTimerSheet) {
+      Popup(properties = PopupProperties(focusable = true)) {
+        WorkoutTimerSheet(
+          visible = true,
+          onDismiss = onDismissTimerSheet,
+          onStart = stateHolder::startTimer,
+        )
+      }
+    }
+  }
 }
 
 @Composable private fun WorkoutScreen(
   state: WorkoutDashboardState,
   mainExerciseInput: String,
-  maxWeightInput: String,
-  editingField: WorkoutEditingField?,
+  isEditingMainExercise: Boolean,
   mainExerciseFocusRequester: FocusRequester,
-  maxWeightFocusRequester: FocusRequester,
   onPreviousDateClick: () -> Unit,
   onNextDateClick: () -> Unit,
   onCurrentDateClick: () -> Unit,
   onSupplementClick: (String) -> Unit,
   onMainExerciseClick: () -> Unit,
   onMainExerciseInputChange: (String) -> Unit,
-  onMaxWeightClick: () -> Unit,
-  onMaxWeightInputChange: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
     modifier = modifier
       .fillMaxSize()
       .verticalScroll(rememberScrollState())
-      .padding(bottom = 16.dp),
+      .padding(bottom = 92.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     WorkoutSummaryCard(
       state = state.summary,
       mainExerciseInput = mainExerciseInput,
-      maxWeightInput = maxWeightInput,
-      isEditingMainExercise = editingField == WorkoutEditingField.MainExercise,
-      isEditingMaxWeight = editingField == WorkoutEditingField.MaxWeight,
+      isEditingMainExercise = isEditingMainExercise,
       mainExerciseFocusRequester = mainExerciseFocusRequester,
-      maxWeightFocusRequester = maxWeightFocusRequester,
       modifier = Modifier.fillMaxWidth(),
       onPreviousDateClick = onPreviousDateClick,
       onNextDateClick = onNextDateClick,
       onCurrentDateClick = onCurrentDateClick,
       onMainExerciseClick = onMainExerciseClick,
-      onMaxWeightClick = onMaxWeightClick,
       onMainExerciseInputChange = onMainExerciseInputChange,
-      onMaxWeightInputChange = onMaxWeightInputChange,
       onOpenRoutineDetailClick = {},
-      onOpenTrendClick = {},
     )
     WorkoutSupplementChecklistSection(
       state = state.supplements,
@@ -172,13 +155,5 @@ import sungbinland.uikit.UiKitColors
   }
 }
 
-private enum class WorkoutEditingField {
-  MainExercise,
-  MaxWeight,
-}
-
 private fun String.toMainExerciseInput(): String =
   if (this == "[...]") "" else this
-
-private fun String.toWeightInput(): String =
-  removeSuffix("kg").filter(Char::isDigit)

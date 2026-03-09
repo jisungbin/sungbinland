@@ -16,14 +16,18 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import androidx.compose.ui.util.fastMap
 import sungbinland.core.workout.dao.SupplementIntakeDao
+import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
 import sungbinland.core.workout.entity.SupplementIntakeEntity
 import sungbinland.core.workout.entity.SupplementIntakeItemEntity
+import sungbinland.core.workout.entity.TimerRecordEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
 
 internal class WorkoutStateHolder(
   private val mapper: WorkoutDashboardStateMapper,
+  private val timerRecordDao: TimerRecordDao,
   private val supplementIntakeDao: SupplementIntakeDao,
   private val workoutSessionDao: WorkoutSessionDao,
   private val nowProvider: () -> LocalDate,
@@ -63,7 +67,6 @@ internal class WorkoutStateHolder(
   internal fun saveSession(
     routineName: String,
     mainExerciseName: String,
-    heaviestWeightInput: String,
   ) {
     scope.launch {
       val selectedDate = selectedDateState.value
@@ -74,21 +77,17 @@ internal class WorkoutStateHolder(
         endOfDayExclusive = endOfDayExclusive,
       ).maxByOrNull { session -> session.performedAt.time }
       val normalizedMainExercise = mainExerciseName.trim()
-      val nextMainExercise = if (normalizedMainExercise.isNotBlank()) {
-        normalizedMainExercise
-      } else {
-        existingSession?.mainExerciseName.orEmpty()
+      val nextMainExercise = when {
+        normalizedMainExercise.isNotBlank() -> normalizedMainExercise
+        else -> existingSession?.mainExerciseName.orEmpty()
       }
-      val parsedWeight = heaviestWeightInput.toIntOrNull()
-      val nextWeight = parsedWeight ?: existingSession?.heaviestWeightKg
-      if (nextMainExercise.isBlank() || nextWeight == null || nextWeight <= 0) {
+      if (nextMainExercise.isBlank()) {
         return@launch
       }
       workoutSessionDao.upsertWorkoutSession(
         session = WorkoutSessionEntity(
           routineName = existingSession?.routineName ?: routineName.ifBlank { "상체" },
           mainExerciseName = nextMainExercise,
-          heaviestWeightKg = nextWeight,
           performedAt = existingSession?.performedAt ?: startOfDay,
         ),
       )
@@ -107,7 +106,7 @@ internal class WorkoutStateHolder(
       ).firstOrNull()
       val nextNames = intakeWithItems
         ?.items
-        ?.map { item -> item.supplementName }
+        ?.fastMap { item -> item.supplementName }
         ?.toMutableSet()
         ?: mutableSetOf()
       if (!nextNames.add(name)) {
@@ -127,7 +126,7 @@ internal class WorkoutStateHolder(
         val intake = SupplementIntakeEntity(intakeAt = intakeAt)
         val items = nextNames
           .sorted()
-          .map { supplementName ->
+          .fastMap { supplementName ->
             SupplementIntakeItemEntity(
               intakeAt = intakeAt,
               supplementName = supplementName,
@@ -138,6 +137,15 @@ internal class WorkoutStateHolder(
           items = items,
         )
       }
+      refresh()
+    }
+  }
+
+  internal fun startTimer() {
+    scope.launch {
+      timerRecordDao.upsertTimerRecord(
+        TimerRecordEntity(startedAt = Date()),
+      )
       refresh()
     }
   }
