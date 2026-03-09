@@ -29,6 +29,7 @@ kotlin {
 
 dependencies {
   implementation(projects.coreDatabase)
+  implementation(projects.coreDatabaseFixture)
   implementation(projects.uikit)
   implementation(projects.featureNutrition)
   implementation(projects.featureStudy)

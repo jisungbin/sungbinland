@@ -1,10 +1,11 @@
 package sungbinland.app.navigation
 
-import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
@@ -22,12 +24,14 @@ import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -37,6 +41,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.nutrition.dao.BodyInfoDao
 import sungbinland.core.nutrition.dao.EatenFoodDao
 import sungbinland.core.nutrition.dao.FoodDao
@@ -49,10 +54,10 @@ import sungbinland.nutrition.NutritionRoute
 import sungbinland.nutrition.nutritionEntry
 import sungbinland.study.StudyRoute
 import sungbinland.study.studyEntry
-import sungbinland.uikit.FloatingButtonState
+import sungbinland.uikit.FabController
+import sungbinland.uikit.LocalFabController
 import sungbinland.uikit.UiKitFloatingActionButton
 import sungbinland.workout.WorkoutRoute
-import kotlinx.collections.immutable.persistentListOf
 import sungbinland.workout.workoutEntry
 
 @Composable internal fun AppNavHost(
@@ -75,6 +80,12 @@ import sungbinland.workout.workoutEntry
         bodyInfoDao = bodyInfoDao,
         eatenFoodDao = eatenFoodDao,
         foodDao = foodDao,
+        onNavigate = { key -> backStack.add(key) },
+        onBack = {
+          if (backStack.size > 1) {
+            backStack.removeLast()
+          }
+        },
       )
       workoutEntry(
         supplementDao = supplementDao,
@@ -87,8 +98,9 @@ import sungbinland.workout.workoutEntry
       )
     }
   }
-  val selectedTab by remember(backStack) { derivedStateOf { backStack.last() } }
+  val selectedTab by remember(backStack, tabs) { derivedStateOf { backStack.lastOrNull { it in tabs } ?: tabs.first() } }
   val hazeState = remember { HazeState() }
+  val fabController = remember { FabController() }
   val labelsByTab = remember(entryProvider) {
     mapOf(
       NutritionRoute to entryProvider(NutritionRoute).label(),
@@ -112,31 +124,33 @@ import sungbinland.workout.workoutEntry
   }
 
   Box(modifier = modifier) {
-    NavDisplay(
-      modifier = Modifier
-        .fillMaxSize()
-        .hazeSource(state = hazeState),
-      backStack = backStack,
-      entryDecorators = persistentListOf(stateHolderDecorator),
-      transitionSpec = {
-        ContentTransform(
-          targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
-          initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
-        )
-      },
-      popTransitionSpec = {
-        ContentTransform(
-          targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
-          initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
-        )
-      },
-      entryProvider = entryProvider,
-      onBack = {
-        if (backStack.size > 1) {
-          backStack.removeLast()
-        }
-      },
-    )
+    CompositionLocalProvider(LocalFabController provides fabController) {
+      NavDisplay(
+        modifier = Modifier
+          .fillMaxSize()
+          .hazeSource(state = hazeState),
+        backStack = backStack,
+        entryDecorators = persistentListOf(stateHolderDecorator),
+        transitionSpec = {
+          ContentTransform(
+            targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
+            initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
+          )
+        },
+        popTransitionSpec = {
+          ContentTransform(
+            targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
+            initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
+          )
+        },
+        entryProvider = entryProvider,
+        onBack = {
+          if (backStack.size > 1) {
+            backStack.removeLast()
+          }
+        },
+      )
+    }
 
     Row(
       modifier = Modifier
@@ -163,20 +177,28 @@ import sungbinland.workout.workoutEntry
           }
         },
       )
-      AnimatedContent(
-        targetState = selectedTab,
-        transitionSpec = {
-          ContentTransform(
-            targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
-            initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
+      UiKitFloatingActionButton(
+        hazeState = hazeState,
+        onClick = { fabController.get(selectedTab)?.onClick?.invoke() },
+      ) {
+        AnimatedContent(
+          targetState = selectedTab,
+          transitionSpec = {
+            ContentTransform(
+              targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
+              initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            )
+          },
+          label = "fab-icon",
+        ) { tab ->
+          val icon = fabController.get(tab)?.icon ?: return@AnimatedContent
+          Image(
+            modifier = Modifier.size(24.dp),
+            imageVector = icon,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(Color.White),
           )
-        },
-        label = "tab-fab-content",
-      ) { tab ->
-        UiKitFloatingActionButton(
-          state = entryProvider(tab).floatingButtonState(),
-          hazeState = hazeState,
-        )
+        }
       }
     }
   }
@@ -184,7 +206,3 @@ import sungbinland.workout.workoutEntry
 
 private fun NavEntry<NavKey>.label(): String =
   metadata["label"] as? String ?: error("Missing tab label metadata for entry: $this")
-
-private fun NavEntry<NavKey>.floatingButtonState(): FloatingButtonState =
-  metadata["floatingButtonState"] as? FloatingButtonState
-    ?: error("Missing FloatingButtonState metadata for entry: $this")
