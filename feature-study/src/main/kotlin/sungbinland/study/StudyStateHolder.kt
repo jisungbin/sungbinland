@@ -12,8 +12,15 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import androidx.compose.ui.util.fastMap
+import sungbinland.core.study.dao.StudyEntryDao
+import sungbinland.core.study.entity.StudyEntryEntity
 
-internal class StudyStateHolder(private val mapper: StudyDashboardStateMapper) {
+internal class StudyStateHolder(
+  private val mapper: StudyDashboardStateMapper,
+  private val studyEntryDao: StudyEntryDao,
+) {
   private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
   private val selectedCategoryState: MutableStateFlow<String> = MutableStateFlow(ALL_CATEGORY)
   private val searchQueryState: MutableStateFlow<String> = MutableStateFlow("")
@@ -45,6 +52,31 @@ internal class StudyStateHolder(private val mapper: StudyDashboardStateMapper) {
 
   internal fun selectCategory(category: String) {
     selectedCategoryState.update { category }
+  }
+
+  internal suspend fun getCategories(): List<String> =
+    studyEntryDao.getAllStudyEntries()
+      .fastMap { entry -> entry.category }
+      .distinct()
+      .sorted()
+
+  internal fun registerEntry(
+    category: String,
+    name: String,
+    content: String,
+    imageUrl: String?,
+  ) {
+    scope.launch {
+      studyEntryDao.upsertStudyEntry(
+        StudyEntryEntity(
+          category = category,
+          name = name,
+          content = content,
+          imageUrl = imageUrl,
+        ),
+      )
+      refresh()
+    }
   }
 
   internal fun refresh() {

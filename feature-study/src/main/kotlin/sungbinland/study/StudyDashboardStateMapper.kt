@@ -1,5 +1,8 @@
 package sungbinland.study
 
+import androidx.compose.ui.util.fastFilter
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapTo
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -14,12 +17,12 @@ internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDa
   ): StudyDashboardState {
     val entries = studyEntryDao.getAllStudyEntries()
     val categories = entries
-      .map { entry -> entry.category }
+      .fastMap { entry -> entry.category }
       .distinct()
       .sorted()
     val chips = buildList {
       add(UiKitChipState(id = ALL_CATEGORY, label = ALL_CATEGORY, selected = selectedCategory == ALL_CATEGORY))
-      categories.forEach { category ->
+      categories.fastForEach { category ->
         add(UiKitChipState(id = category, label = category, selected = selectedCategory == category))
       }
     }.toImmutableList()
@@ -59,7 +62,7 @@ internal class StudyDashboardStateMapper(private val studyEntryDao: StudyEntryDa
     searchQuery: String,
   ): List<StudyEntryEntity> {
     val normalizedQuery = searchQuery.trim()
-    return filter { entry ->
+    return fastFilter { entry ->
       val categoryMatches = selectedCategory == ALL_CATEGORY || entry.category == selectedCategory
       val queryMatches = when {
         normalizedQuery.isBlank() -> true
