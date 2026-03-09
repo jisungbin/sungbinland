@@ -10073,6 +10073,152 @@
                   ]
                 }
               ]
+            },
+            {
+              "type": "rectangle",
+              "id": "c41bl",
+              "name": "구분선/주간메인종목",
+              "fill": "#EFEFEF",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "8vs1p",
+              "name": "영역/주간메인종목",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ZS3Rp",
+                  "name": "텍스트/주간메인종목라벨",
+                  "fill": "$--foreground",
+                  "content": "최근 일주일 메인 종목",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "2VlxQ",
+                  "name": "리스트/주간메인종목",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jef5p",
+                      "name": "항목/3월9일",
+                      "width": "fill_container",
+                      "fill": "#F5F5F5",
+                      "cornerRadius": 12,
+                      "padding": [
+                        10,
+                        14
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "d82bw",
+                          "name": "날짜1",
+                          "fill": "#999999",
+                          "content": "3/9 (일)",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "rTMYx",
+                          "name": "종목1",
+                          "fill": "$--foreground",
+                          "content": "랫 풀다운",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "g3MTv",
+                      "name": "항목/3월8일",
+                      "width": "fill_container",
+                      "fill": "#F5F5F5",
+                      "cornerRadius": 12,
+                      "padding": [
+                        10,
+                        14
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "lq2xt",
+                          "name": "날짜2",
+                          "fill": "#999999",
+                          "content": "3/8 (토)",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "OkVfr",
+                          "name": "종목2",
+                          "fill": "$--foreground",
+                          "content": "시티드 로우",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "odd0s",
+                      "name": "항목/3월7일",
+                      "width": "fill_container",
+                      "fill": "#F5F5F5",
+                      "cornerRadius": 12,
+                      "padding": [
+                        10,
+                        14
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "IOA9w",
+                          "name": "날짜3",
+                          "fill": "#999999",
+                          "content": "3/7 (금)",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "FeF7m",
+                          "name": "종목3",
+                          "fill": "$--foreground",
+                          "content": "바벨 로우",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
