@@ -3,45 +3,54 @@ package sungbinland.nutrition
 import androidx.compose.runtime.Immutable
 import dev.drewhamilton.poko.Poko
 import java.time.LocalDate
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
-@Immutable @Poko internal class NutritionDashboardState(
-  val summary: NutritionSummaryState,
-  val macroCards: List<NutritionMacroCardState>,
-  val timeline: NutritionTimelineState,
+@Immutable
+@Poko internal class NutritionDashboardState(
+  internal val summary: NutritionSummaryState,
+  internal val macroCards: ImmutableList<NutritionMacroCardState>,
+  internal val timeline: NutritionTimelineState,
 )
 
-@Immutable @Poko internal class NutritionSummaryState(
-  val dayTag: String,
-  val displayDate: String,
-  val headline: String,
-  val totalCaloriesValue: String,
-  val progressPercent: Int,
-  val progressMeta: String,
-  val trendDelta: String,
-  val trendValues: List<NutritionTrendValueState>,
+@Immutable
+@Poko internal class NutritionSummaryState(
+  internal val dayTag: String,
+  internal val displayDate: String,
+  internal val headline: String,
+  internal val totalCaloriesValue: String,
+  internal val progressPercent: Int,
+  internal val progressMeta: String,
+  internal val trendDelta: String,
+  internal val trendValues: ImmutableList<NutritionTrendValueState>,
 )
 
-@Immutable @Poko internal class NutritionTrendValueState(
-  val label: String,
-  val value: String,
+@Immutable
+@Poko internal class NutritionTrendValueState(
+  internal val label: String,
+  internal val value: String,
 )
 
-@Immutable @Poko internal class NutritionMacroCardState(
-  val title: String,
-  val value: String,
-  val meta: String,
-  val highlighted: Boolean,
+@Immutable
+@Poko internal class NutritionMacroCardState(
+  internal val title: String,
+  internal val value: String,
+  internal val meta: String,
+  internal val highlighted: Boolean,
 )
 
-@Immutable @Poko internal class NutritionTimelineState(
-  val meta: String,
-  val items: List<NutritionTimelineItemState>,
+@Immutable
+@Poko internal class NutritionTimelineState(
+  internal val meta: String,
+  internal val items: ImmutableList<NutritionTimelineItemState>,
 )
 
-@Immutable @Poko internal class NutritionTimelineItemState(
-  val title: String,
-  val subtitle: String,
-  val calorieText: String,
+@Immutable
+@Poko internal class NutritionTimelineItemState(
+  internal val title: String,
+  internal val subtitle: String,
+  internal val calorieText: String,
 )
 
 internal fun nutritionDashboardLoadingState(selectedDate: LocalDate): NutritionDashboardState =
@@ -60,9 +69,9 @@ internal fun nutritionDashboardLoadingState(selectedDate: LocalDate): NutritionD
           label = "${date.monthValue}/${date.dayOfMonth}",
           value = "0 kcal",
         )
-      },
+      }.toImmutableList(),
     ),
-    macroCards = listOf(
+    macroCards = persistentListOf(
       NutritionMacroCardState(
         title = "탄수화물",
         value = "0g",
@@ -84,6 +93,6 @@ internal fun nutritionDashboardLoadingState(selectedDate: LocalDate): NutritionD
     ),
     timeline = NutritionTimelineState(
       meta = "오늘 0건",
-      items = emptyList(),
+      items = persistentListOf(),
     ),
   )

@@ -3,39 +3,47 @@ package sungbinland.workout
 import androidx.compose.runtime.Immutable
 import dev.drewhamilton.poko.Poko
 import java.time.LocalDate
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
-@Immutable @Poko internal class WorkoutDashboardState(
-  val summary: WorkoutSummaryState,
-  val supplements: WorkoutSupplementChecklistState,
+@Immutable
+@Poko internal class WorkoutDashboardState(
+  internal val summary: WorkoutSummaryState,
+  internal val supplements: WorkoutSupplementChecklistState,
 )
 
-@Immutable @Poko internal class WorkoutSummaryState(
-  val dayTag: String,
-  val displayDate: String,
-  val routineTitle: String,
-  val mainExerciseValue: String,
-  val maxWeightValue: String,
-  val firstTimerStartedAt: String,
-  val lastTimerStartedAt: String,
-  val timerSpan: String,
-  val trendDelta: String,
-  val trendDeltaMeta: String,
-  val trendValues: List<WorkoutTrendValueState>,
+@Immutable
+@Poko internal class WorkoutSummaryState(
+  internal val dayTag: String,
+  internal val displayDate: String,
+  internal val routineTitle: String,
+  internal val mainExerciseValue: String,
+  internal val maxWeightValue: String,
+  internal val firstTimerStartedAt: String,
+  internal val lastTimerStartedAt: String,
+  internal val timerSpan: String,
+  internal val trendDelta: String,
+  internal val trendDeltaMeta: String,
+  internal val trendValues: ImmutableList<WorkoutTrendValueState>,
 )
 
-@Immutable @Poko internal class WorkoutTrendValueState(
-  val label: String,
-  val value: String,
+@Immutable
+@Poko internal class WorkoutTrendValueState(
+  internal val label: String,
+  internal val value: String,
 )
 
-@Immutable @Poko internal class WorkoutSupplementChecklistState(
-  val items: List<WorkoutSupplementItemState>,
+@Immutable
+@Poko internal class WorkoutSupplementChecklistState(
+  internal val items: ImmutableList<WorkoutSupplementItemState>,
 )
 
-@Immutable @Poko internal class WorkoutSupplementItemState(
-  val name: String,
-  val meta: String,
-  val checked: Boolean,
+@Immutable
+@Poko internal class WorkoutSupplementItemState(
+  internal val name: String,
+  internal val meta: String,
+  internal val checked: Boolean,
 )
 
 internal fun workoutLoadingState(selectedDate: LocalDate): WorkoutDashboardState =
@@ -57,9 +65,9 @@ internal fun workoutLoadingState(selectedDate: LocalDate): WorkoutDashboardState
           label = "${date.monthValue}/${date.dayOfMonth}",
           value = "0kg",
         )
-      },
+      }.toImmutableList(),
     ),
     supplements = WorkoutSupplementChecklistState(
-      items = emptyList(),
+      items = persistentListOf(),
     ),
   )
