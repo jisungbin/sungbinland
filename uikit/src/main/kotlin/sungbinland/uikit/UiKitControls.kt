@@ -194,6 +194,22 @@ import kotlinx.collections.immutable.ImmutableList
 }
 
 @Composable public fun UiKitFloatingActionButton(
+  hazeState: HazeState,
+  modifier: Modifier = Modifier,
+  containerColor: Color = UiKitColors.BrandBlue.copy(alpha = 0.5f),
+  onClick: () -> Unit,
+  content: @Composable () -> Unit,
+) {
+  UiKitFloatingActionButtonContainer(
+    hazeState = hazeState,
+    modifier = modifier,
+    containerColor = containerColor,
+    onClick = onClick,
+    content = content,
+  )
+}
+
+@Composable public fun UiKitFloatingActionButton(
   symbol: String,
   hazeState: HazeState,
   modifier: Modifier = Modifier,

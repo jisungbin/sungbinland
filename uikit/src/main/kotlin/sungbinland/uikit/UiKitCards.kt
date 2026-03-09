@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -188,18 +190,24 @@ import androidx.compose.ui.unit.dp
         style = UiKitTypography.Value.copy(color = UiKitColors.MutedText),
       )
     }
-    BasicText(
-      text = if (checked) "✓" else "",
+    Box(
       modifier = Modifier
+        .size(36.dp)
         .clip(RoundedCornerShape(12.dp))
         .background(if (checked) Color(0xFFFF9800) else Color.Transparent)
         .border(
           width = 1.dp,
           color = if (checked) Color(0xFFFF9800) else UiKitColors.BorderSoft,
           shape = RoundedCornerShape(12.dp),
+        ),
+      contentAlignment = Alignment.Center,
+    ) {
+      if (checked) {
+        BasicText(
+          text = "✓",
+          style = UiKitTypography.Value.copy(color = Color.Black),
         )
-        .padding(horizontal = 11.dp, vertical = 8.dp),
-      style = UiKitTypography.Value.copy(color = Color.Black),
-    )
+      }
+    }
   }
 }
