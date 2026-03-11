@@ -18,4 +18,5 @@ import java.util.Date
 @Poko public class SupplementIntakeItemEntity(
   @ColumnInfo(name = "intake_at") public val intakeAt: Date,
   @ColumnInfo(name = "supplement_name") public val supplementName: String,
+  @ColumnInfo(name = "intake_count") public val intakeCount: Int = 1,
 )

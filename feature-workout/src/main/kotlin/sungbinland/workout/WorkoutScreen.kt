@@ -104,7 +104,8 @@ import sungbinland.uikit.UiKitColors
     onNextDateClick = viewModel::moveToNextDate,
     onCurrentDateClick = viewModel::moveToToday,
     onPreviousDateClick = viewModel::moveToPreviousDate,
-    onSupplementClick = viewModel::toggleSupplement,
+    onSupplementIncrement = viewModel::incrementSupplement,
+    onSupplementDecrement = viewModel::decrementSupplement,
     onMainExerciseClick = { isEditing = true },
     onMainExerciseInputChange = { input -> mainExerciseInput = input },
     onOpenRoutineDetailClick = onOpenRoutineDetailClick,
@@ -121,7 +122,8 @@ import sungbinland.uikit.UiKitColors
   onPreviousDateClick: () -> Unit,
   onNextDateClick: () -> Unit,
   onCurrentDateClick: () -> Unit,
-  onSupplementClick: (String) -> Unit,
+  onSupplementIncrement: (String) -> Unit,
+  onSupplementDecrement: (String) -> Unit,
   onMainExerciseClick: () -> Unit,
   onMainExerciseInputChange: (String) -> Unit,
   onOpenRoutineDetailClick: () -> Unit,
@@ -149,7 +151,8 @@ import sungbinland.uikit.UiKitColors
     WorkoutSupplementChecklistSection(
       state = state.supplements,
       modifier = Modifier.fillMaxWidth(),
-      onItemClick = onSupplementClick,
+      onIncrement = onSupplementIncrement,
+      onDecrement = onSupplementDecrement,
       onManageSupplementClick = onManageSupplementClick,
     )
   }

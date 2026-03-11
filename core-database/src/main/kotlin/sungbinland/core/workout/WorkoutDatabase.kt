@@ -31,7 +31,7 @@ import sungbinland.core.workout.entity.WorkoutSessionEntity
     SupplementIntakeEntity::class,
     SupplementIntakeItemEntity::class,
   ],
-  version = 7,
+  version = 8,
   exportSchema = true,
 )
 @TypeConverters(DateEpochMillisTypeConverter::class)
@@ -55,6 +55,7 @@ public abstract class WorkoutDatabase internal constructor() : RoomDatabase() {
           DATABASE_NAME,
         )
           .fallbackToDestructiveMigration(true)
+          .addMigrations(WorkoutMigration7To8)
           .build()
           .also { created -> instance = created }
       }

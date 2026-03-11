@@ -38,8 +38,8 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 @Poko internal class WorkoutSupplementItemState(
   internal val name: String,
-  internal val meta: String,
-  internal val checked: Boolean,
+  internal val currentCount: Int,
+  internal val targetCount: Int,
 )
 
 internal val emptyTimerValue = WorkoutTimerValueState(hours = "--", minutes = "--")

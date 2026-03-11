@@ -11,7 +11,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -169,29 +168,23 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
   ) {
     val viewModel = viewModel<WorkoutViewModel>(factory = factory)
     val scope = rememberCoroutineScope()
-    var supplements: ImmutableList<String> by remember { mutableStateOf(persistentListOf()) }
+    var supplements: ImmutableList<SupplementEntity> by remember { mutableStateOf(persistentListOf()) }
     LaunchedEffect(Unit) {
-      supplements = supplementDao.getAllSupplements()
-        .fastMap { it.name }
-        .toImmutableList()
+      supplements = supplementDao.getAllSupplements().toImmutableList()
     }
     WorkoutSupplementManagementSheet(
       supplements = supplements,
       onDelete = { name ->
         scope.launch {
           supplementDao.deleteSupplement(SupplementEntity(name = name))
-          supplements = supplementDao.getAllSupplements()
-            .fastMap { it.name }
-            .toImmutableList()
+          supplements = supplementDao.getAllSupplements().toImmutableList()
           viewModel.refresh()
         }
       },
-      onRegister = { name ->
+      onRegister = { name, targetIntakeCount ->
         scope.launch {
-          supplementDao.upsertSupplement(SupplementEntity(name = name))
-          supplements = supplementDao.getAllSupplements()
-            .fastMap { it.name }
-            .toImmutableList()
+          supplementDao.upsertSupplement(SupplementEntity(name = name, targetIntakeCount = targetIntakeCount))
+          supplements = supplementDao.getAllSupplements().toImmutableList()
           viewModel.refresh()
         }
       },

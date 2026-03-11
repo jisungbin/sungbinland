@@ -10,4 +10,5 @@ import dev.drewhamilton.poko.Poko
 @Immutable
 @Poko public class SupplementEntity(
   @PrimaryKey @ColumnInfo(name = "name") public val name: String,
+  @ColumnInfo(name = "target_intake_count") public val targetIntakeCount: Int = 1,
 )

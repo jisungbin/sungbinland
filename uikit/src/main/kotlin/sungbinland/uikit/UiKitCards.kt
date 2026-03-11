@@ -156,56 +156,74 @@ import androidx.compose.ui.unit.dp
 
 @Composable public fun UiKitChecklistRow(
   title: String,
-  subtitle: String,
-  checked: Boolean,
+  currentCount: Int,
+  targetCount: Int,
   modifier: Modifier = Modifier,
-  onClick: () -> Unit,
+  onIncrement: () -> Unit,
+  onDecrement: () -> Unit,
 ) {
+  val completed = currentCount >= targetCount
   Row(
     modifier = modifier
       .clip(RoundedCornerShape(16.dp))
       .background(UiKitColors.Surface)
       .border(
         width = 1.dp,
-        color = UiKitColors.Border,
+        color = if (completed) Color(0xFFFF9800) else UiKitColors.Border,
         shape = RoundedCornerShape(16.dp),
       )
-      .clickable(onClick = onClick)
-      .padding(horizontal = 14.dp, vertical = 16.dp),
+      .padding(horizontal = 14.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Column(
-      verticalArrangement = Arrangement.spacedBy(2.dp),
+    BasicText(
+      text = title,
+      style = UiKitTypography.Title.copy(
+        color = UiKitColors.Text,
+        fontWeight = FontWeight.SemiBold,
+      ),
+    )
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
+      Box(
+        modifier = Modifier
+          .size(32.dp)
+          .clip(RoundedCornerShape(10.dp))
+          .background(Color(0xFFF0F0F0))
+          .clickable(onClick = onDecrement),
+        contentAlignment = Alignment.Center,
+      ) {
+        BasicText(
+          text = "<",
+          style = UiKitTypography.Value.copy(
+            color = Color(0xFF555555),
+            fontWeight = FontWeight.Medium,
+          ),
+        )
+      }
       BasicText(
-        text = title,
-        style = UiKitTypography.Title.copy(
-          color = UiKitColors.Text,
+        text = "$currentCount/$targetCount",
+        style = UiKitTypography.Value.copy(
+          color = if (completed) Color(0xFFFF9800) else UiKitColors.Text,
           fontWeight = FontWeight.SemiBold,
         ),
       )
-      BasicText(
-        text = subtitle,
-        style = UiKitTypography.Value.copy(color = UiKitColors.MutedText),
-      )
-    }
-    Box(
-      modifier = Modifier
-        .size(36.dp)
-        .clip(RoundedCornerShape(12.dp))
-        .background(if (checked) Color(0xFFFF9800) else Color.Transparent)
-        .border(
-          width = 1.dp,
-          color = if (checked) Color(0xFFFF9800) else UiKitColors.BorderSoft,
-          shape = RoundedCornerShape(12.dp),
-        ),
-      contentAlignment = Alignment.Center,
-    ) {
-      if (checked) {
+      Box(
+        modifier = Modifier
+          .size(32.dp)
+          .clip(RoundedCornerShape(10.dp))
+          .background(Color(0xFFF0F0F0))
+          .clickable(onClick = onIncrement),
+        contentAlignment = Alignment.Center,
+      ) {
         BasicText(
-          text = "✓",
-          style = UiKitTypography.Value.copy(color = Color.Black),
+          text = ">",
+          style = UiKitTypography.Value.copy(
+            color = Color(0xFF555555),
+            fontWeight = FontWeight.Medium,
+          ),
         )
       }
     }

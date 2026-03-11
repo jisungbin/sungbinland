@@ -6,8 +6,25 @@ plugins {
 android {
   namespace = "sungbinland.app"
 
+  signingConfigs {
+    create("release") {
+      storeFile = rootProject.file("keystore.jks")
+      storePassword = "aaaaaa"
+      keyAlias = "key0"
+      keyPassword = "aaaaaa"
+    }
+  }
+
   defaultConfig {
     targetSdk = 36
+    versionCode = 2
+    versionName = "1.1.0"
+  }
+
+  buildTypes {
+    release {
+      signingConfig = signingConfigs.getByName("release")
+    }
   }
 
   buildFeatures {

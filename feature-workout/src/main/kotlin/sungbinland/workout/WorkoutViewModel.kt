@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
@@ -81,31 +82,57 @@ internal class WorkoutViewModel(
     }
   }
 
-  internal fun toggleSupplement(name: String) {
+  internal fun incrementSupplement(name: String) {
     viewModelScope.launch {
       val selectedDate = selectedDateState.value
       val startOfDay = selectedDate.toStartOfDayDate()
       val intakeWithItems = supplementIntakeDao.getSupplementIntakeByExactDate(date = startOfDay)
-      val nextNames = intakeWithItems
-        ?.items
-        ?.fastMap { item -> item.supplementName }
-        ?.toMutableSet()
-        ?: mutableSetOf()
-      if (!nextNames.add(name)) {
-        nextNames.remove(name)
-      }
-      if (nextNames.isEmpty()) {
-        if (intakeWithItems != null) {
-          supplementIntakeDao.deleteSupplementIntakeItemsByDate(intakeAt = intakeWithItems.intake.intakeAt)
+      val intakeAt = intakeWithItems?.intake?.intakeAt ?: startOfDay
+      val existingItem = intakeWithItems?.items?.firstOrNull { it.supplementName == name }
+      val newCount = (existingItem?.intakeCount ?: 0) + 1
+      val otherItems = intakeWithItems?.items?.fastFilter { it.supplementName != name } ?: emptyList()
+      val updatedItems = otherItems + SupplementIntakeItemEntity(
+        intakeAt = intakeAt,
+        supplementName = name,
+        intakeCount = newCount,
+      )
+      supplementIntakeDao.upsertIntake(
+        intake = SupplementIntakeEntity(intakeAt = intakeAt),
+        items = updatedItems,
+      )
+      refresh()
+    }
+  }
+
+  internal fun decrementSupplement(name: String) {
+    viewModelScope.launch {
+      val selectedDate = selectedDateState.value
+      val startOfDay = selectedDate.toStartOfDayDate()
+      val intakeWithItems = supplementIntakeDao.getSupplementIntakeByExactDate(date = startOfDay) ?: return@launch
+      val existingItem = intakeWithItems.items.firstOrNull { it.supplementName == name } ?: return@launch
+      val newCount = existingItem.intakeCount - 1
+      val intakeAt = intakeWithItems.intake.intakeAt
+      val otherItems = intakeWithItems.items.fastFilter { it.supplementName != name }
+      if (newCount <= 0) {
+        if (otherItems.isEmpty()) {
+          supplementIntakeDao.deleteSupplementIntakeItemsByDate(intakeAt = intakeAt)
           supplementIntakeDao.deleteSupplementIntake(intake = intakeWithItems.intake)
+        } else {
+          supplementIntakeDao.upsertIntake(
+            intake = SupplementIntakeEntity(intakeAt = intakeAt),
+            items = otherItems,
+          )
         }
       } else {
-        val intakeAt = intakeWithItems?.intake?.intakeAt ?: startOfDay
-        val intake = SupplementIntakeEntity(intakeAt = intakeAt)
-        val items = nextNames.sorted().fastMap { supplementName ->
-          SupplementIntakeItemEntity(intakeAt = intakeAt, supplementName = supplementName)
-        }
-        supplementIntakeDao.upsertIntake(intake = intake, items = items)
+        val updatedItems = otherItems + SupplementIntakeItemEntity(
+          intakeAt = intakeAt,
+          supplementName = name,
+          intakeCount = newCount,
+        )
+        supplementIntakeDao.upsertIntake(
+          intake = SupplementIntakeEntity(intakeAt = intakeAt),
+          items = updatedItems,
+        )
       }
       refresh()
     }

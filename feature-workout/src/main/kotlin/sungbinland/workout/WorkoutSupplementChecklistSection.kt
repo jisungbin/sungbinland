@@ -18,7 +18,8 @@ import sungbinland.uikit.UiKitTypography
 @Composable internal fun WorkoutSupplementChecklistSection(
   state: WorkoutSupplementChecklistState,
   modifier: Modifier = Modifier,
-  onItemClick: (String) -> Unit,
+  onIncrement: (String) -> Unit,
+  onDecrement: (String) -> Unit,
   onManageSupplementClick: () -> Unit,
 ) {
   Column(
@@ -48,10 +49,11 @@ import sungbinland.uikit.UiKitTypography
       state.items.fastForEach { item ->
         UiKitChecklistRow(
           title = item.name,
-          subtitle = item.meta,
-          checked = item.checked,
+          currentCount = item.currentCount,
+          targetCount = item.targetCount,
           modifier = Modifier.fillMaxWidth(),
-          onClick = { onItemClick(item.name) },
+          onIncrement = { onIncrement(item.name) },
+          onDecrement = { onDecrement(item.name) },
         )
       }
     }

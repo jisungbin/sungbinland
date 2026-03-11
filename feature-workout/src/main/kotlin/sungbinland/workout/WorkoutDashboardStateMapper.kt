@@ -17,6 +17,7 @@ import sungbinland.core.workout.dao.SupplementIntakeWithItems
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
+import sungbinland.core.workout.entity.SupplementEntity
 import sungbinland.core.workout.entity.TimerRecordEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
 
@@ -58,37 +59,39 @@ internal class WorkoutDashboardStateMapper(
           endOfDayExclusive = endOfDayExclusive,
         )
       }
-      val registeredSupplementNamesDeferred = if (selectedDate < nowDate) {
-        null
-      } else {
-        async { supplementDao.getAllSupplements().fastMap { supplement -> supplement.name } }
-      }
+      val registeredSupplementsDeferred = async { supplementDao.getAllSupplements() }
       WorkoutQuerySnapshot(
         sessionsOfDate = sessionsOfDateDeferred.await(),
         mainExerciseSuggestions = mainExerciseSuggestionsDeferred.await(),
         timerRecordsOfDate = timerRecordsOfDateDeferred.await(),
         intakeWithItems = intakeWithItemsDeferred.await(),
-        registeredSupplementNames = registeredSupplementNamesDeferred?.await(),
+        registeredSupplements = registeredSupplementsDeferred.await(),
       )
     }
     val latestSession = snapshot.sessionsOfDate.maxByOrNull { session -> session.performedAt.time }
     val firstTimerRecord = snapshot.timerRecordsOfDate.minByOrNull { record -> record.startedAt.time }
     val lastTimerRecord = snapshot.timerRecordsOfDate.maxByOrNull { record -> record.startedAt.time }
 
-    val consumedNames = buildSet {
+    val registeredSupplements = snapshot.registeredSupplements
+    val targetCountByName = buildMap {
+      registeredSupplements.fastForEach { supplement ->
+        put(supplement.name, supplement.targetIntakeCount)
+      }
+    }
+    val consumedCounts = buildMap<String, Int> {
       snapshot.intakeWithItems.fastForEach { intake ->
         intake.items.fastForEach { item ->
-          add(item.supplementName)
+          put(item.supplementName, item.intakeCount)
         }
       }
     }
     val supplementNames = when {
-      selectedDate < nowDate -> consumedNames.toList().sorted()
+      selectedDate < nowDate -> consumedCounts.keys.toList().sorted()
       else -> {
-        val registered = snapshot.registeredSupplementNames ?: emptyList()
+        val registeredNames = registeredSupplements.fastMap { it.name }
         when {
-          registered.isNotEmpty() -> registered
-          else -> consumedNames.toList().sorted()
+          registeredNames.isNotEmpty() -> registeredNames
+          else -> consumedCounts.keys.toList().sorted()
         }
       }
     }
@@ -111,8 +114,8 @@ internal class WorkoutDashboardStateMapper(
         items = supplementNames.fastMapTo(persistentListOf<WorkoutSupplementItemState>().builder()) { name ->
           WorkoutSupplementItemState(
             name = name,
-            meta = "복용 기록",
-            checked = consumedNames.contains(name),
+            currentCount = consumedCounts[name] ?: 0,
+            targetCount = targetCountByName[name] ?: 1,
           )
         }.build(),
       ),
@@ -156,6 +159,6 @@ internal class WorkoutDashboardStateMapper(
     val mainExerciseSuggestions: ImmutableList<String>,
     val timerRecordsOfDate: List<TimerRecordEntity>,
     val intakeWithItems: List<SupplementIntakeWithItems>,
-    val registeredSupplementNames: List<String>?,
+    val registeredSupplements: List<SupplementEntity>,
   )
 }

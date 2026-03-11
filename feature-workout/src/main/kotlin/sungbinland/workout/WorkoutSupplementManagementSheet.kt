@@ -30,17 +30,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.mutableIntStateOf
 import kotlinx.collections.immutable.ImmutableList
+import sungbinland.core.workout.entity.SupplementEntity
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun WorkoutSupplementManagementSheet(
-  supplements: ImmutableList<String>,
+  supplements: ImmutableList<SupplementEntity>,
   modifier: Modifier = Modifier,
   onDelete: (name: String) -> Unit,
-  onRegister: (name: String) -> Unit,
+  onRegister: (name: String, targetIntakeCount: Int) -> Unit,
 ) {
   var nameInput by remember { mutableStateOf("") }
+  var targetCount by remember { mutableIntStateOf(1) }
 
   Column(
     modifier = modifier
@@ -72,7 +76,7 @@ import sungbinland.uikit.UiKitTypography
           fontWeight = FontWeight.SemiBold,
         ),
       )
-      supplements.fastForEach { name ->
+      supplements.fastForEach { supplement ->
         Row(
           modifier = Modifier
             .fillMaxWidth()
@@ -82,12 +86,12 @@ import sungbinland.uikit.UiKitTypography
           verticalAlignment = Alignment.CenterVertically,
         ) {
           BasicText(
-            text = name,
+            text = "${supplement.name} (${supplement.targetIntakeCount}회)",
             style = UiKitTypography.Value.copy(color = UiKitColors.Text),
           )
           BasicText(
             text = "✕",
-            modifier = Modifier.clickable { onDelete(name) },
+            modifier = Modifier.clickable { onDelete(supplement.name) },
             style = TextStyle(
               color = Color(0xFFE85A4F),
               fontSize = 16.sp,
@@ -140,6 +144,66 @@ import sungbinland.uikit.UiKitTypography
         },
       )
     }
+    Column(
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      BasicText(
+        text = "목표 횟수",
+        style = TextStyle(
+          color = Color(0xFF1C1C1C),
+          fontSize = 14.sp,
+          fontWeight = FontWeight.SemiBold,
+        ),
+      )
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Box(
+          modifier = Modifier
+            .size(36.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color(0xFFF0F0F0))
+            .clickable { if (targetCount > 1) targetCount-- },
+          contentAlignment = Alignment.Center,
+        ) {
+          BasicText(
+            text = "−",
+            style = TextStyle(
+              color = Color(0xFF555555),
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Medium,
+            ),
+          )
+        }
+        BasicText(
+          text = "${targetCount}회",
+          style = TextStyle(
+            color = UiKitColors.Text,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+          ),
+        )
+        Box(
+          modifier = Modifier
+            .size(36.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color(0xFFF0F0F0))
+            .clickable { targetCount++ },
+          contentAlignment = Alignment.Center,
+        ) {
+          BasicText(
+            text = "+",
+            style = TextStyle(
+              color = Color(0xFF555555),
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Medium,
+            ),
+          )
+        }
+      }
+    }
     Box(
       modifier = Modifier
         .fillMaxWidth()
@@ -148,8 +212,9 @@ import sungbinland.uikit.UiKitTypography
         .background(Color(0xFF1E3A5F))
         .clickable {
           if (nameInput.isNotBlank()) {
-            onRegister(nameInput)
+            onRegister(nameInput, targetCount)
             nameInput = ""
+            targetCount = 1
           }
         },
       contentAlignment = Alignment.Center,
