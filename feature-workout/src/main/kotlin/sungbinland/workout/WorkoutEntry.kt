@@ -2,14 +2,18 @@ package sungbinland.workout
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -55,6 +59,7 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
     supplementIntakeDao = supplementIntakeDao,
     timerRecordDao = timerRecordDao,
     workoutExerciseDao = workoutExerciseDao,
+    workoutRoutineDao = workoutRoutineDao,
     workoutSessionDao = workoutSessionDao,
     nowProvider = { LocalDate.now() },
   )
@@ -78,6 +83,7 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
     val context = LocalContext.current
     val fabController = LocalFabController.current
     val fabProgressState = remember { mutableStateOf(0f) }
+    var confettiTrigger by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(restTimer.startNanos) {
       if (!restTimer.isRunning) {
@@ -85,11 +91,12 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
         return@LaunchedEffect
       }
       while (restTimer.isRunning) {
-        val elapsedMillis = (System.nanoTime() - restTimer.startNanos) / 1_000_000L
+        val elapsedMillis = (withFrameNanos { it } - restTimer.startNanos) / 1_000_000L
         if (elapsedMillis >= 80_000L) {
           restTimer.stop()
           fabProgressState.value = 0f
           HapticFeedback.vibrateHeavy(context)
+          confettiTrigger++
           break
         }
         fabProgressState.value = elapsedMillis / 80_000f
@@ -101,15 +108,19 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
       FloatingButtonState(
         icon = Icons.Rounded.Timer,
         onClick = { onNavigate(WorkoutTimerSheetRoute) },
+        onLongClick = { restTimer.stop() },
         progress = fabProgressState,
       )
     }
     SideEffect { fabController.set(WorkoutRoute, fabState) }
-    WorkoutScreen(
-      viewModel = viewModel,
-      onOpenRoutineDetailClick = { onNavigate(WorkoutRoutineDetailSheetRoute) },
-      onManageSupplementClick = { onNavigate(WorkoutSupplementManagementSheetRoute) },
-    )
+    Box {
+      WorkoutScreen(
+        viewModel = viewModel,
+        onOpenRoutineDetailClick = { onNavigate(WorkoutRoutineDetailSheetRoute) },
+        onManageSupplementClick = { onNavigate(WorkoutSupplementManagementSheetRoute) },
+      )
+      WorkoutConfetti(trigger = confettiTrigger, modifier = Modifier.fillMaxSize())
+    }
   }
   entry<WorkoutTimerSheetRoute>(
     metadata = BottomSheetSceneStrategy.bottomSheet(),
@@ -188,6 +199,7 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
           viewModel.refresh()
         }
       },
+      onClose = onBack,
     )
   }
 }

@@ -38,6 +38,7 @@ import kotlinx.collections.immutable.toImmutableList
   internal val value: String,
   internal val meta: String,
   internal val highlighted: Boolean,
+  internal val goalAchieved: Boolean = false,
 )
 
 @Immutable

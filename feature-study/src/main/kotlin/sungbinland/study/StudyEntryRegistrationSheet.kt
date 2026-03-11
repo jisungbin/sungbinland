@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,10 +30,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
@@ -55,6 +60,19 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
   var customCategoryInput by remember { mutableStateOf("") }
   var nameInput by remember { mutableStateOf("") }
   var contentInput by remember { mutableStateOf("") }
+
+  val nameFocusRequester = remember { FocusRequester() }
+  val contentFocusRequester = remember { FocusRequester() }
+
+  val isSubmitEnabled = run {
+    val hasCategory = if (isCustomCategory) customCategoryInput.isNotBlank() else selectedCategory != null
+    hasCategory && nameInput.isNotBlank() && contentInput.isNotBlank()
+  }
+  val performSubmit: () -> Unit = submit@{
+    if (!isSubmitEnabled) return@submit
+    val category = if (isCustomCategory) customCategoryInput else selectedCategory ?: return@submit
+    onSubmit(category, nameInput, contentInput)
+  }
 
   Column(
     modifier = modifier
@@ -112,6 +130,8 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
           onValueChange = { customCategoryInput = it },
           singleLine = true,
           textStyle = UiKitTypography.Value.copy(color = UiKitColors.Text),
+          keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+          keyboardActions = KeyboardActions(onNext = { nameFocusRequester.requestFocus() }),
           modifier = Modifier
             .fillMaxWidth()
             .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
@@ -136,6 +156,9 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       placeholder = "자료 이름을 입력하세요",
       singleLine = true,
       height = 44,
+      focusRequester = nameFocusRequester,
+      imeAction = ImeAction.Next,
+      onImeAction = { contentFocusRequester.requestFocus() },
       onValueChange = { nameInput = it },
     )
     StudySheetField(
@@ -144,6 +167,9 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       placeholder = "콘텐츠 내용을 입력하세요",
       singleLine = false,
       height = 88,
+      focusRequester = contentFocusRequester,
+      imeAction = ImeAction.Done,
+      onImeAction = performSubmit,
       onValueChange = { contentInput = it },
     )
     Box(
@@ -151,19 +177,8 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
         .fillMaxWidth()
         .height(52.dp)
         .clip(RoundedCornerShape(14.dp))
-        .background(UiKitColors.BrandBlue)
-        .clickable {
-          val category = when {
-            isCustomCategory -> customCategoryInput
-            else -> selectedCategory ?: return@clickable
-          }
-          if (category.isBlank() || nameInput.isBlank()) return@clickable
-          onSubmit(
-            category,
-            nameInput,
-            contentInput,
-          )
-        },
+        .background(if (isSubmitEnabled) UiKitColors.BrandBlue else Color(0xFFCCCCCC))
+        .clickable(enabled = isSubmitEnabled, onClick = performSubmit),
       contentAlignment = Alignment.Center,
     ) {
       BasicText(
@@ -226,6 +241,9 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
   singleLine: Boolean,
   height: Int,
   modifier: Modifier = Modifier,
+  focusRequester: FocusRequester? = null,
+  imeAction: ImeAction = ImeAction.Default,
+  onImeAction: (() -> Unit)? = null,
   onValueChange: (String) -> Unit,
 ) {
   Column(
@@ -244,8 +262,15 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       onValueChange = onValueChange,
       singleLine = singleLine,
       textStyle = UiKitTypography.Value.copy(color = UiKitColors.Text),
+      keyboardOptions = KeyboardOptions(imeAction = imeAction),
+      keyboardActions = when (imeAction) {
+        ImeAction.Next -> KeyboardActions(onNext = { onImeAction?.invoke() })
+        ImeAction.Done -> KeyboardActions(onDone = { onImeAction?.invoke() })
+        else -> KeyboardActions.Default
+      },
       modifier = Modifier
         .fillMaxWidth()
+        .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
         .height(height.dp)
         .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
         .padding(horizontal = 14.dp, vertical = 12.dp),

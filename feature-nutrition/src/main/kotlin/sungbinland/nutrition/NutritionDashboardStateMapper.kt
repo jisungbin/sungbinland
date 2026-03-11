@@ -175,12 +175,14 @@ internal class NutritionDashboardStateMapper(
           value = "${totalCarbohydrate}g",
           meta = "목표 ${goalCarbohydrate}g",
           highlighted = false,
+          goalAchieved = totalCarbohydrate >= goalCarbohydrate,
         ),
         NutritionMacroCardState(
           title = "단백질",
           value = "${totalProtein}g",
           meta = "목표 ${goalProtein}g",
           highlighted = false,
+          goalAchieved = totalProtein >= goalProtein,
         ),
         NutritionMacroCardState(
           title = "체중",

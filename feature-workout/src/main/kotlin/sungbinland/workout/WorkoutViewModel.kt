@@ -138,6 +138,36 @@ internal class WorkoutViewModel(
     }
   }
 
+  internal fun selectRoutine(routineName: String) {
+    viewModelScope.launch {
+      val selectedDate = selectedDateState.value
+      val startOfDay = selectedDate.toStartOfDayDate()
+      val endOfDayExclusive = selectedDate.plusDays(1).toStartOfDayDate()
+      val existingSession = workoutSessionDao.getWorkoutSessionsByDate(
+        startOfDay = startOfDay,
+        endOfDayExclusive = endOfDayExclusive,
+      ).maxByOrNull { it.performedAt.time }
+      workoutSessionDao.upsertWorkoutSession(
+        session = WorkoutSessionEntity(
+          routineName = routineName,
+          mainExerciseName = existingSession?.mainExerciseName ?: "",
+          performedAt = existingSession?.performedAt ?: startOfDay,
+        ),
+      )
+      refresh()
+    }
+  }
+
+  internal fun clearTodayTimerRecords() {
+    viewModelScope.launch {
+      val selectedDate = selectedDateState.value
+      val startOfDay = selectedDate.toStartOfDayDate()
+      val endOfDayExclusive = selectedDate.plusDays(1).toStartOfDayDate()
+      timerRecordDao.deleteTimerRecordsByDate(startOfDay, endOfDayExclusive)
+      refresh()
+    }
+  }
+
   internal fun startTimer() {
     viewModelScope.launch {
       timerRecordDao.upsertTimerRecord(TimerRecordEntity(startedAt = Date()))

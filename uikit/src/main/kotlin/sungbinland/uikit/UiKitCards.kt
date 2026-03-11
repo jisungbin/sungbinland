@@ -77,12 +77,33 @@ import androidx.compose.ui.unit.dp
   meta: String,
   highlighted: Boolean,
   modifier: Modifier = Modifier,
+  goalAchieved: Boolean = false,
 ) {
-  val containerColor: Color = if (highlighted) UiKitColors.Accent else UiKitColors.Surface
-  val borderColor: Color = if (highlighted) UiKitColors.Accent else UiKitColors.Border
-  val titleColor: Color = if (highlighted) Color(0xCCFFFFFF) else UiKitColors.MutedText
-  val valueColor: Color = if (highlighted) Color.White else UiKitColors.Primary
-  val metaColor: Color = if (highlighted) Color(0xE0FFFFFF) else UiKitColors.MutedText
+  val containerColor: Color = when {
+    highlighted -> UiKitColors.Accent
+    goalAchieved -> UiKitColors.PositiveSurface
+    else -> UiKitColors.Surface
+  }
+  val borderColor: Color = when {
+    highlighted -> UiKitColors.Accent
+    goalAchieved -> UiKitColors.PositiveText
+    else -> UiKitColors.Border
+  }
+  val titleColor: Color = when {
+    highlighted -> Color(0xCCFFFFFF)
+    goalAchieved -> UiKitColors.PositiveText
+    else -> UiKitColors.MutedText
+  }
+  val valueColor: Color = when {
+    highlighted -> Color.White
+    goalAchieved -> UiKitColors.PositiveText
+    else -> UiKitColors.Primary
+  }
+  val metaColor: Color = when {
+    highlighted -> Color(0xE0FFFFFF)
+    goalAchieved -> UiKitColors.PositiveText
+    else -> UiKitColors.MutedText
+  }
 
   Column(
     modifier = modifier

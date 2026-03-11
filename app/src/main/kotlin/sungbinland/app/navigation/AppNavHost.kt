@@ -209,6 +209,7 @@ import sungbinland.workout.workoutEntry
       UiKitFloatingActionButton(
         hazeState = hazeState,
         onClick = { fabController.get(selectedTab)?.onClick?.invoke() },
+        onLongClick = { fabController.get(selectedTab)?.onLongClick?.invoke() },
       ) {
         AnimatedContent(
           targetState = selectedTab,

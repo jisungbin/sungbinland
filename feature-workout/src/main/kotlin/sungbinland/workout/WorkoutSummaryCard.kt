@@ -1,19 +1,26 @@
 package sungbinland.workout
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +43,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.window.Popup
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitDateNavigator
 import sungbinland.uikit.UiKitPillButton
@@ -53,9 +64,28 @@ import sungbinland.uikit.UiKitTypography
   onMainExerciseClick: () -> Unit,
   onMainExerciseInputChange: (String) -> Unit,
   onOpenRoutineDetailClick: () -> Unit,
+  onRoutineSelect: (String) -> Unit,
+  onResetTimerRecords: () -> Unit,
 ) {
+  var showRoutinePopup by remember { mutableStateOf(false) }
   UiKitSurfaceCard(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier
+      .fillMaxWidth()
+      .pointerInput(Unit) {
+        var totalDragOffset = 0f
+        detectHorizontalDragGestures(
+          onDragStart = { totalDragOffset = 0f },
+          onDragEnd = {
+            val threshold = 40.dp.toPx()
+            when {
+              totalDragOffset > threshold -> onPreviousDateClick()
+              totalDragOffset < -threshold -> onNextDateClick()
+            }
+          },
+          onDragCancel = { totalDragOffset = 0f },
+          onHorizontalDrag = { _, dragAmount -> totalDragOffset += dragAmount },
+        )
+      },
     borderColor = UiKitColors.BorderStrong,
     verticalSpacing = 15.dp,
   ) {
@@ -72,10 +102,54 @@ import sungbinland.uikit.UiKitTypography
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      BasicText(
-        text = state.routineTitle,
-        style = UiKitTypography.Headline.copy(color = UiKitColors.Primary),
-      )
+      Box {
+        BasicText(
+          text = "${state.routineTitle} ▾",
+          modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(enabled = state.routineNames.isNotEmpty()) {
+              showRoutinePopup = true
+            }
+            .padding(vertical = 4.dp, horizontal = 2.dp),
+          style = UiKitTypography.Headline.copy(color = UiKitColors.Primary),
+        )
+        if (showRoutinePopup) {
+          Popup(
+            alignment = Alignment.TopStart,
+            onDismissRequest = { showRoutinePopup = false },
+          ) {
+            Column(
+              modifier = Modifier
+                .widthIn(min = 160.dp, max = 220.dp)
+                .heightIn(max = 240.dp)
+                .verticalScroll(rememberScrollState())
+                .background(Color.White, RoundedCornerShape(12.dp))
+                .border(1.dp, Color(0xFFE8E8E8), RoundedCornerShape(12.dp))
+                .padding(horizontal = 6.dp, vertical = 6.dp),
+            ) {
+              state.routineNames.fastForEach { name ->
+                BasicText(
+                  text = name,
+                  modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                      onRoutineSelect(name)
+                      showRoutinePopup = false
+                    }
+                    .background(if (name == state.routineTitle) Color(0xFFF0F4FF) else Color.Transparent)
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                  style = TextStyle(
+                    color = if (name == state.routineTitle) UiKitColors.BrandBlue else UiKitColors.Primary,
+                    fontSize = 15.sp,
+                    fontWeight = if (name == state.routineTitle) FontWeight.SemiBold else FontWeight.Normal,
+                  ),
+                )
+              }
+            }
+          }
+        }
+      }
       UiKitPillButton(
         text = "루틴 상세",
         onClick = onOpenRoutineDetailClick,
@@ -96,6 +170,7 @@ import sungbinland.uikit.UiKitTypography
       lastTimerStartedAt = state.lastTimerStartedAt,
       timerSpan = state.timerSpan,
       modifier = Modifier.fillMaxWidth(),
+      onFirstTimerLongClick = onResetTimerRecords,
     )
   }
 }
@@ -220,12 +295,14 @@ import sungbinland.uikit.UiKitTypography
   lastTimerStartedAt: WorkoutTimerValueState,
   timerSpan: WorkoutTimerValueState,
   modifier: Modifier = Modifier,
+  onFirstTimerLongClick: () -> Unit,
 ) {
   Row(modifier = modifier) {
     WorkoutTimerColumn(
       label = "첫 시작",
       value = firstTimerStartedAt,
       modifier = Modifier.weight(1f),
+      onLongClick = onFirstTimerLongClick,
     )
     WorkoutTimerColumn(
       label = "마지막 시작",
@@ -240,13 +317,18 @@ import sungbinland.uikit.UiKitTypography
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable private fun WorkoutTimerColumn(
   label: String,
   value: WorkoutTimerValueState,
   modifier: Modifier = Modifier,
+  onLongClick: (() -> Unit)? = null,
 ) {
   Column(
-    modifier = modifier,
+    modifier = modifier.then(
+      if (onLongClick != null) Modifier.combinedClickable(onClick = {}, onLongClick = onLongClick)
+      else Modifier,
+    ),
     verticalArrangement = Arrangement.spacedBy(4.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {

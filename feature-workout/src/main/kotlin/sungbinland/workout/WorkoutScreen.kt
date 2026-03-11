@@ -109,7 +109,9 @@ import sungbinland.uikit.UiKitColors
     onMainExerciseClick = { isEditing = true },
     onMainExerciseInputChange = { input -> mainExerciseInput = input },
     onOpenRoutineDetailClick = onOpenRoutineDetailClick,
+    onRoutineSelect = viewModel::selectRoutine,
     onManageSupplementClick = onManageSupplementClick,
+    onResetTimerRecords = viewModel::clearTodayTimerRecords,
   )
 }
 
@@ -127,7 +129,9 @@ import sungbinland.uikit.UiKitColors
   onMainExerciseClick: () -> Unit,
   onMainExerciseInputChange: (String) -> Unit,
   onOpenRoutineDetailClick: () -> Unit,
+  onRoutineSelect: (String) -> Unit,
   onManageSupplementClick: () -> Unit,
+  onResetTimerRecords: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -147,6 +151,8 @@ import sungbinland.uikit.UiKitColors
       onMainExerciseClick = onMainExerciseClick,
       onMainExerciseInputChange = onMainExerciseInputChange,
       onOpenRoutineDetailClick = onOpenRoutineDetailClick,
+      onRoutineSelect = onRoutineSelect,
+      onResetTimerRecords = onResetTimerRecords,
     )
     WorkoutSupplementChecklistSection(
       state = state.supplements,

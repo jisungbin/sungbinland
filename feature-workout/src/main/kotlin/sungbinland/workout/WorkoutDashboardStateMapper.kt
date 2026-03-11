@@ -16,6 +16,7 @@ import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.SupplementIntakeWithItems
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
+import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
 import sungbinland.core.workout.entity.SupplementEntity
 import sungbinland.core.workout.entity.TimerRecordEntity
@@ -26,6 +27,7 @@ internal class WorkoutDashboardStateMapper(
   private val supplementIntakeDao: SupplementIntakeDao,
   private val timerRecordDao: TimerRecordDao,
   private val workoutExerciseDao: WorkoutExerciseDao,
+  private val workoutRoutineDao: WorkoutRoutineDao,
   private val workoutSessionDao: WorkoutSessionDao,
   private val nowProvider: () -> LocalDate,
 ) {
@@ -60,9 +62,15 @@ internal class WorkoutDashboardStateMapper(
         )
       }
       val registeredSupplementsDeferred = async { supplementDao.getAllSupplements() }
+      val routineNamesDeferred = async {
+        workoutRoutineDao.getAllWorkoutRoutines()
+          .fastMapTo(persistentListOf<String>().builder()) { routine -> routine.routine.name }
+          .build()
+      }
       WorkoutQuerySnapshot(
         sessionsOfDate = sessionsOfDateDeferred.await(),
         mainExerciseSuggestions = mainExerciseSuggestionsDeferred.await(),
+        routineNames = routineNamesDeferred.await(),
         timerRecordsOfDate = timerRecordsOfDateDeferred.await(),
         intakeWithItems = intakeWithItemsDeferred.await(),
         registeredSupplements = registeredSupplementsDeferred.await(),
@@ -101,6 +109,7 @@ internal class WorkoutDashboardStateMapper(
         dayTag = dayTag(selectedDate = selectedDate, nowDate = nowDate),
         displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
         routineTitle = latestSession?.routineName ?: "상체",
+        routineNames = snapshot.routineNames,
         mainExerciseValue = latestSession?.mainExerciseName ?: "[...]",
         mainExerciseSuggestions = snapshot.mainExerciseSuggestions,
         firstTimerStartedAt = firstTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,
@@ -157,6 +166,7 @@ internal class WorkoutDashboardStateMapper(
   private class WorkoutQuerySnapshot(
     val sessionsOfDate: List<WorkoutSessionEntity>,
     val mainExerciseSuggestions: ImmutableList<String>,
+    val routineNames: ImmutableList<String>,
     val timerRecordsOfDate: List<TimerRecordEntity>,
     val intakeWithItems: List<SupplementIntakeWithItems>,
     val registeredSupplements: List<SupplementEntity>,

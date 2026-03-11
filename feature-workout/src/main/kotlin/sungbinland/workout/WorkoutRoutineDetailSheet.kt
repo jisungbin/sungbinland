@@ -335,13 +335,14 @@ import sungbinland.uikit.UiKitTypography
         }
       },
     )
+    val isEnabled = value.isNotBlank()
     Box(
       modifier = Modifier
         .fillMaxWidth()
         .height(44.dp)
         .clip(RoundedCornerShape(12.dp))
-        .background(UiKitColors.BrandBlue)
-        .clickable(onClick = onSubmit),
+        .background(if (isEnabled) UiKitColors.BrandBlue else Color(0xFFCCCCCC))
+        .clickable(enabled = isEnabled, onClick = onSubmit),
       contentAlignment = Alignment.Center,
     ) {
       BasicText(

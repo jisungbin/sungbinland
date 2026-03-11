@@ -55,6 +55,7 @@ import sungbinland.uikit.UiKitTypography
         value = item.value,
         meta = item.meta,
         highlighted = item.highlighted,
+        goalAchieved = item.goalAchieved,
         modifier = Modifier.weight(1f),
       )
     }

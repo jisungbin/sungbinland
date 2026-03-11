@@ -24,6 +24,12 @@ import sungbinland.core.workout.entity.TimerRecordEntity
   @Query("SELECT * FROM timer_records WHERE started_at = :date")
   public suspend fun getTimerRecordsByExactDate(date: Date): List<TimerRecordEntity>
 
+  @Query(
+    "DELETE FROM timer_records " +
+      "WHERE started_at >= :startOfDay AND started_at < :endOfDayExclusive",
+  )
+  public suspend fun deleteTimerRecordsByDate(startOfDay: Date, endOfDayExclusive: Date)
+
   @Delete
   public suspend fun deleteTimerRecord(record: TimerRecordEntity)
 }

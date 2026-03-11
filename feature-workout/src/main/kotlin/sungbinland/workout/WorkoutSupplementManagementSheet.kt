@@ -42,7 +42,9 @@ import sungbinland.uikit.UiKitTypography
   modifier: Modifier = Modifier,
   onDelete: (name: String) -> Unit,
   onRegister: (name: String, targetIntakeCount: Int) -> Unit,
+  onClose: () -> Unit,
 ) {
+  var editingName by remember { mutableStateOf<String?>(null) }
   var nameInput by remember { mutableStateOf("") }
   var targetCount by remember { mutableIntStateOf(1) }
 
@@ -77,10 +79,17 @@ import sungbinland.uikit.UiKitTypography
         ),
       )
       supplements.fastForEach { supplement ->
+        val isEditing = editingName == supplement.name
         Row(
           modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isEditing) Color(0xFFE8EFF7) else Color(0xFFF5F5F5))
+            .clickable {
+              editingName = supplement.name
+              nameInput = supplement.name
+              targetCount = supplement.targetIntakeCount
+            }
             .padding(horizontal = 14.dp, vertical = 12.dp),
           horizontalArrangement = Arrangement.SpaceBetween,
           verticalAlignment = Alignment.CenterVertically,
@@ -204,23 +213,24 @@ import sungbinland.uikit.UiKitTypography
         }
       }
     }
+    val isSubmitEnabled = nameInput.isNotBlank()
     Box(
       modifier = Modifier
         .fillMaxWidth()
         .height(52.dp)
         .clip(RoundedCornerShape(14.dp))
-        .background(Color(0xFF1E3A5F))
-        .clickable {
-          if (nameInput.isNotBlank()) {
-            onRegister(nameInput, targetCount)
-            nameInput = ""
-            targetCount = 1
+        .background(if (isSubmitEnabled) Color(0xFF1E3A5F) else Color(0xFFCCCCCC))
+        .clickable(enabled = isSubmitEnabled) {
+          if (editingName != null) {
+            onDelete(editingName!!)
           }
+          onRegister(nameInput, targetCount)
+          onClose()
         },
       contentAlignment = Alignment.Center,
     ) {
       BasicText(
-        text = "등록하기",
+        text = if (editingName != null) "수정하기" else "등록하기",
         style = TextStyle(
           color = Color.White,
           fontSize = 16.sp,

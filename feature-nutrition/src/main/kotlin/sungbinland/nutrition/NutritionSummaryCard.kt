@@ -2,6 +2,7 @@ package sungbinland.nutrition
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableList
@@ -38,7 +40,23 @@ import sungbinland.uikit.UiKitTypography
   modifier: Modifier = Modifier,
 ) {
   UiKitSurfaceCard(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier
+      .fillMaxWidth()
+      .pointerInput(Unit) {
+        var totalDragOffset = 0f
+        detectHorizontalDragGestures(
+          onDragStart = { totalDragOffset = 0f },
+          onDragEnd = {
+            val threshold = 40.dp.toPx()
+            when {
+              totalDragOffset > threshold -> onPreviousDateClick()
+              totalDragOffset < -threshold -> onNextDateClick()
+            }
+          },
+          onDragCancel = { totalDragOffset = 0f },
+          onHorizontalDrag = { _, dragAmount -> totalDragOffset += dragAmount },
+        )
+      },
     borderColor = UiKitColors.BorderStrong,
     verticalSpacing = 14.dp,
   ) {

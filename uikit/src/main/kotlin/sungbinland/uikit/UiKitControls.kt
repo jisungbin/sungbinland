@@ -1,9 +1,11 @@
 package sungbinland.uikit
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -207,6 +209,7 @@ import kotlinx.collections.immutable.ImmutableList
   modifier: Modifier = Modifier,
   containerColor: Color = UiKitColors.BrandBlue.copy(alpha = 0.5f),
   onClick: () -> Unit,
+  onLongClick: (() -> Unit)? = null,
   content: @Composable () -> Unit,
 ) {
   UiKitFloatingActionButtonContainer(
@@ -214,6 +217,7 @@ import kotlinx.collections.immutable.ImmutableList
     modifier = modifier,
     containerColor = containerColor,
     onClick = onClick,
+    onLongClick = onLongClick,
     content = content,
   )
 }
@@ -260,11 +264,13 @@ import kotlinx.collections.immutable.ImmutableList
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable private fun UiKitFloatingActionButtonContainer(
   hazeState: HazeState,
   containerColor: Color,
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
+  onLongClick: (() -> Unit)? = null,
   content: @Composable () -> Unit,
 ) {
   Box(
@@ -280,7 +286,7 @@ import kotlinx.collections.immutable.ImmutableList
         ),
       )
       .background(color = containerColor)
-      .clickable(onClick = onClick),
+      .combinedClickable(onClick = onClick, onLongClick = onLongClick),
     contentAlignment = Alignment.Center,
   ) {
     content()

@@ -40,7 +40,10 @@ import sungbinland.uikit.UiKitTypography
     if (restTimer.isRunning) {
       while (restTimer.isRunning) {
         withFrameNanos { now ->
-          elapsedMillis = (now - restTimer.startNanos) / 1_000_000
+          val start = restTimer.startNanos
+          if (start != 0L) {
+            elapsedMillis = ((now - start) / 1_000_000).coerceAtMost(80_000)
+          }
         }
       }
     }
