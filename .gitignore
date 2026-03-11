@@ -12,6 +12,9 @@
 .codex
 .DS_Store
 build
-app/release
+!app/build/outputs/
+!app/build/outputs/apk/
+!app/build/outputs/apk/release/
+!app/build/outputs/apk/release/app-release.apk
 local.properties
 secrets.properties
