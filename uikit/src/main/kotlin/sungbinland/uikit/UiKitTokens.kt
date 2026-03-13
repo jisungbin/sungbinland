@@ -2,6 +2,8 @@ package sungbinland.uikit
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -22,38 +24,52 @@ public object UiKitColors {
   public val ProgressTrack: Color = Color(0xFFF5F4F2)
 }
 
+public val IbmPlexSansKr: FontFamily = FontFamily(
+  Font(R.font.ibm_plex_sans_kr_regular, FontWeight.Normal),
+  Font(R.font.ibm_plex_sans_kr_medium, FontWeight.Medium),
+  Font(R.font.ibm_plex_sans_kr_semibold, FontWeight.SemiBold),
+  Font(R.font.ibm_plex_sans_kr_bold, FontWeight.Bold),
+)
+
 public object UiKitTypography {
   public val Headline: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 24.sp,
     fontWeight = FontWeight.Bold,
     lineHeight = 30.sp,
   )
   public val Title: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 18.sp,
     fontWeight = FontWeight.SemiBold,
     lineHeight = 24.sp,
   )
   public val TitleLarge: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 22.sp,
     fontWeight = FontWeight.Bold,
     lineHeight = 26.sp,
   )
   public val DisplayMetric: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 34.sp,
     fontWeight = FontWeight.Bold,
     lineHeight = 36.sp,
   )
   public val Value: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 14.sp,
     fontWeight = FontWeight.Medium,
     lineHeight = 18.sp,
   )
   public val Label: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 12.sp,
     fontWeight = FontWeight.Medium,
     lineHeight = 16.sp,
   )
   public val Micro: TextStyle = TextStyle(
+    fontFamily = IbmPlexSansKr,
     fontSize = 10.sp,
     fontWeight = FontWeight.SemiBold,
     lineHeight = 12.sp,

@@ -85,6 +85,11 @@ internal class BottomSheetOverlayScene<T : Any>(
           modifier = Modifier
             .align(Alignment.BottomCenter)
             .imePadding()
+            .clickable(
+              interactionSource = remember { MutableInteractionSource() },
+              indication = null,
+              onClick = {},
+            )
             .animateEnterExit(
               enter = slideInVertically(
                 initialOffsetY = { fullHeight -> fullHeight },

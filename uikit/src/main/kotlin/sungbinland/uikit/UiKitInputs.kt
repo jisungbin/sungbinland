@@ -116,6 +116,7 @@ import kotlinx.collections.immutable.ImmutableList
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
     style = TextStyle(
+      fontFamily = IbmPlexSansKr,
       color = textColor,
       fontSize = UiKitTypography.Value.fontSize,
       fontWeight = FontWeight.SemiBold,

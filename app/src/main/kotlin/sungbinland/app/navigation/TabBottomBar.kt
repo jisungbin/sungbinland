@@ -43,6 +43,7 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import kotlinx.collections.immutable.ImmutableList
+import sungbinland.uikit.IbmPlexSansKr
 
 @Composable internal fun TabBottomBar(
   hazeState: HazeState,
@@ -117,6 +118,7 @@ import kotlinx.collections.immutable.ImmutableList
           BasicText(
             text = labelOf(tab),
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = contentColor,
               fontSize = 10.sp,
               fontWeight = FontWeight.SemiBold,
