@@ -1,8 +1,9 @@
 package sungbinland.study
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,7 @@ import sungbinland.uikit.UiKitTypography
   sections: ImmutableList<StudySectionState>,
   modifier: Modifier = Modifier,
   onEntryClick: (category: String, name: String) -> Unit,
+  onEntryLongClick: (category: String, name: String) -> Unit,
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -36,6 +39,7 @@ import sungbinland.uikit.UiKitTypography
         state = section,
         modifier = Modifier,
         onEntryClick = onEntryClick,
+        onEntryLongClick = onEntryLongClick,
       )
     }
   }
@@ -45,6 +49,7 @@ import sungbinland.uikit.UiKitTypography
   state: StudySectionState,
   modifier: Modifier = Modifier,
   onEntryClick: (category: String, name: String) -> Unit,
+  onEntryLongClick: (category: String, name: String) -> Unit,
 ) {
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -60,25 +65,30 @@ import sungbinland.uikit.UiKitTypography
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
       state.entries.fastForEach { entry ->
-        StudyCard(
-          state = entry,
-          modifier = Modifier,
-          onClick = { onEntryClick(entry.category, entry.name) },
-        )
+        key(entry.category, entry.name) {
+          StudyCard(
+            state = entry,
+            modifier = Modifier,
+            onClick = { onEntryClick(entry.category, entry.name) },
+            onLongClick = { onEntryLongClick(entry.category, entry.name) },
+          )
+        }
       }
     }
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable private fun StudyCard(
   state: StudyCardState,
   modifier: Modifier = Modifier,
   onClick: () -> Unit,
+  onLongClick: () -> Unit,
 ) {
   Row(
     modifier = modifier
       .fillMaxWidth()
-      .clickable(onClick = onClick)
+      .combinedClickable(onClick = onClick, onLongClick = onLongClick)
       .background(
         color = UiKitColors.Surface,
         shape = RoundedCornerShape(16.dp),

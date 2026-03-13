@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
@@ -97,14 +98,12 @@ import sungbinland.uikit.UiKitTypography
       onValueChange = { nameInput = it },
     )
     EditSheetField(
-      label = "콘텐츠",
+      label = "내용",
       value = contentInput,
-      placeholder = "콘텐츠 내용을 입력하세요",
+      placeholder = "내용을 입력하세요",
       singleLine = false,
       height = 88,
       focusRequester = contentFocusRequester,
-      imeAction = ImeAction.Done,
-      onImeAction = performSubmit,
       onValueChange = { contentInput = it },
     )
     Box(
@@ -119,6 +118,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "수정하기",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color.White,
           fontSize = 16.sp,
           fontWeight = FontWeight.SemiBold,

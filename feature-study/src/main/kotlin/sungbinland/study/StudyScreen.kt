@@ -22,6 +22,7 @@ import sungbinland.uikit.UiKitColors
 @Composable internal fun StudyScreen(
   viewModel: StudyViewModel,
   onEntryClick: (category: String, name: String) -> Unit,
+  onEntryLongClick: (category: String, name: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -42,6 +43,7 @@ import sungbinland.uikit.UiKitColors
       viewModel.updateSearchQuery(query)
     },
     onEntryClick = onEntryClick,
+    onEntryLongClick = onEntryLongClick,
   )
 }
 
@@ -51,6 +53,7 @@ import sungbinland.uikit.UiKitColors
   onSearchQueryChange: (String) -> Unit,
   onCategoryClick: (String) -> Unit,
   onEntryClick: (category: String, name: String) -> Unit,
+  onEntryLongClick: (category: String, name: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -68,6 +71,7 @@ import sungbinland.uikit.UiKitColors
       sections = state.sections,
       modifier = Modifier.fillMaxWidth(),
       onEntryClick = onEntryClick,
+      onEntryLongClick = onEntryLongClick,
     )
   }
 }

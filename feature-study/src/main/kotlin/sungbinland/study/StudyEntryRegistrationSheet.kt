@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
@@ -162,14 +163,12 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       onValueChange = { nameInput = it },
     )
     StudySheetField(
-      label = "콘텐츠",
+      label = "내용",
       value = contentInput,
-      placeholder = "콘텐츠 내용을 입력하세요",
+      placeholder = "내용을 입력하세요",
       singleLine = false,
       height = 88,
       focusRequester = contentFocusRequester,
-      imeAction = ImeAction.Done,
-      onImeAction = performSubmit,
       onValueChange = { contentInput = it },
     )
     Box(
@@ -184,6 +183,7 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       BasicText(
         text = "등록하기",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color.White,
           fontSize = 16.sp,
           fontWeight = FontWeight.SemiBold,
@@ -224,6 +224,7 @@ private val StudyAccent: Color = Color(0xFFE85A4F)
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
     style = TextStyle(
+      fontFamily = IbmPlexSansKr,
       color = textColor,
       fontSize = 13.sp,
       fontWeight = when {

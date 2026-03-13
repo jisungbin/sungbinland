@@ -18,6 +18,8 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import sungbinland.core.study.dao.StudyEntryDao
 import sungbinland.core.study.entity.StudyEntryEntity
+import android.app.AlertDialog
+import androidx.compose.ui.platform.LocalContext
 import sungbinland.uikit.BottomSheetSceneStrategy
 import sungbinland.uikit.FloatingButtonState
 import sungbinland.uikit.LocalFabController
@@ -39,6 +41,7 @@ public fun EntryProviderScope<NavKey>.studyEntry(
     metadata = mapOf("label" to "스터디"),
   ) {
     val viewModel = viewModel<StudyViewModel>(factory = factory)
+    val context = LocalContext.current
     val fabController = LocalFabController.current
     val fabState = remember {
       FloatingButtonState(icon = Icons.AutoMirrored.Rounded.MenuBook, onClick = { onNavigate(StudyEntryRegistrationSheetRoute) })
@@ -48,6 +51,16 @@ public fun EntryProviderScope<NavKey>.studyEntry(
       viewModel = viewModel,
       onEntryClick = { category, name ->
         onNavigate(StudyEntryEditSheetRoute(category = category, name = name))
+      },
+      onEntryLongClick = { category, name ->
+        AlertDialog.Builder(context)
+          .setTitle("삭제 확인")
+          .setMessage("'$name' 항목을 삭제하시겠습니까?")
+          .setPositiveButton("삭제") { _, _ ->
+            viewModel.deleteEntry(category = category, name = name)
+          }
+          .setNegativeButton("취소", null)
+          .show()
       },
     )
   }

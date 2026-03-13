@@ -81,6 +81,15 @@ internal class StudyViewModel(
     }
   }
 
+  internal fun deleteEntry(category: String, name: String) {
+    viewModelScope.launch {
+      studyEntryDao.deleteStudyEntry(
+        StudyEntryEntity(category = category, name = name, content = ""),
+      )
+      refresh()
+    }
+  }
+
   internal fun refresh() {
     refreshState.update { it + 1L }
   }
