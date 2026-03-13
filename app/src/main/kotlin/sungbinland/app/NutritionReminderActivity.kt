@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import sungbinland.uikit.IbmPlexSansKr
 
 public class NutritionReminderActivity : ComponentActivity() {
   public override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +58,7 @@ public class NutritionReminderActivity : ComponentActivity() {
       BasicText(
         text = "섭취 안내",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF1C1C1C),
           fontSize = 28.sp,
           fontWeight = FontWeight.Bold,
@@ -65,6 +67,7 @@ public class NutritionReminderActivity : ComponentActivity() {
       BasicText(
         text = "단백질과 탄수화물을\n섭취할 시간입니다",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF1C1C1C),
           fontSize = 20.sp,
           fontWeight = FontWeight.Medium,
@@ -75,6 +78,7 @@ public class NutritionReminderActivity : ComponentActivity() {
       BasicText(
         text = "오후 3시 영양소 섭취를 잊지 마세요",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF999999),
           fontSize = 14.sp,
           textAlign = TextAlign.Center,
@@ -92,6 +96,7 @@ public class NutritionReminderActivity : ComponentActivity() {
         BasicText(
           text = "확인",
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,

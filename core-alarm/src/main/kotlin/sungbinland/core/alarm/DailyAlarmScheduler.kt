@@ -50,10 +50,14 @@ public object DailyAlarmScheduler {
   private fun requestBatteryOptimizationExemption(context: Context) {
     val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
     if (!powerManager.isIgnoringBatteryOptimizations(context.packageName)) {
-      val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-        .setData(Uri.parse("package:${context.packageName}"))
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-      context.startActivity(intent)
+      try {
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+          .setData(Uri.parse("package:${context.packageName}"))
+          .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+      } catch (_: Exception) {
+        // 백그라운드에서 Activity 시작이 제한될 수 있음
+      }
     }
   }
 }

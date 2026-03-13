@@ -10,8 +10,8 @@ public object HapticFeedback {
     val vibrator = vibratorManager.defaultVibrator
     vibrator.vibrate(
       VibrationEffect.createWaveform(
-        longArrayOf(0, 400, 100, 400, 100, 400),
-        intArrayOf(0, 255, 0, 255, 0, 255),
+        longArrayOf(0, 400, 100, 400, 100, 400, 100, 400),
+        intArrayOf(0, 255, 0, 255, 0, 255, 0, 255),
         -1,
       ),
     )
