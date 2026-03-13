@@ -47,16 +47,16 @@ private val confettiColors = listOf(
   Color(0xFFFDAC53),
 )
 
-private fun generateParticles(width: Float, count: Int = 200): List<ConfettiParticle> {
+private fun generateParticles(width: Float, height: Float, count: Int = 400): List<ConfettiParticle> {
   val random = Random(System.nanoTime())
   val shapes = ConfettiShape.entries
   return List(count) {
     ConfettiParticle(
       x = random.nextFloat() * width,
-      velocityX = (random.nextFloat() - 0.5f) * 4f,
-      velocityY = random.nextFloat() * 2.5f + 1f,
+      velocityX = (random.nextFloat() - 0.5f) * 5f,
+      velocityY = random.nextFloat() * 1.8f + 0.5f,
       rotation = random.nextFloat() * 360f,
-      rotationSpeed = (random.nextFloat() - 0.5f) * 10f,
+      rotationSpeed = (random.nextFloat() - 0.5f) * 12f,
       color = confettiColors[random.nextInt(confettiColors.size)],
       shape = shapes[random.nextInt(shapes.size)],
       size = random.nextFloat() * 10f + 5f,
@@ -75,23 +75,23 @@ private fun generateParticles(width: Float, count: Int = 200): List<ConfettiPart
     progress.snapTo(0f)
     progress.animateTo(
       targetValue = 1f,
-      animationSpec = tween(durationMillis = 3500, easing = LinearEasing),
+      animationSpec = tween(durationMillis = 5000, easing = LinearEasing),
     )
   }
 
   Canvas(modifier = modifier.fillMaxSize()) {
     if (particles.isEmpty()) {
-      particles.addAll(generateParticles(width = size.width))
+      particles.addAll(generateParticles(width = size.width, height = size.height))
     }
     val t = progress.value
     if (t <= 0f || t >= 1f) return@Canvas
-    val alpha = if (t > 0.7f) ((1f - t) / 0.3f).coerceIn(0f, 1f) else 1f
+    val alpha = if (t > 0.75f) ((1f - t) / 0.25f).coerceIn(0f, 1f) else 1f
     val height = size.height
 
     particles.forEach { particle ->
-      val elapsed = t * 3.5f
-      val px = particle.x + particle.velocityX * elapsed * 100f
-      val py = -60f + particle.velocityY * elapsed * 160f + 80f * elapsed * elapsed
+      val elapsed = t * 5f
+      val px = particle.x + particle.velocityX * elapsed * 80f
+      val py = -80f + particle.velocityY * elapsed * 140f + 50f * elapsed * elapsed
       if (py > height + 50f) return@forEach
       val rotation = particle.rotation + particle.rotationSpeed * elapsed * 60f
       val color = particle.color.copy(alpha = alpha)

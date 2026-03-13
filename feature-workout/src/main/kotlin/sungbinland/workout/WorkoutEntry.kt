@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -12,8 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -27,8 +26,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import sungbinland.core.alarm.HapticFeedback
+import kotlinx.coroutines.launch
 import sungbinland.core.workout.dao.SupplementDao
 import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
@@ -91,16 +90,15 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
         return@LaunchedEffect
       }
       while (restTimer.isRunning) {
-        val elapsedMillis = (withFrameNanos { it } - restTimer.startNanos) / 1_000_000L
-        if (elapsedMillis >= 80_000L) {
-          restTimer.stop()
-          fabProgressState.value = 0f
-          HapticFeedback.vibrateHeavy(context)
-          confettiTrigger++
-          break
-        }
-        fabProgressState.value = elapsedMillis / 80_000f
+        fabProgressState.value = (restTimer.elapsedMillis() / 80_000f).coerceAtMost(1f)
         delay(100L)
+      }
+      fabProgressState.value = 0f
+    }
+    LaunchedEffect(Unit) {
+      viewModel.timerCompletedEvent.collect {
+        HapticFeedback.vibrateHeavy(context.applicationContext)
+        confettiTrigger++
       }
     }
 
@@ -126,11 +124,12 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
     metadata = BottomSheetSceneStrategy.bottomSheet(),
   ) {
     val viewModel = viewModel<WorkoutViewModel>(factory = factory)
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
       if (!restTimer.isRunning) {
-        val now = withFrameNanos { it }
-        restTimer.start(now)
+        restTimer.start()
         viewModel.startTimer()
+        viewModel.monitorTimer(restTimer, context.applicationContext)
       }
     }
     WorkoutTimerSheet(restTimer = restTimer)

@@ -1,12 +1,16 @@
 package sungbinland.workout
 
+import android.content.Context
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -14,6 +18,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import sungbinland.core.alarm.HapticFeedback
 import androidx.compose.ui.util.fastFilter
 import androidx.compose.ui.util.fastMap
 import sungbinland.core.workout.dao.SupplementIntakeDao
@@ -34,6 +39,9 @@ internal class WorkoutViewModel(
   private val zoneId: ZoneId = ZoneId.systemDefault()
   private val selectedDateState: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
   private val refreshState: MutableStateFlow<Long> = MutableStateFlow(0L)
+
+  private val _timerCompletedEvent = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+  internal val timerCompletedEvent: SharedFlow<Unit> = _timerCompletedEvent
 
   internal val state: StateFlow<WorkoutDashboardState> =
     combine(selectedDateState, refreshState) { date, _ -> date }
@@ -73,7 +81,7 @@ internal class WorkoutViewModel(
       if (nextMainExercise.isBlank()) return@launch
       workoutSessionDao.upsertWorkoutSession(
         session = WorkoutSessionEntity(
-          routineName = existingSession?.routineName ?: routineName.ifBlank { "상체" },
+          routineName = existingSession?.routineName ?: routineName.ifBlank { return@launch },
           mainExerciseName = nextMainExercise,
           performedAt = existingSession?.performedAt ?: startOfDay,
         ),
@@ -172,6 +180,20 @@ internal class WorkoutViewModel(
     viewModelScope.launch {
       timerRecordDao.upsertTimerRecord(TimerRecordEntity(startedAt = Date()))
       refresh()
+    }
+  }
+
+  internal fun monitorTimer(restTimer: WorkoutRestTimer, applicationContext: Context) {
+    viewModelScope.launch {
+      while (restTimer.isRunning) {
+        if (restTimer.elapsedMillis() >= 80_000L) {
+          restTimer.stop()
+          HapticFeedback.vibrateHeavy(applicationContext)
+          _timerCompletedEvent.emit(Unit)
+          break
+        }
+        delay(100L)
+      }
     }
   }
 

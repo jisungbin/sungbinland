@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.window.Popup
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitDateNavigator
 import sungbinland.uikit.UiKitPillButton
@@ -140,6 +141,7 @@ import sungbinland.uikit.UiKitTypography
                     .background(if (name == state.routineTitle) Color(0xFFF0F4FF) else Color.Transparent)
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                   style = TextStyle(
+                    fontFamily = IbmPlexSansKr,
                     color = if (name == state.routineTitle) UiKitColors.BrandBlue else UiKitColors.Primary,
                     fontSize = 15.sp,
                     fontWeight = if (name == state.routineTitle) FontWeight.SemiBold else FontWeight.Normal,
@@ -249,6 +251,7 @@ import sungbinland.uikit.UiKitTypography
             BasicText(
               text = currentAutocompleteValue.value.orEmpty(),
               style = TextStyle(
+                fontFamily = IbmPlexSansKr,
                 color = Color(0xFFBDBDBD),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -266,6 +269,7 @@ import sungbinland.uikit.UiKitTypography
               .fillMaxWidth(),
             singleLine = true,
             textStyle = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = UiKitColors.Primary,
               fontSize = 16.sp,
               fontWeight = FontWeight.SemiBold,
@@ -277,6 +281,7 @@ import sungbinland.uikit.UiKitTypography
         BasicText(
           text = value,
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = when (value) {
               "[...]" -> Color(0xFF9A9A9A)
               else -> UiKitColors.Primary
@@ -335,6 +340,7 @@ import sungbinland.uikit.UiKitTypography
     BasicText(
       text = label,
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF8A8A8A),
         fontSize = 11.sp,
         fontWeight = FontWeight.Medium,
@@ -348,6 +354,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = value.hours,
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = UiKitColors.Primary,
           fontSize = 20.sp,
           fontWeight = FontWeight.Bold,
@@ -356,6 +363,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "h",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF8A8A8A),
           fontSize = 11.sp,
           fontWeight = FontWeight.Medium,
@@ -364,6 +372,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = value.minutes,
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = UiKitColors.Primary,
           fontSize = 20.sp,
           fontWeight = FontWeight.Bold,
@@ -372,6 +381,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "m",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF8A8A8A),
           fontSize = 11.sp,
           fontWeight = FontWeight.Medium,

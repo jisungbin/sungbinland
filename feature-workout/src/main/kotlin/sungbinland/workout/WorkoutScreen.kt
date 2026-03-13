@@ -25,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import android.app.AlertDialog
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import sungbinland.uikit.UiKitColors
@@ -37,6 +39,7 @@ import sungbinland.uikit.UiKitColors
   modifier: Modifier = Modifier,
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val context = LocalContext.current
   val focusManager = LocalFocusManager.current
   val keyboardController = LocalSoftwareKeyboardController.current
   val mainExerciseFocusRequester = remember { FocusRequester() }
@@ -111,7 +114,16 @@ import sungbinland.uikit.UiKitColors
     onOpenRoutineDetailClick = onOpenRoutineDetailClick,
     onRoutineSelect = viewModel::selectRoutine,
     onManageSupplementClick = onManageSupplementClick,
-    onResetTimerRecords = viewModel::clearTodayTimerRecords,
+    onResetTimerRecords = {
+      AlertDialog.Builder(context)
+        .setTitle("기록 초기화")
+        .setMessage("오늘의 타이머 기록을 모두 삭제하시겠습니까?")
+        .setPositiveButton("삭제") { _, _ ->
+          viewModel.clearTodayTimerRecords()
+        }
+        .setNegativeButton("취소", null)
+        .show()
+    },
   )
 }
 

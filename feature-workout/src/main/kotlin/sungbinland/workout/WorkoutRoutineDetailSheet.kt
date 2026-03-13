@@ -39,6 +39,7 @@ import java.util.Locale
 import kotlinx.collections.immutable.ImmutableList
 import sungbinland.core.workout.dao.WorkoutRoutineWithExercises
 import sungbinland.core.workout.entity.WorkoutSessionEntity
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
@@ -133,6 +134,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "등록된 종목",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = UiKitColors.Text,
           fontSize = 16.sp,
           fontWeight = FontWeight.SemiBold,
@@ -199,6 +201,7 @@ import sungbinland.uikit.UiKitTypography
         BasicText(
           text = sectionTitle,
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = UiKitColors.Text,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
@@ -208,6 +211,7 @@ import sungbinland.uikit.UiKitTypography
           BasicText(
             text = "기록 없음",
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = Color(0xFF999999),
               fontSize = 14.sp,
             ),
@@ -249,6 +253,7 @@ import sungbinland.uikit.UiKitTypography
     BasicText(
       text = dateText,
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF999999),
         fontSize = 13.sp,
         fontWeight = FontWeight.Medium,
@@ -257,6 +262,7 @@ import sungbinland.uikit.UiKitTypography
     BasicText(
       text = session.mainExerciseName,
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = UiKitColors.Text,
         fontSize = 14.sp,
         fontWeight = FontWeight.SemiBold,
@@ -296,6 +302,7 @@ import sungbinland.uikit.UiKitTypography
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
     style = TextStyle(
+      fontFamily = IbmPlexSansKr,
       color = textColor,
       fontSize = 13.sp,
       fontWeight = FontWeight.Medium,
@@ -348,6 +355,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "등록하기",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color.White,
           fontSize = 14.sp,
           fontWeight = FontWeight.SemiBold,

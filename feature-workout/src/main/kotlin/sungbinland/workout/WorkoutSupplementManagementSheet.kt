@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.mutableIntStateOf
 import kotlinx.collections.immutable.ImmutableList
 import sungbinland.core.workout.entity.SupplementEntity
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
@@ -62,6 +63,7 @@ import sungbinland.uikit.UiKitTypography
     BasicText(
       text = "보충제 관리",
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
@@ -73,6 +75,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "등록된 보충제",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF1C1C1C),
           fontSize = 14.sp,
           fontWeight = FontWeight.SemiBold,
@@ -102,6 +105,7 @@ import sungbinland.uikit.UiKitTypography
             text = "✕",
             modifier = Modifier.clickable { onDelete(supplement.name) },
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = Color(0xFFE85A4F),
               fontSize = 16.sp,
               fontWeight = FontWeight.Medium,
@@ -122,6 +126,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "이름",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF1C1C1C),
           fontSize = 14.sp,
           fontWeight = FontWeight.SemiBold,
@@ -159,6 +164,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = "목표 횟수",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF1C1C1C),
           fontSize = 14.sp,
           fontWeight = FontWeight.SemiBold,
@@ -180,6 +186,7 @@ import sungbinland.uikit.UiKitTypography
           BasicText(
             text = "−",
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = Color(0xFF555555),
               fontSize = 18.sp,
               fontWeight = FontWeight.Medium,
@@ -189,6 +196,7 @@ import sungbinland.uikit.UiKitTypography
         BasicText(
           text = "${targetCount}회",
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = UiKitColors.Text,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold,
@@ -205,6 +213,7 @@ import sungbinland.uikit.UiKitTypography
           BasicText(
             text = "+",
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = Color(0xFF555555),
               fontSize = 18.sp,
               fontWeight = FontWeight.Medium,
@@ -232,6 +241,7 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = if (editingName != null) "수정하기" else "등록하기",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color.White,
           fontSize = 16.sp,
           fontWeight = FontWeight.SemiBold,

@@ -108,7 +108,7 @@ internal class WorkoutDashboardStateMapper(
       summary = WorkoutSummaryState(
         dayTag = dayTag(selectedDate = selectedDate, nowDate = nowDate),
         displayDate = "${selectedDate.monthValue}월 ${selectedDate.dayOfMonth}일",
-        routineTitle = latestSession?.routineName ?: "상체",
+        routineTitle = latestSession?.routineName ?: "[...]",
         routineNames = snapshot.routineNames,
         mainExerciseValue = latestSession?.mainExerciseName ?: "[...]",
         mainExerciseSuggestions = snapshot.mainExerciseSuggestions,

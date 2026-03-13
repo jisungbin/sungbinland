@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,16 +18,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
@@ -34,21 +38,18 @@ import sungbinland.uikit.UiKitTypography
   restTimer: WorkoutRestTimer,
   modifier: Modifier = Modifier,
 ) {
-  var elapsedMillis by remember { mutableLongStateOf(0L) }
+  var animatingMillis by remember { mutableLongStateOf(0L) }
 
   LaunchedEffect(restTimer.startNanos) {
     if (restTimer.isRunning) {
       while (restTimer.isRunning) {
-        withFrameNanos { now ->
-          val start = restTimer.startNanos
-          if (start != 0L) {
-            elapsedMillis = ((now - start) / 1_000_000).coerceAtMost(80_000)
-          }
-        }
+        animatingMillis = restTimer.elapsedMillis().coerceAtMost(80_000)
+        delay(16L)
       }
     }
   }
 
+  val elapsedMillis = if (restTimer.isRunning) animatingMillis else restTimer.elapsedMillis().coerceAtMost(80_000)
   val totalSeconds = elapsedMillis / 1000
   val minutes = totalSeconds / 60
   val seconds = totalSeconds % 60
@@ -95,11 +96,28 @@ import sungbinland.uikit.UiKitTypography
       BasicText(
         text = timerText,
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = UiKitColors.Text,
           fontSize = 48.sp,
           fontWeight = FontWeight.Bold,
         ),
       )
     }
+    BasicText(
+      text = "호흡  ·  하체  ·  견갑 신경쓰기",
+      modifier = Modifier
+        .clip(RoundedCornerShape(12.dp))
+        .background(Color(0xFFF0F4FF))
+        .border(1.dp, Color(0xFFD6E2F5), RoundedCornerShape(12.dp))
+        .padding(horizontal = 20.dp, vertical = 10.dp),
+      style = TextStyle(
+        fontFamily = IbmPlexSansKr,
+        color = UiKitColors.BrandBlue,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.Center,
+        letterSpacing = 0.5.sp,
+      ),
+    )
   }
 }
