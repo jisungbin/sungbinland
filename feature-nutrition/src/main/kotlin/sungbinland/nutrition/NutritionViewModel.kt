@@ -70,6 +70,9 @@ internal class NutritionViewModel(
     }
   }
 
+  internal suspend fun getLatestBodyWeight(): Int? =
+    bodyInfoDao.getLatestBodyInfo()?.bodyWeightKg
+
   internal fun refresh() {
     refreshState.update { it + 1L }
   }

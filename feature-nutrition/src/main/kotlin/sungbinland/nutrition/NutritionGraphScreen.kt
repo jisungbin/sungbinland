@@ -41,6 +41,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 
 @Composable internal fun NutritionGraphScreen(
@@ -127,6 +128,7 @@ import sungbinland.uikit.UiKitColors
         .size(24.dp)
         .clickable(onClick = onBack),
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 24.sp,
         fontWeight = FontWeight.Normal,
@@ -137,6 +139,7 @@ import sungbinland.uikit.UiKitColors
       text = "전체 그래프",
       modifier = Modifier.weight(1f),
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 18.sp,
         fontWeight = FontWeight.SemiBold,
@@ -173,6 +176,7 @@ import sungbinland.uikit.UiKitColors
           .clickable { onPeriodClick(period) }
           .padding(horizontal = 16.dp, vertical = 8.dp),
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = when {
             selected -> Color.White
             else -> Color(0xFF8A8A8A)
@@ -211,6 +215,7 @@ import sungbinland.uikit.UiKitColors
           BasicText(
             text = label,
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = Color(0xFF9A9A9A),
               fontSize = 10.sp,
               fontWeight = FontWeight.Normal,
@@ -237,6 +242,7 @@ import sungbinland.uikit.UiKitColors
         BasicText(
           text = label,
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = Color(0xFF9A9A9A),
             fontSize = 11.sp,
             fontWeight = FontWeight.Normal,
@@ -320,6 +326,7 @@ import sungbinland.uikit.UiKitColors
     BasicText(
       text = label,
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 13.sp,
         fontWeight = FontWeight.Medium,
@@ -340,6 +347,7 @@ import sungbinland.uikit.UiKitColors
     BasicText(
       text = "기간 요약",
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 17.sp,
         fontWeight = FontWeight.SemiBold,
@@ -348,6 +356,7 @@ import sungbinland.uikit.UiKitColors
     BasicText(
       text = periodLabel,
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF9A9A9A),
         fontSize = 13.sp,
         fontWeight = FontWeight.Medium,
@@ -398,6 +407,7 @@ import sungbinland.uikit.UiKitColors
       BasicText(
         text = stat.name,
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF8A8A8A),
           fontSize = 12.sp,
           fontWeight = FontWeight.SemiBold,
@@ -407,6 +417,7 @@ import sungbinland.uikit.UiKitColors
     BasicText(
       text = stat.averageValue,
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
@@ -416,6 +427,7 @@ import sungbinland.uikit.UiKitColors
       BasicText(
         text = stat.rangeText,
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF9A9A9A),
           fontSize = 10.sp,
           fontWeight = FontWeight.Medium,
@@ -432,6 +444,7 @@ import sungbinland.uikit.UiKitColors
         BasicText(
           text = stat.deltaArrow,
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = deltaColor,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
@@ -440,6 +453,7 @@ import sungbinland.uikit.UiKitColors
         BasicText(
           text = stat.deltaText,
           style = TextStyle(
+            fontFamily = IbmPlexSansKr,
             color = deltaColor,
             fontSize = 10.sp,
             fontWeight = FontWeight.SemiBold,
@@ -471,6 +485,7 @@ import sungbinland.uikit.UiKitColors
         text = "항목",
         modifier = Modifier.weight(1f),
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF9A9A9A),
           fontSize = 11.sp,
           fontWeight = FontWeight.SemiBold,
@@ -480,6 +495,7 @@ import sungbinland.uikit.UiKitColors
         text = "평균",
         modifier = Modifier.width(60.dp),
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF9A9A9A),
           fontSize = 11.sp,
           fontWeight = FontWeight.SemiBold,
@@ -490,6 +506,7 @@ import sungbinland.uikit.UiKitColors
         text = "최저",
         modifier = Modifier.width(60.dp),
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF9A9A9A),
           fontSize = 11.sp,
           fontWeight = FontWeight.SemiBold,
@@ -500,6 +517,7 @@ import sungbinland.uikit.UiKitColors
         text = "최고",
         modifier = Modifier.width(60.dp),
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF9A9A9A),
           fontSize = 11.sp,
           fontWeight = FontWeight.SemiBold,
@@ -545,6 +563,7 @@ import sungbinland.uikit.UiKitColors
       BasicText(
         text = row.name,
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF1C1C1C),
           fontSize = 12.sp,
           fontWeight = FontWeight.Medium,
@@ -555,6 +574,7 @@ import sungbinland.uikit.UiKitColors
       text = row.average,
       modifier = Modifier.width(60.dp),
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF1C1C1C),
         fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
@@ -565,6 +585,7 @@ import sungbinland.uikit.UiKitColors
       text = row.min,
       modifier = Modifier.width(60.dp),
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF666666),
         fontSize = 12.sp,
         fontWeight = FontWeight.Medium,
@@ -575,6 +596,7 @@ import sungbinland.uikit.UiKitColors
       text = row.max,
       modifier = Modifier.width(60.dp),
       style = TextStyle(
+        fontFamily = IbmPlexSansKr,
         color = Color(0xFF666666),
         fontSize = 12.sp,
         fontWeight = FontWeight.Medium,

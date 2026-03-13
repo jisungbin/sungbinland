@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,7 +29,12 @@ import sungbinland.uikit.UiKitColors
   val state by viewModel.state.collectAsStateWithLifecycle()
   var isEditingWeight by rememberSaveable { mutableStateOf(false) }
   var weightEditText by rememberSaveable { mutableStateOf("") }
+  var lastRecordedWeight by rememberSaveable { mutableStateOf("") }
   val stateWeight = state.macroCards.fastFirstOrNull { it.highlighted }?.value?.toWeightDigits().orEmpty()
+
+  LaunchedEffect(Unit) {
+    lastRecordedWeight = viewModel.getLatestBodyWeight()?.toString() ?: ""
+  }
 
   NutritionScreen(
     state = state,
@@ -36,6 +42,7 @@ import sungbinland.uikit.UiKitColors
     weightDisplayText = when {
       isEditingWeight -> weightEditText
       stateWeight.isNotBlank() -> stateWeight
+      lastRecordedWeight.isNotBlank() -> lastRecordedWeight
       else -> ""
     },
     modifier = modifier
@@ -49,7 +56,7 @@ import sungbinland.uikit.UiKitColors
     onOpenGraphClick = onOpenGraphClick,
     onPreviousDateClick = viewModel::moveToPreviousDate,
     onWeightCardClick = {
-      weightEditText = stateWeight
+      weightEditText = stateWeight.ifBlank { lastRecordedWeight }
       isEditingWeight = true
     },
     onWeightInputChange = { weightEditText = it },

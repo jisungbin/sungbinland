@@ -51,6 +51,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import kotlinx.collections.immutable.ImmutableList
 import sungbinland.core.nutrition.entity.FoodEntity
+import sungbinland.uikit.IbmPlexSansKr
 import sungbinland.uikit.UiKitColors
 import sungbinland.uikit.UiKitTypography
 
@@ -278,6 +279,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
       BasicText(
         text = "등록하기",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color.White,
           fontSize = 16.sp,
           fontWeight = FontWeight.SemiBold,
@@ -318,6 +320,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
       .clickable(onClick = onClick)
       .padding(horizontal = 14.dp, vertical = 8.dp),
     style = TextStyle(
+      fontFamily = IbmPlexSansKr,
       color = textColor,
       fontSize = 13.sp,
       fontWeight = FontWeight.Medium,
@@ -401,6 +404,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
           BasicText(
             text = suffix,
             style = TextStyle(
+              fontFamily = IbmPlexSansKr,
               color = Color(0xFF999999),
               fontSize = 13.sp,
             ),
@@ -435,6 +439,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
       BasicText(
         text = "−",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF555555),
           fontSize = 18.sp,
           fontWeight = FontWeight.Medium,
@@ -448,6 +453,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
       BasicText(
         text = quantity.toString(),
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = UiKitColors.Text,
           fontSize = 18.sp,
           fontWeight = FontWeight.SemiBold,
@@ -456,6 +462,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
       BasicText(
         text = "개",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF999999),
           fontSize = 14.sp,
         ),
@@ -472,6 +479,7 @@ private val TimeVisualTransformation = VisualTransformation { text ->
       BasicText(
         text = "+",
         style = TextStyle(
+          fontFamily = IbmPlexSansKr,
           color = Color(0xFF555555),
           fontSize = 18.sp,
           fontWeight = FontWeight.Medium,
