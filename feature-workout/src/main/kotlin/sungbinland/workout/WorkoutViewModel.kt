@@ -64,7 +64,7 @@ internal class WorkoutViewModel(
     selectedDateState.update { LocalDate.now() }
   }
 
-  internal fun saveSession(routineName: String, mainExerciseName: String) {
+  internal fun saveSession(routineName: String, mainExerciseName: String, mainExerciseName2: String) {
     viewModelScope.launch {
       val selectedDate = selectedDateState.value
       val startOfDay = selectedDate.toStartOfDayDate()
@@ -79,10 +79,16 @@ internal class WorkoutViewModel(
         else -> existingSession?.mainExerciseName.orEmpty()
       }
       if (nextMainExercise.isBlank()) return@launch
+      val normalizedMainExercise2 = mainExerciseName2.trim()
+      val nextMainExercise2 = when {
+        normalizedMainExercise2.isNotBlank() -> normalizedMainExercise2
+        else -> existingSession?.mainExerciseName2.orEmpty()
+      }
       workoutSessionDao.upsertWorkoutSession(
         session = WorkoutSessionEntity(
           routineName = existingSession?.routineName ?: routineName.ifBlank { return@launch },
           mainExerciseName = nextMainExercise,
+          mainExerciseName2 = nextMainExercise2,
           performedAt = existingSession?.performedAt ?: startOfDay,
         ),
       )
@@ -159,6 +165,7 @@ internal class WorkoutViewModel(
         session = WorkoutSessionEntity(
           routineName = routineName,
           mainExerciseName = existingSession?.mainExerciseName ?: "",
+          mainExerciseName2 = existingSession?.mainExerciseName2 ?: "",
           performedAt = existingSession?.performedAt ?: startOfDay,
         ),
       )

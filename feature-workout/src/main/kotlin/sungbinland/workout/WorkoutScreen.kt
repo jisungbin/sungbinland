@@ -42,50 +42,89 @@ import sungbinland.uikit.UiKitColors
   val context = LocalContext.current
   val focusManager = LocalFocusManager.current
   val keyboardController = LocalSoftwareKeyboardController.current
-  val mainExerciseFocusRequester = remember { FocusRequester() }
+  val mainExerciseFocusRequester1 = remember { FocusRequester() }
+  val mainExerciseFocusRequester2 = remember { FocusRequester() }
   val imeVisible: Boolean = WindowInsets.isImeVisible
   val wasImeVisibleState = remember { mutableStateOf(false) }
-  val isEditingState = rememberSaveable { mutableStateOf(false) }
-  var isEditing by isEditingState
-  val mainExerciseInputState = rememberSaveable { mutableStateOf("") }
-  var mainExerciseInput by mainExerciseInputState
-  val currentMainExercise = remember(state.summary.mainExerciseValue) {
+  // -1 = not editing, 0 = editing first field, 1 = editing second field
+  val editingFieldIndexState = rememberSaveable { mutableStateOf(-1) }
+  var editingFieldIndex by editingFieldIndexState
+  val mainExerciseInput1State = rememberSaveable { mutableStateOf("") }
+  var mainExerciseInput1 by mainExerciseInput1State
+  val mainExerciseInput2State = rememberSaveable { mutableStateOf("") }
+  var mainExerciseInput2 by mainExerciseInput2State
+  val currentMainExercise1 = remember(state.summary.mainExerciseValue) {
     state.summary.mainExerciseValue.toMainExerciseInput()
   }
-  val mainExerciseAutocomplete = remember(mainExerciseInput, state.summary.mainExerciseSuggestions) {
+  val currentMainExercise2 = remember(state.summary.mainExerciseValue2) {
+    state.summary.mainExerciseValue2.toMainExerciseInput()
+  }
+  val mainExerciseAutocomplete1 = remember(mainExerciseInput1, state.summary.mainExerciseSuggestions) {
     findMainExerciseSuggestion(
-      input = mainExerciseInput,
+      input = mainExerciseInput1,
       suggestions = state.summary.mainExerciseSuggestions,
     )
   }
-  val currentMainExerciseRef = rememberUpdatedState(currentMainExercise)
-  val mainExerciseAutocompleteRef = rememberUpdatedState(mainExerciseAutocomplete)
+  val mainExerciseAutocomplete2 = remember(mainExerciseInput2, state.summary.mainExerciseSuggestions) {
+    findMainExerciseSuggestion(
+      input = mainExerciseInput2,
+      suggestions = state.summary.mainExerciseSuggestions,
+    )
+  }
+  val currentMainExercise1Ref = rememberUpdatedState(currentMainExercise1)
+  val currentMainExercise2Ref = rememberUpdatedState(currentMainExercise2)
+  val mainExerciseAutocomplete1Ref = rememberUpdatedState(mainExerciseAutocomplete1)
+  val mainExerciseAutocomplete2Ref = rememberUpdatedState(mainExerciseAutocomplete2)
   val imeVisibleRef = rememberUpdatedState(imeVisible)
-  LaunchedEffect(isEditingState) {
-    snapshotFlow { currentMainExerciseRef.value to isEditingState.value }.collect { (mainExercise, editing) ->
-      if (!editing) {
-        mainExerciseInputState.value = mainExercise
+  LaunchedEffect(editingFieldIndexState) {
+    snapshotFlow { currentMainExercise1Ref.value to editingFieldIndexState.value }.collect { (mainExercise, editIndex) ->
+      if (editIndex != 0) {
+        mainExerciseInput1State.value = mainExercise
       }
     }
   }
-  LaunchedEffect(isEditingState) {
-    snapshotFlow { isEditingState.value }.collect { editing ->
-      if (editing) {
-        mainExerciseFocusRequester.requestFocus()
-        keyboardController?.show()
+  LaunchedEffect(editingFieldIndexState) {
+    snapshotFlow { currentMainExercise2Ref.value to editingFieldIndexState.value }.collect { (mainExercise, editIndex) ->
+      if (editIndex != 1) {
+        mainExerciseInput2State.value = mainExercise
       }
     }
   }
-  LaunchedEffect(isEditingState) {
-    snapshotFlow { imeVisibleRef.value to isEditingState.value }.collect { (imeVis, editing) ->
-      if (wasImeVisibleState.value && !imeVis && editing) {
-        val nextMainExercise = mainExerciseAutocompleteRef.value ?: mainExerciseInputState.value
-        mainExerciseInputState.value = nextMainExercise
-        isEditingState.value = false
+  LaunchedEffect(editingFieldIndexState) {
+    snapshotFlow { editingFieldIndexState.value }.collect { editIndex ->
+      when (editIndex) {
+        0 -> {
+          mainExerciseFocusRequester1.requestFocus()
+          keyboardController?.show()
+        }
+        1 -> {
+          mainExerciseFocusRequester2.requestFocus()
+          keyboardController?.show()
+        }
+      }
+    }
+  }
+  LaunchedEffect(editingFieldIndexState) {
+    snapshotFlow { imeVisibleRef.value to editingFieldIndexState.value }.collect { (imeVis, editIndex) ->
+      if (wasImeVisibleState.value && !imeVis && editIndex >= 0) {
+        val nextMainExercise1 = if (editIndex == 0) {
+          mainExerciseAutocomplete1Ref.value ?: mainExerciseInput1State.value
+        } else {
+          mainExerciseInput1State.value
+        }
+        val nextMainExercise2 = if (editIndex == 1) {
+          mainExerciseAutocomplete2Ref.value ?: mainExerciseInput2State.value
+        } else {
+          mainExerciseInput2State.value
+        }
+        if (editIndex == 0) mainExerciseInput1State.value = nextMainExercise1
+        if (editIndex == 1) mainExerciseInput2State.value = nextMainExercise2
+        editingFieldIndexState.value = -1
         focusManager.clearFocus(force = true)
         viewModel.saveSession(
           routineName = state.summary.routineTitle,
-          mainExerciseName = nextMainExercise,
+          mainExerciseName = nextMainExercise1,
+          mainExerciseName2 = nextMainExercise2,
         )
       }
       wasImeVisibleState.value = imeVis
@@ -94,10 +133,13 @@ import sungbinland.uikit.UiKitColors
 
   WorkoutScreen(
     state = state,
-    mainExerciseInput = mainExerciseInput,
-    mainExerciseAutocomplete = mainExerciseAutocomplete,
-    isEditingMainExercise = isEditing,
-    mainExerciseFocusRequester = mainExerciseFocusRequester,
+    mainExerciseInput1 = mainExerciseInput1,
+    mainExerciseInput2 = mainExerciseInput2,
+    mainExerciseAutocomplete1 = mainExerciseAutocomplete1,
+    mainExerciseAutocomplete2 = mainExerciseAutocomplete2,
+    editingMainExerciseIndex = editingFieldIndex,
+    mainExerciseFocusRequester1 = mainExerciseFocusRequester1,
+    mainExerciseFocusRequester2 = mainExerciseFocusRequester2,
     modifier = modifier
       .fillMaxSize()
       .background(UiKitColors.Background)
@@ -109,8 +151,13 @@ import sungbinland.uikit.UiKitColors
     onPreviousDateClick = viewModel::moveToPreviousDate,
     onSupplementIncrement = viewModel::incrementSupplement,
     onSupplementDecrement = viewModel::decrementSupplement,
-    onMainExerciseClick = { isEditing = true },
-    onMainExerciseInputChange = { input -> mainExerciseInput = input },
+    onMainExerciseClick = { index -> editingFieldIndex = index },
+    onMainExerciseInputChange = { index, input ->
+      when (index) {
+        0 -> mainExerciseInput1 = input
+        1 -> mainExerciseInput2 = input
+      }
+    },
     onOpenRoutineDetailClick = onOpenRoutineDetailClick,
     onRoutineSelect = viewModel::selectRoutine,
     onManageSupplementClick = onManageSupplementClick,
@@ -129,17 +176,20 @@ import sungbinland.uikit.UiKitColors
 
 @Composable private fun WorkoutScreen(
   state: WorkoutDashboardState,
-  mainExerciseInput: String,
-  mainExerciseAutocomplete: String?,
-  isEditingMainExercise: Boolean,
-  mainExerciseFocusRequester: FocusRequester,
+  mainExerciseInput1: String,
+  mainExerciseInput2: String,
+  mainExerciseAutocomplete1: String?,
+  mainExerciseAutocomplete2: String?,
+  editingMainExerciseIndex: Int,
+  mainExerciseFocusRequester1: FocusRequester,
+  mainExerciseFocusRequester2: FocusRequester,
   onPreviousDateClick: () -> Unit,
   onNextDateClick: () -> Unit,
   onCurrentDateClick: () -> Unit,
   onSupplementIncrement: (String) -> Unit,
   onSupplementDecrement: (String) -> Unit,
-  onMainExerciseClick: () -> Unit,
-  onMainExerciseInputChange: (String) -> Unit,
+  onMainExerciseClick: (Int) -> Unit,
+  onMainExerciseInputChange: (Int, String) -> Unit,
   onOpenRoutineDetailClick: () -> Unit,
   onRoutineSelect: (String) -> Unit,
   onManageSupplementClick: () -> Unit,
@@ -152,10 +202,13 @@ import sungbinland.uikit.UiKitColors
   ) {
     WorkoutSummaryCard(
       state = state.summary,
-      mainExerciseInput = mainExerciseInput,
-      mainExerciseAutocomplete = mainExerciseAutocomplete,
-      isEditingMainExercise = isEditingMainExercise,
-      mainExerciseFocusRequester = mainExerciseFocusRequester,
+      mainExerciseInput1 = mainExerciseInput1,
+      mainExerciseInput2 = mainExerciseInput2,
+      mainExerciseAutocomplete1 = mainExerciseAutocomplete1,
+      mainExerciseAutocomplete2 = mainExerciseAutocomplete2,
+      editingMainExerciseIndex = editingMainExerciseIndex,
+      mainExerciseFocusRequester1 = mainExerciseFocusRequester1,
+      mainExerciseFocusRequester2 = mainExerciseFocusRequester2,
       modifier = Modifier.fillMaxWidth(),
       onPreviousDateClick = onPreviousDateClick,
       onNextDateClick = onNextDateClick,

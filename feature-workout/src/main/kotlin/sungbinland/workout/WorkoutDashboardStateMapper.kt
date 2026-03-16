@@ -111,6 +111,7 @@ internal class WorkoutDashboardStateMapper(
         routineTitle = latestSession?.routineName ?: "[...]",
         routineNames = snapshot.routineNames,
         mainExerciseValue = latestSession?.mainExerciseName ?: "[...]",
+        mainExerciseValue2 = latestSession?.mainExerciseName2?.takeIf { it.isNotBlank() } ?: "[...]",
         mainExerciseSuggestions = snapshot.mainExerciseSuggestions,
         firstTimerStartedAt = firstTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,
         lastTimerStartedAt = lastTimerRecord?.startedAt?.toTimerValue() ?: emptyTimerValue,

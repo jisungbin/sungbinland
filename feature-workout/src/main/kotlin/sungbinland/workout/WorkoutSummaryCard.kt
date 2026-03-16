@@ -54,16 +54,19 @@ import sungbinland.uikit.UiKitTypography
 
 @Composable internal fun WorkoutSummaryCard(
   state: WorkoutSummaryState,
-  mainExerciseInput: String,
-  mainExerciseAutocomplete: String?,
-  isEditingMainExercise: Boolean,
-  mainExerciseFocusRequester: FocusRequester,
+  mainExerciseInput1: String,
+  mainExerciseInput2: String,
+  mainExerciseAutocomplete1: String?,
+  mainExerciseAutocomplete2: String?,
+  editingMainExerciseIndex: Int,
+  mainExerciseFocusRequester1: FocusRequester,
+  mainExerciseFocusRequester2: FocusRequester,
   modifier: Modifier = Modifier,
   onPreviousDateClick: () -> Unit,
   onNextDateClick: () -> Unit,
   onCurrentDateClick: () -> Unit,
-  onMainExerciseClick: () -> Unit,
-  onMainExerciseInputChange: (String) -> Unit,
+  onMainExerciseClick: (Int) -> Unit,
+  onMainExerciseInputChange: (Int, String) -> Unit,
   onOpenRoutineDetailClick: () -> Unit,
   onRoutineSelect: (String) -> Unit,
   onResetTimerRecords: () -> Unit,
@@ -157,16 +160,39 @@ import sungbinland.uikit.UiKitTypography
         onClick = onOpenRoutineDetailClick,
       )
     }
-    WorkoutMainExerciseField(
-      value = state.mainExerciseValue,
-      inputValue = mainExerciseInput,
-      autocompleteValue = mainExerciseAutocomplete,
-      isEditing = isEditingMainExercise,
-      focusRequester = mainExerciseFocusRequester,
-      modifier = Modifier.fillMaxWidth(),
-      onClick = onMainExerciseClick,
-      onInputChange = onMainExerciseInputChange,
-    )
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      BasicText(
+        text = "메인 종목",
+        style = UiKitTypography.Title.copy(color = UiKitColors.MutedText),
+      )
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        WorkoutMainExerciseField(
+          value = state.mainExerciseValue,
+          inputValue = mainExerciseInput1,
+          autocompleteValue = mainExerciseAutocomplete1,
+          isEditing = editingMainExerciseIndex == 0,
+          focusRequester = mainExerciseFocusRequester1,
+          modifier = Modifier.weight(1f),
+          onClick = { onMainExerciseClick(0) },
+          onInputChange = { onMainExerciseInputChange(0, it) },
+        )
+        WorkoutMainExerciseField(
+          value = state.mainExerciseValue2,
+          inputValue = mainExerciseInput2,
+          autocompleteValue = mainExerciseAutocomplete2,
+          isEditing = editingMainExerciseIndex == 1,
+          focusRequester = mainExerciseFocusRequester2,
+          modifier = Modifier.weight(1f),
+          onClick = { onMainExerciseClick(1) },
+          onInputChange = { onMainExerciseInputChange(1, it) },
+        )
+      }
+    }
     WorkoutTimerInfoRow(
       firstTimerStartedAt = state.firstTimerStartedAt,
       lastTimerStartedAt = state.lastTimerStartedAt,
@@ -220,31 +246,22 @@ import sungbinland.uikit.UiKitTypography
     }
   }
 
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+  Box(
+    modifier = modifier
+      .height(40.dp)
+      .background(
+        color = Color(0xFFFCFBF9),
+        shape = RoundedCornerShape(10.dp),
+      )
+      .border(
+        width = 1.dp,
+        color = Color(0xFFE8E8E8),
+        shape = RoundedCornerShape(10.dp),
+      )
+      .clickable(onClick = onClick)
+      .padding(horizontal = 12.dp),
+    contentAlignment = Alignment.CenterStart,
   ) {
-    BasicText(
-      text = "메인 종목",
-      style = UiKitTypography.Title.copy(color = UiKitColors.MutedText),
-    )
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(40.dp)
-        .background(
-          color = Color(0xFFFCFBF9),
-          shape = RoundedCornerShape(10.dp),
-        )
-        .border(
-          width = 1.dp,
-          color = Color(0xFFE8E8E8),
-          shape = RoundedCornerShape(10.dp),
-        )
-        .clickable(onClick = onClick)
-        .padding(horizontal = 12.dp),
-      contentAlignment = Alignment.CenterStart,
-    ) {
       if (isEditing) {
         Box(modifier = Modifier.fillMaxWidth()) {
           if (!currentAutocompleteValue.value.isNullOrEmpty()) {
@@ -293,7 +310,6 @@ import sungbinland.uikit.UiKitTypography
       }
     }
   }
-}
 
 @Composable private fun WorkoutTimerInfoRow(
   firstTimerStartedAt: WorkoutTimerValueState,

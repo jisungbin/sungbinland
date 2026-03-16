@@ -66,7 +66,7 @@ import sungbinland.uikit.UiKitTypography
     val filter = selectedExerciseName
     when {
       filter == null -> recentSessions
-      else -> recentSessions.filter { it.mainExerciseName == filter }
+      else -> recentSessions.filter { it.mainExerciseName == filter || it.mainExerciseName2 == filter }
     }
   }
 
@@ -260,7 +260,13 @@ import sungbinland.uikit.UiKitTypography
       ),
     )
     BasicText(
-      text = session.mainExerciseName,
+      text = buildString {
+        append(session.mainExerciseName)
+        if (session.mainExerciseName2.isNotBlank()) {
+          append(" / ")
+          append(session.mainExerciseName2)
+        }
+      },
       style = TextStyle(
         fontFamily = IbmPlexSansKr,
         color = UiKitColors.Text,

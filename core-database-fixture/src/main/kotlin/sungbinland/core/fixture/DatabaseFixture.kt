@@ -166,12 +166,14 @@ public class DatabaseFixture(
       val routineName = routineNames[routineIndex % routineNames.size]
       val exercises = routines.getValue(routineName)
       val mainExercise = exercises[random.nextInt(exercises.size)]
+      val mainExercise2 = exercises.filter { it != mainExercise }.random(random)
       routineIndex++
 
       workoutSessionDao.upsertWorkoutSession(
         WorkoutSessionEntity(
           routineName = routineName,
           mainExerciseName = mainExercise,
+          mainExerciseName2 = mainExercise2,
           performedAt = date.toDate(LocalTime.of(6, 30)),
         ),
       )
