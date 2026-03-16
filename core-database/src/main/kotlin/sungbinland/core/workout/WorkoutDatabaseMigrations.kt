@@ -10,3 +10,10 @@ internal val WorkoutMigration7To8 = object : Migration(7, 8) {
     db.execSQL("ALTER TABLE `supplement_intake_items` ADD COLUMN `intake_count` INTEGER NOT NULL DEFAULT 1")
   }
 }
+
+/** v8→v9: Add second main exercise name to workout_sessions */
+internal val WorkoutMigration8To9 = object : Migration(8, 9) {
+  override fun migrate(db: SupportSQLiteDatabase) {
+    db.execSQL("ALTER TABLE `workout_sessions` ADD COLUMN `main_exercise_name_2` TEXT NOT NULL DEFAULT ''")
+  }
+}
