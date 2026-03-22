@@ -12,7 +12,7 @@ pluginManagement {
 }
 
 plugins {
-  id("com.android.settings") version "9.2.0-alpha03"
+  id("com.android.settings") version "9.2.0-alpha05"
 }
 
 dependencyResolutionManagement {
