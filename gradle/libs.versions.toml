@@ -22,7 +22,7 @@ poko = { id = "dev.drewhamilton.poko", version = "0.21.3" }
 [libraries]
 dev-chrisbanes-haze = { module = "dev.chrisbanes.haze:haze", version = "1.7.2" }
 
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0-rc01" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
 androidx-annotation = { module = "androidx.annotation:annotation", version = "1.9.1" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.10.0" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
