@@ -183,11 +183,25 @@ internal class WorkoutViewModel(
     }
   }
 
-  internal fun startTimer() {
+  internal fun startTimer(applicationContext: Context, alarmReceiverClass: Class<*>) {
     viewModelScope.launch {
       timerRecordDao.upsertTimerRecord(TimerRecordEntity(startedAt = Date()))
       refresh()
+      @Suppress("UNCHECKED_CAST")
+      sungbinland.core.alarm.RestTimerAlarmScheduler.schedule(
+        context = applicationContext,
+        delayMillis = 80_000L,
+        receiverClass = alarmReceiverClass as Class<android.content.BroadcastReceiver>,
+      )
     }
+  }
+
+  internal fun cancelTimerAlarm(applicationContext: Context, alarmReceiverClass: Class<*>) {
+    @Suppress("UNCHECKED_CAST")
+    sungbinland.core.alarm.RestTimerAlarmScheduler.cancel(
+      context = applicationContext,
+      receiverClass = alarmReceiverClass as Class<android.content.BroadcastReceiver>,
+    )
   }
 
   internal fun monitorTimer(restTimer: WorkoutRestTimer, applicationContext: Context) {
