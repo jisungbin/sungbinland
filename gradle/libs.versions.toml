@@ -16,7 +16,7 @@ android-library = { id = "com.android.library", version.ref = "android-gradle-pl
 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
-poko = { id = "dev.drewhamilton.poko", version = "0.21.3" }
+poko = { id = "dev.drewhamilton.poko", version = "0.22.0" }
 
 
 [libraries]
