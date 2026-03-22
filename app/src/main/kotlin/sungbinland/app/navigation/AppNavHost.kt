@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.FitnessCenter
-import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
@@ -44,9 +43,6 @@ import androidx.navigation3.ui.NavDisplay
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.persistentListOf
-import sungbinland.core.nutrition.dao.BodyInfoDao
-import sungbinland.core.nutrition.dao.EatenFoodDao
-import sungbinland.core.nutrition.dao.FoodDao
 import sungbinland.core.study.dao.StudyEntryDao
 import sungbinland.core.workout.dao.SupplementDao
 import sungbinland.core.workout.dao.SupplementIntakeDao
@@ -54,8 +50,6 @@ import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
-import sungbinland.nutrition.NutritionRoute
-import sungbinland.nutrition.nutritionEntry
 import sungbinland.study.StudyRoute
 import sungbinland.study.studyEntry
 import sungbinland.uikit.FabController
@@ -66,9 +60,6 @@ import sungbinland.workout.WorkoutRoute
 import sungbinland.workout.workoutEntry
 
 @Composable internal fun AppNavHost(
-  bodyInfoDao: BodyInfoDao,
-  eatenFoodDao: EatenFoodDao,
-  foodDao: FoodDao,
   studyEntryDao: StudyEntryDao,
   supplementDao: SupplementDao,
   supplementIntakeDao: SupplementIntakeDao,
@@ -76,24 +67,14 @@ import sungbinland.workout.workoutEntry
   workoutSessionDao: WorkoutSessionDao,
   workoutRoutineDao: WorkoutRoutineDao,
   workoutExerciseDao: WorkoutExerciseDao,
+  alarmReceiverClass: Class<*>,
   modifier: Modifier = Modifier,
 ) {
-  val tabs = remember { persistentListOf(NutritionRoute, WorkoutRoute, StudyRoute) }
-  val backStack = rememberNavBackStack(NutritionRoute)
+  val tabs = remember { persistentListOf(WorkoutRoute, StudyRoute) }
+  val backStack = rememberNavBackStack(WorkoutRoute)
   val stateHolderDecorator = rememberSaveableStateHolderNavEntryDecorator<NavKey>()
   val entryProvider = remember {
     entryProvider {
-      nutritionEntry(
-        bodyInfoDao = bodyInfoDao,
-        eatenFoodDao = eatenFoodDao,
-        foodDao = foodDao,
-        onNavigate = { key -> backStack.add(key) },
-        onBack = {
-          if (backStack.size > 1) {
-            backStack.removeLast()
-          }
-        },
-      )
       workoutEntry(
         supplementDao = supplementDao,
         supplementIntakeDao = supplementIntakeDao,
@@ -101,6 +82,7 @@ import sungbinland.workout.workoutEntry
         workoutSessionDao = workoutSessionDao,
         workoutRoutineDao = workoutRoutineDao,
         workoutExerciseDao = workoutExerciseDao,
+        alarmReceiverClass = alarmReceiverClass,
         onNavigate = { key -> backStack.add(key) },
         onBack = {
           if (backStack.size > 1) {
@@ -125,21 +107,18 @@ import sungbinland.workout.workoutEntry
   val fabController = remember { FabController() }
   val labelsByTab = remember(entryProvider) {
     mapOf(
-      NutritionRoute to entryProvider(NutritionRoute).label(),
       WorkoutRoute to entryProvider(WorkoutRoute).label(),
       StudyRoute to entryProvider(StudyRoute).label(),
     )
   }
   val iconsByTab = remember {
     mapOf(
-      NutritionRoute to Icons.Rounded.Restaurant,
       WorkoutRoute to Icons.Rounded.FitnessCenter,
       StudyRoute to Icons.AutoMirrored.Rounded.MenuBook,
     )
   }
   val accentsByTab = remember {
     mapOf(
-      NutritionRoute to Color(0xFFE85A4F),
       WorkoutRoute to Color(0xFF4A7BFF),
       StudyRoute to Color(0xFF20B07A),
     )

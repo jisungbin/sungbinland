@@ -48,7 +48,6 @@ dependencies {
   implementation(projects.coreAlarm)
   implementation(projects.coreDatabase)
   implementation(projects.uikit)
-  implementation(projects.featureNutrition)
   implementation(projects.featureStudy)
   implementation(projects.featureWorkout)
 

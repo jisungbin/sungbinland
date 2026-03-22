@@ -9,30 +9,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import sungbinland.app.navigation.AppNavHost
-import sungbinland.core.alarm.DailyAlarmScheduler
-import sungbinland.core.nutrition.NutritionDatabase
 import sungbinland.core.study.StudyDatabase
 import sungbinland.core.workout.WorkoutDatabase
 
 public class MainActivity : ComponentActivity() {
-  private val nutritionDatabase by lazy { NutritionDatabase.getOrCreate(context = applicationContext) }
   private val studyDatabase by lazy { StudyDatabase.getOrCreate(context = applicationContext) }
   private val workoutDatabase by lazy { WorkoutDatabase.getOrCreate(context = applicationContext) }
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     enableEdgeToEdge()
     super.onCreate(savedInstanceState)
-
-    DailyAlarmScheduler.schedule(
-      context = applicationContext,
-      hour = 15,
-      minute = 0,
-      receiverClass = NutritionReminderReceiver::class.java,
-    )
-
-    val bodyInfoDao = nutritionDatabase.bodyInfoDao()
-    val eatenFoodDao = nutritionDatabase.eatenFoodDao()
-    val foodDao = nutritionDatabase.foodDao()
 
     val studyEntryDao = studyDatabase.studyEntryDao()
 
@@ -48,9 +34,6 @@ public class MainActivity : ComponentActivity() {
         modifier = Modifier
           .fillMaxSize()
           .background(Color(0xFFFAF8F5)),
-        bodyInfoDao = bodyInfoDao,
-        eatenFoodDao = eatenFoodDao,
-        foodDao = foodDao,
         studyEntryDao = studyEntryDao,
         supplementDao = supplementDao,
         supplementIntakeDao = supplementIntakeDao,
@@ -58,6 +41,7 @@ public class MainActivity : ComponentActivity() {
         workoutSessionDao = workoutSessionDao,
         workoutRoutineDao = workoutRoutineDao,
         workoutExerciseDao = workoutExerciseDao,
+        alarmReceiverClass = RestTimerAlarmReceiver::class.java,
       )
     }
   }
