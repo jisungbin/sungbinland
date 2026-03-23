@@ -5,10 +5,6 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Date
 import kotlin.random.Random
-import sungbinland.core.nutrition.NutritionDatabase
-import sungbinland.core.nutrition.entity.BodyInfoEntity
-import sungbinland.core.nutrition.entity.EatenFoodEntity
-import sungbinland.core.nutrition.entity.FoodEntity
 import sungbinland.core.study.StudyDatabase
 import sungbinland.core.study.entity.StudyEntryEntity
 import sungbinland.core.workout.WorkoutDatabase
@@ -21,7 +17,6 @@ import sungbinland.core.workout.entity.WorkoutRoutineEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
 
 public class DatabaseFixture(
-  private val nutritionDatabase: NutritionDatabase,
   private val studyDatabase: StudyDatabase,
   private val workoutDatabase: WorkoutDatabase,
 ) {
@@ -33,96 +28,9 @@ public class DatabaseFixture(
    * @return `true` if fixture data was inserted, `false` if data already existed.
    */
   public suspend fun populate(): Boolean {
-    val nutritionInserted = populateNutrition()
     val workoutInserted = populateWorkout()
     val studyInserted = populateStudy()
-    return nutritionInserted || workoutInserted || studyInserted
-  }
-
-  private suspend fun populateNutrition(): Boolean {
-    val foodDao = nutritionDatabase.foodDao()
-    val eatenFoodDao = nutritionDatabase.eatenFoodDao()
-    val bodyInfoDao = nutritionDatabase.bodyInfoDao()
-
-    if (foodDao.getAllFoods().isNotEmpty()) return false
-
-    val foods = listOf(
-      FoodEntity(name = "현미밥", calories = 250, carbohydrateGrams = 55, proteinGrams = 5),
-      FoodEntity(name = "닭가슴살", calories = 165, carbohydrateGrams = 0, proteinGrams = 31),
-      FoodEntity(name = "삶은 계란", calories = 78, carbohydrateGrams = 1, proteinGrams = 6),
-      FoodEntity(name = "샐러드", calories = 120, carbohydrateGrams = 15, proteinGrams = 3),
-      FoodEntity(name = "고구마", calories = 130, carbohydrateGrams = 30, proteinGrams = 2),
-      FoodEntity(name = "바나나", calories = 105, carbohydrateGrams = 27, proteinGrams = 1),
-      FoodEntity(name = "프로틴 쉐이크", calories = 200, carbohydrateGrams = 8, proteinGrams = 30),
-      FoodEntity(name = "김치찌개", calories = 180, carbohydrateGrams = 12, proteinGrams = 15),
-      FoodEntity(name = "불고기", calories = 250, carbohydrateGrams = 10, proteinGrams = 25),
-      FoodEntity(name = "된장국", calories = 80, carbohydrateGrams = 8, proteinGrams = 6),
-      FoodEntity(name = "두부", calories = 76, carbohydrateGrams = 2, proteinGrams = 8),
-      FoodEntity(name = "오트밀", calories = 150, carbohydrateGrams = 27, proteinGrams = 5),
-    )
-    foods.forEach { food -> foodDao.upsertFood(food) }
-
-    val breakfastFoods = listOf("현미밥", "삶은 계란", "오트밀", "바나나", "된장국")
-    val lunchFoods = listOf("현미밥", "닭가슴살", "김치찌개", "불고기", "샐러드", "두부")
-    val dinnerFoods = listOf("현미밥", "불고기", "김치찌개", "닭가슴살", "된장국", "두부")
-    val snackFoods = listOf("고구마", "바나나", "프로틴 쉐이크", "삶은 계란")
-
-    var weightKg = 73.0
-
-    for (dayOffset in 60L downTo 0L) {
-      val date = today.minusDays(dayOffset)
-
-      weightKg += random.nextDouble(-0.5, 0.4)
-      weightKg = weightKg.coerceIn(68.0, 76.0)
-      bodyInfoDao.upsertBodyInfo(
-        BodyInfoEntity(
-          recordedAt = date.toDate(LocalTime.of(7, 0)),
-          bodyWeightKg = weightKg.toInt(),
-        ),
-      )
-
-      pickMeal(breakfastFoods, count = 2).forEach { foodName ->
-        eatenFoodDao.upsertEatenFood(
-          EatenFoodEntity(
-            foodName = foodName,
-            quantity = 1,
-            consumedAt = date.toDate(LocalTime.of(7, random.nextInt(0, 50))),
-          ),
-        )
-      }
-
-      pickMeal(lunchFoods, count = 2).forEach { foodName ->
-        eatenFoodDao.upsertEatenFood(
-          EatenFoodEntity(
-            foodName = foodName,
-            quantity = 1,
-            consumedAt = date.toDate(LocalTime.of(12, random.nextInt(0, 50))),
-          ),
-        )
-      }
-
-      pickMeal(dinnerFoods, count = 2).forEach { foodName ->
-        eatenFoodDao.upsertEatenFood(
-          EatenFoodEntity(
-            foodName = foodName,
-            quantity = 1,
-            consumedAt = date.toDate(LocalTime.of(18, random.nextInt(0, 50))),
-          ),
-        )
-      }
-
-      if (random.nextFloat() < 0.6f) {
-        val snack = snackFoods[random.nextInt(snackFoods.size)]
-        eatenFoodDao.upsertEatenFood(
-          EatenFoodEntity(
-            foodName = snack,
-            quantity = 1,
-            consumedAt = date.toDate(LocalTime.of(15, random.nextInt(0, 50))),
-          ),
-        )
-      }
-    }
-    return true
+    return workoutInserted || studyInserted
   }
 
   private suspend fun populateWorkout(): Boolean {
@@ -266,9 +174,6 @@ public class DatabaseFixture(
     entries.forEach { entry -> dao.upsertStudyEntry(entry) }
     return true
   }
-
-  private fun pickMeal(pool: List<String>, count: Int): List<String> =
-    pool.shuffled(random).take(count)
 
   private fun LocalDate.toDate(time: LocalTime): Date =
     Date.from(atTime(time).atZone(zoneId).toInstant())
