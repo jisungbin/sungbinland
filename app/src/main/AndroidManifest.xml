@@ -20,17 +20,6 @@
       </intent-filter>
     </activity>
 
-    <activity
-      android:name="sungbinland.app.RestTimerCompleteActivity"
-      android:exported="false"
-      android:screenOrientation="portrait"
-      android:showWhenLocked="true"
-      android:turnScreenOn="true" />
-
-    <receiver
-      android:name="sungbinland.app.RestTimerAlarmReceiver"
-      android:exported="false" />
-
   </application>
 
 </manifest>

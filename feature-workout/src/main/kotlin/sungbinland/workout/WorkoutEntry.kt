@@ -50,7 +50,6 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
   workoutSessionDao: WorkoutSessionDao,
   workoutRoutineDao: WorkoutRoutineDao,
   workoutExerciseDao: WorkoutExerciseDao,
-  alarmReceiverClass: Class<*>,
   onNavigate: (NavKey) -> Unit,
   onBack: () -> Unit,
 ) {
@@ -107,10 +106,7 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
       FloatingButtonState(
         icon = Icons.Rounded.Timer,
         onClick = { onNavigate(WorkoutTimerSheetRoute) },
-        onLongClick = {
-          restTimer.stop()
-          viewModel.cancelTimerAlarm(context.applicationContext, alarmReceiverClass)
-        },
+        onLongClick = { restTimer.stop() },
         progress = fabProgressState,
       )
     }
@@ -132,7 +128,7 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
     LaunchedEffect(Unit) {
       if (!restTimer.isRunning) {
         restTimer.start()
-        viewModel.startTimer(context.applicationContext, alarmReceiverClass)
+        viewModel.startTimer()
         viewModel.monitorTimer(restTimer, context.applicationContext)
       }
     }

@@ -67,7 +67,6 @@ import sungbinland.workout.workoutEntry
   workoutSessionDao: WorkoutSessionDao,
   workoutRoutineDao: WorkoutRoutineDao,
   workoutExerciseDao: WorkoutExerciseDao,
-  alarmReceiverClass: Class<*>,
   modifier: Modifier = Modifier,
 ) {
   val tabs = remember { persistentListOf(WorkoutRoute, StudyRoute) }
@@ -82,7 +81,6 @@ import sungbinland.workout.workoutEntry
         workoutSessionDao = workoutSessionDao,
         workoutRoutineDao = workoutRoutineDao,
         workoutExerciseDao = workoutExerciseDao,
-        alarmReceiverClass = alarmReceiverClass,
         onNavigate = { key -> backStack.add(key) },
         onBack = {
           if (backStack.size > 1) {

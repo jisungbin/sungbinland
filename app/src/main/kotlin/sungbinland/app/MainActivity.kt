@@ -41,7 +41,6 @@ public class MainActivity : ComponentActivity() {
         workoutSessionDao = workoutSessionDao,
         workoutRoutineDao = workoutRoutineDao,
         workoutExerciseDao = workoutExerciseDao,
-        alarmReceiverClass = RestTimerAlarmReceiver::class.java,
       )
     }
   }
