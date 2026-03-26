@@ -33,6 +33,7 @@ include(
   ":core-alarm",
   ":core-database",
   ":core-database-fixture",
+  ":feature-muscle",
   ":feature-workout",
   ":feature-study",
   ":uikit",
