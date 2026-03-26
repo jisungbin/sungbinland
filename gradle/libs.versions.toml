@@ -20,6 +20,8 @@ poko = { id = "dev.drewhamilton.poko", version = "0.22.0" }
 
 
 [libraries]
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version = "3.4.0" }
+
 dev-chrisbanes-haze = { module = "dev.chrisbanes.haze:haze", version = "1.7.2" }
 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
