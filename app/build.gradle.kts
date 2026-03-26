@@ -17,8 +17,8 @@ android {
 
   defaultConfig {
     targetSdk = 36
-    versionCode = 7
-    versionName = "7"
+    versionCode = 8
+    versionName = "8"
   }
 
   buildTypes {
