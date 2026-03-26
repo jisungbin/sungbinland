@@ -21,12 +21,15 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.MenuBook
+import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +53,8 @@ import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
+import sungbinland.muscle.MuscleRoute
+import sungbinland.muscle.muscleEntry
 import sungbinland.study.StudyRoute
 import sungbinland.study.studyEntry
 import sungbinland.uikit.FabController
@@ -69,8 +74,9 @@ import sungbinland.workout.workoutEntry
   workoutExerciseDao: WorkoutExerciseDao,
   modifier: Modifier = Modifier,
 ) {
-  val tabs = remember { persistentListOf(WorkoutRoute, StudyRoute) }
+  val tabs = remember { persistentListOf(WorkoutRoute, StudyRoute, MuscleRoute) }
   val backStack = rememberNavBackStack(WorkoutRoute)
+  var muscleOverlayActive by remember { mutableStateOf(false) }
   val stateHolderDecorator = rememberSaveableStateHolderNavEntryDecorator<NavKey>()
   val entryProvider = remember {
     entryProvider {
@@ -97,6 +103,7 @@ import sungbinland.workout.workoutEntry
           }
         },
       )
+      muscleEntry(onOverlayChange = { muscleOverlayActive = it })
     }
   }
   val selectedTab by remember(backStack, tabs) { derivedStateOf { backStack.lastOrNull { it in tabs } ?: tabs.first() } }
@@ -107,18 +114,21 @@ import sungbinland.workout.workoutEntry
     mapOf(
       WorkoutRoute to entryProvider(WorkoutRoute).label(),
       StudyRoute to entryProvider(StudyRoute).label(),
+      MuscleRoute to entryProvider(MuscleRoute).label(),
     )
   }
   val iconsByTab = remember {
     mapOf(
       WorkoutRoute to Icons.Rounded.FitnessCenter,
       StudyRoute to Icons.AutoMirrored.Rounded.MenuBook,
+      MuscleRoute to Icons.Rounded.Accessibility,
     )
   }
   val accentsByTab = remember {
     mapOf(
       WorkoutRoute to Color(0xFF4A7BFF),
       StudyRoute to Color(0xFF20B07A),
+      MuscleRoute to Color(0xFFD4564E),
     )
   }
 
@@ -158,70 +168,73 @@ import sungbinland.workout.workoutEntry
       )
     }
 
-    if (!isOverlayActive) Row(
-      modifier = Modifier
-        .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
-        .padding(bottom = 16.dp)
-        .align(Alignment.BottomCenter)
-        .fillMaxWidth(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.SpaceAround,
-    ) {
-      TabBottomBar(
+    if (!isOverlayActive && !muscleOverlayActive) {
+      val hasFab = fabController.get(selectedTab) != null
+      Row(
         modifier = Modifier
-          .fillMaxWidth(0.7f)
-          .height(62.dp),
-        hazeState = hazeState,
-        tabs = tabs,
-        selectedTab = selectedTab,
-        accentOf = accentsByTab::getValue,
-        iconOf = iconsByTab::getValue,
-        labelOf = labelsByTab::getValue,
-        onTabClick = { tab ->
-          if (selectedTab != tab) {
-            backStack.add(tab)
-          }
-        },
-      )
-      UiKitFloatingActionButton(
-        hazeState = hazeState,
-        onClick = { fabController.get(selectedTab)?.onClick?.invoke() },
-        onLongClick = { fabController.get(selectedTab)?.onLongClick?.invoke() },
+          .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Bottom))
+          .padding(bottom = 16.dp)
+          .align(Alignment.BottomCenter)
+          .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
       ) {
-        AnimatedContent(
-          targetState = selectedTab,
-          transitionSpec = {
-            ContentTransform(
-              targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
-              initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
-            )
+        TabBottomBar(
+          modifier = Modifier
+            .fillMaxWidth(if (hasFab) 0.7f else 0.88f)
+            .height(62.dp),
+          hazeState = hazeState,
+          tabs = tabs,
+          selectedTab = selectedTab,
+          accentOf = accentsByTab::getValue,
+          iconOf = iconsByTab::getValue,
+          labelOf = labelsByTab::getValue,
+          onTabClick = { tab ->
+            if (selectedTab != tab) {
+              backStack.add(tab)
+            }
           },
-          label = "fab-icon",
-        ) { tab ->
-          val fabState = fabController.get(tab) ?: return@AnimatedContent
-          val progressValue = fabState.progress?.value
-          if (progressValue != null && progressValue > 0f) {
-            androidx.compose.foundation.Canvas(modifier = Modifier.size(24.dp)) {
-              val stroke = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
-              drawCircle(
-                color = Color.White.copy(alpha = 0.3f),
-                style = stroke,
+        )
+        if (hasFab) UiKitFloatingActionButton(
+          hazeState = hazeState,
+          onClick = { fabController.get(selectedTab)?.onClick?.invoke() },
+          onLongClick = { fabController.get(selectedTab)?.onLongClick?.invoke() },
+        ) {
+          AnimatedContent(
+            targetState = selectedTab,
+            transitionSpec = {
+              ContentTransform(
+                targetContentEnter = fadeIn(animationSpec = tween(durationMillis = 300)),
+                initialContentExit = fadeOut(animationSpec = tween(durationMillis = 300)),
               )
-              drawArc(
-                color = Color.White,
-                startAngle = -90f,
-                sweepAngle = 360f * progressValue,
-                useCenter = false,
-                style = stroke,
+            },
+            label = "fab-icon",
+          ) { tab ->
+            val fabState = fabController.get(tab) ?: return@AnimatedContent
+            val progressValue = fabState.progress?.value
+            if (progressValue != null && progressValue > 0f) {
+              androidx.compose.foundation.Canvas(modifier = Modifier.size(24.dp)) {
+                val stroke = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
+                drawCircle(
+                  color = Color.White.copy(alpha = 0.3f),
+                  style = stroke,
+                )
+                drawArc(
+                  color = Color.White,
+                  startAngle = -90f,
+                  sweepAngle = 360f * progressValue,
+                  useCenter = false,
+                  style = stroke,
+                )
+              }
+            } else {
+              Image(
+                modifier = Modifier.size(24.dp),
+                imageVector = fabState.icon,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color.White),
               )
             }
-          } else {
-            Image(
-              modifier = Modifier.size(24.dp),
-              imageVector = fabState.icon,
-              contentDescription = null,
-              colorFilter = ColorFilter.tint(Color.White),
-            )
           }
         }
       }
