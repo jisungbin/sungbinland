@@ -8,9 +8,6 @@ import kotlin.random.Random
 import sungbinland.core.study.StudyDatabase
 import sungbinland.core.study.entity.StudyEntryEntity
 import sungbinland.core.workout.WorkoutDatabase
-import sungbinland.core.workout.entity.SupplementEntity
-import sungbinland.core.workout.entity.SupplementIntakeEntity
-import sungbinland.core.workout.entity.SupplementIntakeItemEntity
 import sungbinland.core.workout.entity.TimerRecordEntity
 import sungbinland.core.workout.entity.WorkoutExerciseEntity
 import sungbinland.core.workout.entity.WorkoutRoutineEntity
@@ -34,8 +31,6 @@ public class DatabaseFixture(
   }
 
   private suspend fun populateWorkout(): Boolean {
-    val supplementDao = workoutDatabase.supplementDao()
-    val supplementIntakeDao = workoutDatabase.supplementIntakeDao()
     val timerRecordDao = workoutDatabase.timerRecordDao()
     val workoutSessionDao = workoutDatabase.workoutSessionDao()
     val routineDao = workoutDatabase.workoutRoutineDao()
@@ -57,9 +52,6 @@ public class DatabaseFixture(
         )
       }
     }
-
-    val supplements = listOf("크레아틴", "비타민D", "오메가3", "아르기닌")
-    supplements.forEach { name -> supplementDao.upsertSupplement(SupplementEntity(name = name)) }
 
     val routineNames = routines.keys.toList()
     var routineIndex = 0
@@ -100,16 +92,6 @@ public class DatabaseFixture(
         }
       }
 
-      val intakeAt = date.toDate(LocalTime.of(7, 0))
-      val intakeCount = random.nextInt(2, 5).coerceAtMost(supplements.size)
-      val todaySupplements = supplements.shuffled(random).take(intakeCount).sorted()
-
-      supplementIntakeDao.upsertIntake(
-        intake = SupplementIntakeEntity(intakeAt = intakeAt),
-        items = todaySupplements.map { name ->
-          SupplementIntakeItemEntity(intakeAt = intakeAt, supplementName = name)
-        },
-      )
     }
     return true
   }

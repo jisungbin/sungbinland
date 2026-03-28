@@ -28,14 +28,11 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import sungbinland.core.alarm.HapticFeedback
 import kotlinx.coroutines.launch
-import sungbinland.core.workout.dao.SupplementDao
-import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutRoutineWithExercises
 import sungbinland.core.workout.dao.WorkoutSessionDao
-import sungbinland.core.workout.entity.SupplementEntity
 import sungbinland.core.workout.entity.WorkoutExerciseEntity
 import sungbinland.core.workout.entity.WorkoutRoutineEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
@@ -44,8 +41,6 @@ import sungbinland.uikit.FloatingButtonState
 import sungbinland.uikit.LocalFabController
 
 public fun EntryProviderScope<NavKey>.workoutEntry(
-  supplementDao: SupplementDao,
-  supplementIntakeDao: SupplementIntakeDao,
   timerRecordDao: TimerRecordDao,
   workoutSessionDao: WorkoutSessionDao,
   workoutRoutineDao: WorkoutRoutineDao,
@@ -54,8 +49,6 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
   onBack: () -> Unit,
 ) {
   val mapper = WorkoutDashboardStateMapper(
-    supplementDao = supplementDao,
-    supplementIntakeDao = supplementIntakeDao,
     timerRecordDao = timerRecordDao,
     workoutExerciseDao = workoutExerciseDao,
     workoutRoutineDao = workoutRoutineDao,
@@ -69,7 +62,6 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
       return WorkoutViewModel(
         mapper = mapper,
         timerRecordDao = timerRecordDao,
-        supplementIntakeDao = supplementIntakeDao,
         workoutSessionDao = workoutSessionDao,
       ) as T
     }
@@ -115,7 +107,6 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
       WorkoutScreen(
         viewModel = viewModel,
         onOpenRoutineDetailClick = { onNavigate(WorkoutRoutineDetailSheetRoute) },
-        onManageSupplementClick = { onNavigate(WorkoutSupplementManagementSheetRoute) },
       )
       WorkoutConfetti(trigger = confettiTrigger, modifier = Modifier.fillMaxSize())
     }
@@ -171,34 +162,6 @@ public fun EntryProviderScope<NavKey>.workoutEntry(
           viewModel.refresh()
         }
       },
-    )
-  }
-  entry<WorkoutSupplementManagementSheetRoute>(
-    metadata = BottomSheetSceneStrategy.bottomSheet(),
-  ) {
-    val viewModel = viewModel<WorkoutViewModel>(factory = factory)
-    val scope = rememberCoroutineScope()
-    var supplements: ImmutableList<SupplementEntity> by remember { mutableStateOf(persistentListOf()) }
-    LaunchedEffect(Unit) {
-      supplements = supplementDao.getAllSupplements().toImmutableList()
-    }
-    WorkoutSupplementManagementSheet(
-      supplements = supplements,
-      onDelete = { name ->
-        scope.launch {
-          supplementDao.deleteSupplement(SupplementEntity(name = name))
-          supplements = supplementDao.getAllSupplements().toImmutableList()
-          viewModel.refresh()
-        }
-      },
-      onRegister = { name, targetIntakeCount ->
-        scope.launch {
-          supplementDao.upsertSupplement(SupplementEntity(name = name, targetIntakeCount = targetIntakeCount))
-          supplements = supplementDao.getAllSupplements().toImmutableList()
-          viewModel.refresh()
-        }
-      },
-      onClose = onBack,
     )
   }
 }

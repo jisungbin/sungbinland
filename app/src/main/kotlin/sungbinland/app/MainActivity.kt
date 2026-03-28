@@ -22,8 +22,6 @@ public class MainActivity : ComponentActivity() {
 
     val studyEntryDao = studyDatabase.studyEntryDao()
 
-    val supplementDao = workoutDatabase.supplementDao()
-    val supplementIntakeDao = workoutDatabase.supplementIntakeDao()
     val timerRecordDao = workoutDatabase.timerRecordDao()
     val workoutSessionDao = workoutDatabase.workoutSessionDao()
     val workoutRoutineDao = workoutDatabase.workoutRoutineDao()
@@ -35,8 +33,6 @@ public class MainActivity : ComponentActivity() {
           .fillMaxSize()
           .background(Color(0xFFFAF8F5)),
         studyEntryDao = studyEntryDao,
-        supplementDao = supplementDao,
-        supplementIntakeDao = supplementIntakeDao,
         timerRecordDao = timerRecordDao,
         workoutSessionDao = workoutSessionDao,
         workoutRoutineDao = workoutRoutineDao,

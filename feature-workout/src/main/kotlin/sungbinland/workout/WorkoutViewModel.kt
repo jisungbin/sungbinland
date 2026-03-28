@@ -19,13 +19,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import sungbinland.core.alarm.HapticFeedback
-import androidx.compose.ui.util.fastFilter
-import androidx.compose.ui.util.fastMap
-import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
-import sungbinland.core.workout.entity.SupplementIntakeEntity
-import sungbinland.core.workout.entity.SupplementIntakeItemEntity
 import sungbinland.core.workout.entity.TimerRecordEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
 
@@ -33,7 +28,6 @@ import sungbinland.core.workout.entity.WorkoutSessionEntity
 internal class WorkoutViewModel(
   private val mapper: WorkoutDashboardStateMapper,
   private val timerRecordDao: TimerRecordDao,
-  private val supplementIntakeDao: SupplementIntakeDao,
   private val workoutSessionDao: WorkoutSessionDao,
 ) : ViewModel() {
   private val zoneId: ZoneId = ZoneId.systemDefault()
@@ -92,62 +86,6 @@ internal class WorkoutViewModel(
           performedAt = existingSession?.performedAt ?: startOfDay,
         ),
       )
-      refresh()
-    }
-  }
-
-  internal fun incrementSupplement(name: String) {
-    viewModelScope.launch {
-      val selectedDate = selectedDateState.value
-      val startOfDay = selectedDate.toStartOfDayDate()
-      val intakeWithItems = supplementIntakeDao.getSupplementIntakeByExactDate(date = startOfDay)
-      val intakeAt = intakeWithItems?.intake?.intakeAt ?: startOfDay
-      val existingItem = intakeWithItems?.items?.firstOrNull { it.supplementName == name }
-      val newCount = (existingItem?.intakeCount ?: 0) + 1
-      val otherItems = intakeWithItems?.items?.fastFilter { it.supplementName != name } ?: emptyList()
-      val updatedItems = otherItems + SupplementIntakeItemEntity(
-        intakeAt = intakeAt,
-        supplementName = name,
-        intakeCount = newCount,
-      )
-      supplementIntakeDao.upsertIntake(
-        intake = SupplementIntakeEntity(intakeAt = intakeAt),
-        items = updatedItems,
-      )
-      refresh()
-    }
-  }
-
-  internal fun decrementSupplement(name: String) {
-    viewModelScope.launch {
-      val selectedDate = selectedDateState.value
-      val startOfDay = selectedDate.toStartOfDayDate()
-      val intakeWithItems = supplementIntakeDao.getSupplementIntakeByExactDate(date = startOfDay) ?: return@launch
-      val existingItem = intakeWithItems.items.firstOrNull { it.supplementName == name } ?: return@launch
-      val newCount = existingItem.intakeCount - 1
-      val intakeAt = intakeWithItems.intake.intakeAt
-      val otherItems = intakeWithItems.items.fastFilter { it.supplementName != name }
-      if (newCount <= 0) {
-        if (otherItems.isEmpty()) {
-          supplementIntakeDao.deleteSupplementIntakeItemsByDate(intakeAt = intakeAt)
-          supplementIntakeDao.deleteSupplementIntake(intake = intakeWithItems.intake)
-        } else {
-          supplementIntakeDao.upsertIntake(
-            intake = SupplementIntakeEntity(intakeAt = intakeAt),
-            items = otherItems,
-          )
-        }
-      } else {
-        val updatedItems = otherItems + SupplementIntakeItemEntity(
-          intakeAt = intakeAt,
-          supplementName = name,
-          intakeCount = newCount,
-        )
-        supplementIntakeDao.upsertIntake(
-          intake = SupplementIntakeEntity(intakeAt = intakeAt),
-          items = updatedItems,
-        )
-      }
       refresh()
     }
   }

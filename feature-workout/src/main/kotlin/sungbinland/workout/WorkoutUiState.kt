@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Immutable
 @Poko internal class WorkoutDashboardState(
   internal val summary: WorkoutSummaryState,
-  internal val supplements: WorkoutSupplementChecklistState,
+  internal val timerRecords: ImmutableList<String>,
 )
 
 @Immutable
@@ -32,18 +32,6 @@ import kotlinx.collections.immutable.persistentListOf
   internal val minutes: String,
 )
 
-@Immutable
-@Poko internal class WorkoutSupplementChecklistState(
-  internal val items: ImmutableList<WorkoutSupplementItemState>,
-)
-
-@Immutable
-@Poko internal class WorkoutSupplementItemState(
-  internal val name: String,
-  internal val currentCount: Int,
-  internal val targetCount: Int,
-)
-
 internal val emptyTimerValue = WorkoutTimerValueState(hours = "--", minutes = "--")
 
 internal fun workoutLoadingState(selectedDate: LocalDate): WorkoutDashboardState =
@@ -60,7 +48,5 @@ internal fun workoutLoadingState(selectedDate: LocalDate): WorkoutDashboardState
       lastTimerStartedAt = emptyTimerValue,
       timerSpan = emptyTimerValue,
     ),
-    supplements = WorkoutSupplementChecklistState(
-      items = persistentListOf(),
-    ),
+    timerRecords = persistentListOf(),
   )

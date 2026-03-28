@@ -7,16 +7,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import sungbinland.core.converter.DateEpochMillisTypeConverter
-import sungbinland.core.workout.dao.SupplementDao
-import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
 import sungbinland.core.workout.entity.TimerRecordEntity
-import sungbinland.core.workout.entity.SupplementEntity
-import sungbinland.core.workout.entity.SupplementIntakeEntity
-import sungbinland.core.workout.entity.SupplementIntakeItemEntity
 import sungbinland.core.workout.entity.WorkoutExerciseEntity
 import sungbinland.core.workout.entity.WorkoutRoutineEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
@@ -27,21 +22,16 @@ import sungbinland.core.workout.entity.WorkoutSessionEntity
     TimerRecordEntity::class,
     WorkoutRoutineEntity::class,
     WorkoutExerciseEntity::class,
-    SupplementEntity::class,
-    SupplementIntakeEntity::class,
-    SupplementIntakeItemEntity::class,
   ],
-  version = 9,
+  version = 10,
   exportSchema = true,
 )
 @TypeConverters(DateEpochMillisTypeConverter::class)
 public abstract class WorkoutDatabase internal constructor() : RoomDatabase() {
   public abstract fun workoutRoutineDao(): WorkoutRoutineDao
   public abstract fun workoutExerciseDao(): WorkoutExerciseDao
-  public abstract fun supplementDao(): SupplementDao
   public abstract fun workoutSessionDao(): WorkoutSessionDao
   public abstract fun timerRecordDao(): TimerRecordDao
-  public abstract fun supplementIntakeDao(): SupplementIntakeDao
 
   public companion object {
     private const val DATABASE_NAME: String = "workout.db"
@@ -55,7 +45,7 @@ public abstract class WorkoutDatabase internal constructor() : RoomDatabase() {
           DATABASE_NAME,
         )
           .fallbackToDestructiveMigration(true)
-          .addMigrations(WorkoutMigration7To8, WorkoutMigration8To9)
+          .addMigrations(WorkoutMigration7To8, WorkoutMigration8To9, WorkoutMigration9To10)
           .build()
           .also { created -> instance = created }
       }

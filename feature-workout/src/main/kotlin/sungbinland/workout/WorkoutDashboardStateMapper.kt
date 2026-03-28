@@ -1,7 +1,5 @@
 package sungbinland.workout
 
-import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMapTo
 import java.time.LocalDate
 import java.time.ZoneId
@@ -11,20 +9,14 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import sungbinland.core.workout.dao.SupplementDao
-import sungbinland.core.workout.dao.SupplementIntakeDao
-import sungbinland.core.workout.dao.SupplementIntakeWithItems
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
 import sungbinland.core.workout.dao.WorkoutSessionDao
-import sungbinland.core.workout.entity.SupplementEntity
 import sungbinland.core.workout.entity.TimerRecordEntity
 import sungbinland.core.workout.entity.WorkoutSessionEntity
 
 internal class WorkoutDashboardStateMapper(
-  private val supplementDao: SupplementDao,
-  private val supplementIntakeDao: SupplementIntakeDao,
   private val timerRecordDao: TimerRecordDao,
   private val workoutExerciseDao: WorkoutExerciseDao,
   private val workoutRoutineDao: WorkoutRoutineDao,
@@ -55,13 +47,6 @@ internal class WorkoutDashboardStateMapper(
           endOfDayExclusive = endOfDayExclusive,
         )
       }
-      val intakeWithItemsDeferred = async {
-        supplementIntakeDao.getSupplementIntakesByDate(
-          startOfDay = startOfDay,
-          endOfDayExclusive = endOfDayExclusive,
-        )
-      }
-      val registeredSupplementsDeferred = async { supplementDao.getAllSupplements() }
       val routineNamesDeferred = async {
         workoutRoutineDao.getAllWorkoutRoutines()
           .fastMapTo(persistentListOf<String>().builder()) { routine -> routine.routine.name }
@@ -72,37 +57,11 @@ internal class WorkoutDashboardStateMapper(
         mainExerciseSuggestions = mainExerciseSuggestionsDeferred.await(),
         routineNames = routineNamesDeferred.await(),
         timerRecordsOfDate = timerRecordsOfDateDeferred.await(),
-        intakeWithItems = intakeWithItemsDeferred.await(),
-        registeredSupplements = registeredSupplementsDeferred.await(),
       )
     }
     val latestSession = snapshot.sessionsOfDate.maxByOrNull { session -> session.performedAt.time }
     val firstTimerRecord = snapshot.timerRecordsOfDate.minByOrNull { record -> record.startedAt.time }
     val lastTimerRecord = snapshot.timerRecordsOfDate.maxByOrNull { record -> record.startedAt.time }
-
-    val registeredSupplements = snapshot.registeredSupplements
-    val targetCountByName = buildMap {
-      registeredSupplements.fastForEach { supplement ->
-        put(supplement.name, supplement.targetIntakeCount)
-      }
-    }
-    val consumedCounts = buildMap<String, Int> {
-      snapshot.intakeWithItems.fastForEach { intake ->
-        intake.items.fastForEach { item ->
-          put(item.supplementName, item.intakeCount)
-        }
-      }
-    }
-    val supplementNames = when {
-      selectedDate < nowDate -> consumedCounts.keys.toList().sorted()
-      else -> {
-        val registeredNames = registeredSupplements.fastMap { it.name }
-        when {
-          registeredNames.isNotEmpty() -> registeredNames
-          else -> consumedCounts.keys.toList().sorted()
-        }
-      }
-    }
 
     return WorkoutDashboardState(
       summary = WorkoutSummaryState(
@@ -120,15 +79,12 @@ internal class WorkoutDashboardStateMapper(
           lastStartedAt = lastTimerRecord?.startedAt,
         ),
       ),
-      supplements = WorkoutSupplementChecklistState(
-        items = supplementNames.fastMapTo(persistentListOf<WorkoutSupplementItemState>().builder()) { name ->
-          WorkoutSupplementItemState(
-            name = name,
-            currentCount = consumedCounts[name] ?: 0,
-            targetCount = targetCountByName[name] ?: 1,
-          )
-        }.build(),
-      ),
+      timerRecords = snapshot.timerRecordsOfDate
+        .fastMapTo(persistentListOf<String>().builder()) { record ->
+          val time = record.startedAt.toInstant().atZone(zoneId).toLocalTime()
+          String.format(Locale.KOREA, "%02d:%02d", time.hour, time.minute)
+        }
+        .build(),
     )
   }
 
@@ -169,7 +125,5 @@ internal class WorkoutDashboardStateMapper(
     val mainExerciseSuggestions: ImmutableList<String>,
     val routineNames: ImmutableList<String>,
     val timerRecordsOfDate: List<TimerRecordEntity>,
-    val intakeWithItems: List<SupplementIntakeWithItems>,
-    val registeredSupplements: List<SupplementEntity>,
   )
 }

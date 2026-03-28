@@ -47,8 +47,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.persistentListOf
 import sungbinland.core.study.dao.StudyEntryDao
-import sungbinland.core.workout.dao.SupplementDao
-import sungbinland.core.workout.dao.SupplementIntakeDao
 import sungbinland.core.workout.dao.TimerRecordDao
 import sungbinland.core.workout.dao.WorkoutExerciseDao
 import sungbinland.core.workout.dao.WorkoutRoutineDao
@@ -66,8 +64,6 @@ import sungbinland.workout.workoutEntry
 
 @Composable internal fun AppNavHost(
   studyEntryDao: StudyEntryDao,
-  supplementDao: SupplementDao,
-  supplementIntakeDao: SupplementIntakeDao,
   timerRecordDao: TimerRecordDao,
   workoutSessionDao: WorkoutSessionDao,
   workoutRoutineDao: WorkoutRoutineDao,
@@ -81,8 +77,6 @@ import sungbinland.workout.workoutEntry
   val entryProvider = remember {
     entryProvider {
       workoutEntry(
-        supplementDao = supplementDao,
-        supplementIntakeDao = supplementIntakeDao,
         timerRecordDao = timerRecordDao,
         workoutSessionDao = workoutSessionDao,
         workoutRoutineDao = workoutRoutineDao,

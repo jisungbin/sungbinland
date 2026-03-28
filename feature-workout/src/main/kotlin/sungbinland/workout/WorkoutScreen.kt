@@ -35,7 +35,6 @@ import sungbinland.uikit.UiKitColors
 @Composable internal fun WorkoutScreen(
   viewModel: WorkoutViewModel,
   onOpenRoutineDetailClick: () -> Unit,
-  onManageSupplementClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -149,8 +148,6 @@ import sungbinland.uikit.UiKitColors
     onNextDateClick = viewModel::moveToNextDate,
     onCurrentDateClick = viewModel::moveToToday,
     onPreviousDateClick = viewModel::moveToPreviousDate,
-    onSupplementIncrement = viewModel::incrementSupplement,
-    onSupplementDecrement = viewModel::decrementSupplement,
     onMainExerciseClick = { index -> editingFieldIndex = index },
     onMainExerciseInputChange = { index, input ->
       when (index) {
@@ -160,7 +157,6 @@ import sungbinland.uikit.UiKitColors
     },
     onOpenRoutineDetailClick = onOpenRoutineDetailClick,
     onRoutineSelect = viewModel::selectRoutine,
-    onManageSupplementClick = onManageSupplementClick,
     onResetTimerRecords = {
       AlertDialog.Builder(context)
         .setTitle("기록 초기화")
@@ -186,13 +182,10 @@ import sungbinland.uikit.UiKitColors
   onPreviousDateClick: () -> Unit,
   onNextDateClick: () -> Unit,
   onCurrentDateClick: () -> Unit,
-  onSupplementIncrement: (String) -> Unit,
-  onSupplementDecrement: (String) -> Unit,
   onMainExerciseClick: (Int) -> Unit,
   onMainExerciseInputChange: (Int, String) -> Unit,
   onOpenRoutineDetailClick: () -> Unit,
   onRoutineSelect: (String) -> Unit,
-  onManageSupplementClick: () -> Unit,
   onResetTimerRecords: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -219,12 +212,9 @@ import sungbinland.uikit.UiKitColors
       onRoutineSelect = onRoutineSelect,
       onResetTimerRecords = onResetTimerRecords,
     )
-    WorkoutSupplementChecklistSection(
-      state = state.supplements,
+    WorkoutTimerRecordSection(
+      timerRecords = state.timerRecords,
       modifier = Modifier.fillMaxWidth(),
-      onIncrement = onSupplementIncrement,
-      onDecrement = onSupplementDecrement,
-      onManageSupplementClick = onManageSupplementClick,
     )
   }
 }
