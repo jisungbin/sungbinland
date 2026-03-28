@@ -2,6 +2,7 @@ package sungbinland.workout
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -103,6 +104,21 @@ import sungbinland.uikit.UiKitTypography
         ),
       )
     }
+    BasicText(
+      text = "+10초",
+      modifier = Modifier
+        .clip(RoundedCornerShape(12.dp))
+        .background(UiKitColors.BrandBlue)
+        .clickable { restTimer.advance(10_000) }
+        .padding(horizontal = 24.dp, vertical = 10.dp),
+      style = TextStyle(
+        fontFamily = IbmPlexSansKr,
+        color = Color.White,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        textAlign = TextAlign.Center,
+      ),
+    )
     BasicText(
       text = "호흡  ·  하체  ·  견갑 신경쓰기",
       modifier = Modifier

@@ -26,6 +26,12 @@ internal class WorkoutRestTimer {
     startNanos = 0L
   }
 
+  internal fun advance(millis: Long) {
+    if (startNanos != 0L) {
+      startNanos -= millis * 1_000_000
+    }
+  }
+
   internal fun elapsedMillis(): Long {
     val start = startNanos
     if (start == 0L) return stoppedElapsedMillis
