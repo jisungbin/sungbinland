@@ -8,7 +8,7 @@ compose = "1.11.0-beta01"
 
 kotlin-compose = "2.3.20-RC2"
 
-ksp = "2.3.6"
+ksp = "2.3.7"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
