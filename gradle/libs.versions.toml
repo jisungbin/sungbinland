@@ -1,49 +1,12 @@
 [versions]
-android-gradle-plugin = "9.2.0-alpha05"
-
-androidx-navigation3 = "1.1.0-beta01"
-androidx-room = "2.8.4"
-
-compose = "1.11.0-beta01"
-
-kotlin-compose = "2.3.20-RC2"
-
-ksp = "2.3.6"
+android-gradle-plugin = "9.4.0-alpha05"
+kotlin = "2.4.20-Beta1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
-
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-
-poko = { id = "dev.drewhamilton.poko", version = "0.22.0" }
-
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 [libraries]
-coil-compose = { module = "io.coil-kt.coil3:coil-compose", version = "3.4.0" }
-
-dev-chrisbanes-haze = { module = "dev.chrisbanes.haze:haze", version = "1.7.2" }
-
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
-androidx-annotation = { module = "androidx.annotation:annotation", version = "1.9.1" }
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.10.0" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
-androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidx-navigation3" }
-androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "androidx-navigation3" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
-
-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "compose" }
-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.7.8" }
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.5.0-alpha15" }
-compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
-compose-runtime-annotation = { module = "androidx.compose.runtime:runtime-annotation", version.ref = "compose" }
-compose-runtime-retain = { module = "androidx.compose.runtime:runtime-retain", version.ref = "compose" }
-compose-runtime-saveable = { module = "androidx.compose.runtime:runtime-saveable", version.ref = "compose" }
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
-compose-ui-util = { module = "androidx.compose.ui:ui-util", version.ref = "compose" }
-
-kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
-kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version = "1.10.0" }
+rxjava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.21" }
+rxandroid = { module = "io.reactivex.rxjava2:rxandroid", version = "2.1.1" }

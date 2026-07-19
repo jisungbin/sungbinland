@@ -1,6 +1,5 @@
 plugins {
   alias(libs.plugins.android.application)
-  kotlin("plugin.compose")
 }
 
 android {
@@ -16,7 +15,7 @@ android {
   }
 
   defaultConfig {
-    targetSdk = 36
+    targetSdk = 37
     versionCode = 8
     versionName = "8"
   }
@@ -25,10 +24,6 @@ android {
     release {
       signingConfig = signingConfigs.getByName("release")
     }
-  }
-
-  buildFeatures {
-    compose = true
   }
 
   compileOptions {
@@ -45,25 +40,6 @@ kotlin {
 }
 
 dependencies {
-  implementation(projects.coreAlarm)
-  implementation(projects.coreDatabase)
-  implementation(projects.uikit)
-  implementation(projects.featureMuscle)
-  implementation(projects.featureStudy)
-  implementation(projects.featureWorkout)
-
-  implementation(libs.dev.chrisbanes.haze)
-
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.navigation3.runtime)
-  implementation(libs.androidx.navigation3.ui)
-  implementation(libs.androidx.room.runtime)
-
-  implementation(libs.kotlinx.collections.immutable)
-
-  implementation(libs.compose.animation)
-  implementation(libs.compose.foundation)
-  implementation(libs.compose.material.icons.extended)
-  implementation(libs.compose.ui)
-  implementation(libs.compose.ui.util)
+  implementation(libs.rxjava)
+  implementation(libs.rxandroid)
 }
