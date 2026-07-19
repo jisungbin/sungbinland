@@ -137,10 +137,10 @@ internal class WorkoutView(
       },
     )
 
-    // 20세트 구성: 항목별로 줄바꿈해 나열
+    // 24세트 구성(상세 20 + 마지막 4): 항목별로 줄바꿈해 나열
     card.addView(
       TextView(activity).apply {
-        text = "20세트 구성"
+        text = "24세트 구성"
         setTextColor(Palette.MUTED)
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
         setPadding(0, activity.dp(18), 0, activity.dp(8))
