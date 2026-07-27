@@ -2,8 +2,6 @@ package sungbinland.workout.ui
 
 import android.app.Activity
 import android.graphics.Paint
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowInsets
@@ -38,7 +36,6 @@ internal class WorkoutView(
   private val store: SetCountStore,
 ) {
   private val disposables = CompositeDisposable()
-  private val tickerHandler = Handler(Looper.getMainLooper())
   private val today: RoutineDay? = todayRoutine()
 
   private val elapsedTimeView: TextView
@@ -114,7 +111,11 @@ internal class WorkoutView(
     disposables.add(
       store.todayItemCounts
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { counts -> renderItems(today, counts) },
+        .subscribe { counts ->
+          renderItems(today, counts)
+          // 매 세트(=휴식 타이머 완료)마다만 재계산 — 1초 폴링 대신 배터리를 아낀다.
+          updateElapsedTime()
+        },
     )
     disposables.add(
       store.firstSetEpochMillis
@@ -124,19 +125,10 @@ internal class WorkoutView(
           updateElapsedTime()
         },
     )
-    tickerHandler.post(elapsedTicker)
   }
 
   fun dispose() {
-    tickerHandler.removeCallbacks(elapsedTicker)
     disposables.clear()
-  }
-
-  private val elapsedTicker = object : Runnable {
-    override fun run() {
-      updateElapsedTime()
-      tickerHandler.postDelayed(this, 1_000L)
-    }
   }
 
   private fun updateElapsedTime() {
