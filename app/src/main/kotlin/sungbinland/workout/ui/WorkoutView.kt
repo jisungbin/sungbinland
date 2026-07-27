@@ -1,6 +1,9 @@
 package sungbinland.workout.ui
 
 import android.app.Activity
+import android.graphics.Paint
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowInsets
@@ -35,8 +38,14 @@ internal class WorkoutView(
   private val store: SetCountStore,
 ) {
   private val disposables = CompositeDisposable()
-  private val setCountView: TextView
+  private val tickerHandler = Handler(Looper.getMainLooper())
+  private val today: RoutineDay? = todayRoutine()
+
+  private val elapsedTimeView: TextView
+  private val itemsContainer: LinearLayout
   private val confettiView: ConfettiView
+
+  private var firstSetEpochMillis: Long = 0L
 
   val root: View
 
@@ -47,29 +56,35 @@ internal class WorkoutView(
       setPadding(activity.dp(16), activity.dp(20), activity.dp(16), activity.dp(24))
     }
 
+    elapsedTimeView = TextView(activity).apply {
+      setTextColor(Palette.MUTED)
+      setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+      visibility = View.GONE
+    }
+    column.addView(elapsedTimeView)
+
     column.addView(
       TextView(activity).apply {
         text = "오늘의 루틴"
         setTextColor(Palette.TEXT)
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
       },
+      rowParams(activity.dp(8)),
     )
-    column.addView(buildTodayRoutine(), rowParams(activity.dp(12)))
 
-    setCountView = TextView(activity).apply {
-      setTextColor(Palette.ACCENT)
-      setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
-      background = activity.borderedBox(Palette.SURFACE, Palette.BORDER)
-      setPadding(activity.dp(16), activity.dp(14), activity.dp(16), activity.dp(14))
+    itemsContainer = LinearLayout(activity).apply {
+      orientation = LinearLayout.VERTICAL
     }
-    column.addView(setCountView, rowParams(activity.dp(24)))
+    column.addView(itemsContainer, rowParams(activity.dp(12)))
 
-    column.addView(
-      activity.flatButton("휴식 타이머 시작") { openRestTimer() }.apply {
-        setPadding(activity.dp(20), activity.dp(16), activity.dp(20), activity.dp(16))
-      },
-      rowParams(activity.dp(16)),
-    )
+    if (today != null) {
+      column.addView(
+        activity.flatButton("휴식 타이머 시작") { openRestTimer() }.apply {
+          setPadding(activity.dp(20), activity.dp(16), activity.dp(20), activity.dp(16))
+        },
+        rowParams(activity.dp(16)),
+      )
+    }
 
     val scroll = ScrollView(activity).apply {
       setBackgroundColor(Palette.BG)
@@ -91,15 +106,48 @@ internal class WorkoutView(
   }
 
   fun start() {
+    if (today == null) {
+      itemsContainer.addView(restDayText())
+      return
+    }
+
     disposables.add(
-      store.todaySetCount
+      store.todayItemCounts
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { count -> setCountView.text = "오늘 수행 세트: ${count}세트" },
+        .subscribe { counts -> renderItems(today, counts) },
     )
+    disposables.add(
+      store.firstSetEpochMillis
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { epoch ->
+          firstSetEpochMillis = epoch
+          updateElapsedTime()
+        },
+    )
+    tickerHandler.post(elapsedTicker)
   }
 
   fun dispose() {
+    tickerHandler.removeCallbacks(elapsedTicker)
     disposables.clear()
+  }
+
+  private val elapsedTicker = object : Runnable {
+    override fun run() {
+      updateElapsedTime()
+      tickerHandler.postDelayed(this, 1_000L)
+    }
+  }
+
+  private fun updateElapsedTime() {
+    val start = firstSetEpochMillis
+    if (start == 0L) {
+      elapsedTimeView.visibility = View.GONE
+      return
+    }
+    val minutes = (System.currentTimeMillis() - start) / 60_000L
+    elapsedTimeView.text = "첫 세트로부터 ${minutes}분 경과"
+    elapsedTimeView.visibility = View.VISIBLE
   }
 
   private fun openRestTimer() {
@@ -111,63 +159,34 @@ internal class WorkoutView(
     }
   }
 
-  private fun buildTodayRoutine(): View {
-    val today: RoutineDay = todayRoutine()
-      ?: return TextView(activity).apply {
-        text = "오늘은 휴식일입니다."
-        setTextColor(Palette.MUTED)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
-        background = activity.borderedBox(Palette.SURFACE, Palette.BORDER)
-        setPadding(activity.dp(20), activity.dp(24), activity.dp(20), activity.dp(24))
-      }
-
-    val card = LinearLayout(activity).apply {
-      orientation = LinearLayout.VERTICAL
-      background = activity.borderedBox(Palette.SURFACE, Palette.BORDER)
-      setPadding(activity.dp(20), activity.dp(20), activity.dp(20), activity.dp(20))
-    }
-
-    // 분류: 메인으로 크게 강조
-    card.addView(
-      TextView(activity).apply {
-        text = today.category
-        setTextColor(Palette.ACCENT)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
-        setLineSpacing(activity.dp(4).toFloat(), 1f)
-      },
-    )
-
-    // 24세트 구성(상세 20 + 마지막 4): 항목별로 줄바꿈해 나열
-    card.addView(
-      TextView(activity).apply {
-        text = "24세트 구성"
-        setTextColor(Palette.MUTED)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-        setPadding(0, activity.dp(18), 0, activity.dp(8))
-      },
-    )
-    today.composition.split("+").forEach { part ->
-      card.addView(
+  private fun renderItems(day: RoutineDay, counts: List<Int>) {
+    itemsContainer.removeAllViews()
+    day.items.forEachIndexed { index, item ->
+      val done = counts.getOrElse(index) { 0 } >= item.targetSets
+      itemsContainer.addView(
         TextView(activity).apply {
-          text = "· ${part.trim()}"
-          setTextColor(Palette.TEXT)
+          text = if (done) {
+            "✓ ${item.name} · ${item.targetSets}/${item.targetSets}세트"
+          } else {
+            "${item.name} · ${counts.getOrElse(index) { 0 }}/${item.targetSets}세트"
+          }
+          setTextColor(if (done) Palette.MUTED else Palette.TEXT)
           setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
-          setPadding(0, activity.dp(3), 0, activity.dp(3))
+          paintFlags = if (done) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+          setPadding(0, activity.dp(6), 0, activity.dp(6))
         },
       )
     }
-
-    // 마지막 4세트: 보조 정보
-    card.addView(
-      TextView(activity).apply {
-        text = "마지막 4세트 · ${today.lastFour}"
-        setTextColor(Palette.MUTED)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-        setPadding(0, activity.dp(18), 0, 0)
-      },
-    )
-    return card
   }
+
+  private fun restDayText(): View =
+    TextView(activity).apply {
+      text = "오늘은 휴식일입니다."
+      setTextColor(Palette.MUTED)
+      setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+      background = activity.borderedBox(Palette.SURFACE, Palette.BORDER)
+      setPadding(activity.dp(20), activity.dp(24), activity.dp(20), activity.dp(24))
+    }
 
   private fun rowParams(topMarginPx: Int): LinearLayout.LayoutParams =
     LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT).apply { topMargin = topMarginPx }
