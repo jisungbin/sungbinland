@@ -4,6 +4,7 @@ plugins {
 
 android {
   namespace = "sungbinland.app"
+  compileSdk = 37
 
   signingConfigs {
     create("release") {
@@ -15,6 +16,7 @@ android {
   }
 
   defaultConfig {
+    minSdk = 36
     targetSdk = 37
     versionCode = 8
     versionName = "8"

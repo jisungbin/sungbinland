@@ -12,7 +12,6 @@ pluginManagement {
 }
 
 plugins {
-  id("com.android.settings") version "9.4.0-alpha05"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
@@ -22,11 +21,6 @@ dependencyResolutionManagement {
     google()
     mavenCentral()
   }
-}
-
-android {
-  compileSdk = 37
-  minSdk = 36
 }
 
 include(
