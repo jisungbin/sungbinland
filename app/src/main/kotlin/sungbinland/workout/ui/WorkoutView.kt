@@ -11,17 +11,25 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import sungbinland.workout.data.SetCountStore
+import sungbinland.workout.data.WeekOrderStore
+import sungbinland.workout.domain.DAY_LABELS
 import sungbinland.workout.domain.RoutineDay
 import sungbinland.workout.domain.RoutineExercise
-import sungbinland.workout.domain.todayRoutine
+import sungbinland.workout.domain.exercises
+import sungbinland.workout.domain.routineOf
+import sungbinland.workout.domain.todayDayIndex
 import sungbinland.workout.haptic.Haptics
 
 internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
-  val store = SetCountStore(activity)
-  val view = WorkoutView(activity, store)
+  val weekOrder = WeekOrderStore(activity)
+  val dayIndex = todayDayIndex()
+  val today = dayIndex?.let { routineOf(it, weekOrder.order) }
+  val store = SetCountStore(activity, today?.exercises() ?: emptyList())
+  val view = WorkoutView(activity, store, weekOrder, dayIndex, today)
   activity.setContentView(view.root)
   view.start()
   return WorkoutViewHandle(view)
@@ -36,15 +44,18 @@ internal class WorkoutViewHandle(private val view: WorkoutView) {
 internal class WorkoutView(
   private val activity: Activity,
   private val store: SetCountStore,
+  private val weekOrder: WeekOrderStore,
+  private val dayIndex: Int?,
+  private val today: RoutineDay?,
 ) {
   private val disposables = CompositeDisposable()
-  private val today: RoutineDay? = todayRoutine()
 
   private val elapsedTimeView: TextView
   private val itemsContainer: LinearLayout
   private val confettiView: ConfettiView
 
   private var firstSetEpochMillis: Long = 0L
+  private var completedSets: Int = 0
 
   val root: View
 
@@ -71,12 +82,20 @@ internal class WorkoutView(
       rowParams(activity.dp(8)),
     )
 
-    if (today != null) {
+    if (today != null && dayIndex != null) {
       column.addView(
         TextView(activity).apply {
-          text = "${today.day} · ${today.category}"
-          setTextColor(Palette.MUTED)
+          // 실제 오늘 요일을 쓴다 — 스왑하면 today.day는 원래 요일이라 화면과 어긋난다.
+          val swappedFrom = today.day.takeIf { weekOrder.order[dayIndex] != dayIndex }
+          text = buildString {
+            append("${DAY_LABELS[dayIndex]} · ${today.category}")
+            if (swappedFrom != null) append(" · $swappedFrom 루틴과 교환됨")
+            append("  ▾")
+          }
+          setTextColor(Palette.ACCENT)
           setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+          setPadding(0, activity.dp(2), 0, activity.dp(2))
+          setOnClickListener { openSwapPicker() }
         },
         rowParams(activity.dp(4)),
       )
@@ -125,6 +144,7 @@ internal class WorkoutView(
       store.todayExerciseCounts
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe { counts ->
+          completedSets = counts.sum()
           renderItems(counts)
           // 매 세트(=휴식 타이머 완료)마다만 재계산 — 1초 폴링 대신 배터리를 아낀다.
           updateElapsedTime()
@@ -153,6 +173,20 @@ internal class WorkoutView(
     val minutes = (System.currentTimeMillis() - start) / 60_000L
     elapsedTimeView.text = "첫 세트로부터 ${minutes}분 경과"
     elapsedTimeView.visibility = View.VISIBLE
+  }
+
+  // 진행한 세트가 하나라도 있으면 스왑을 막는다 — 세트 진행도를 버리지 않고 안전하게 유지하려는 선택.
+  private fun openSwapPicker() {
+    if (dayIndex == null) return
+    if (completedSets > 0) {
+      Toast.makeText(activity, "이미 진행한 세트가 있어 오늘 루틴을 바꿀 수 없습니다.", Toast.LENGTH_SHORT).show()
+      return
+    }
+    SwapPickerDialog.show(activity, dayIndex, weekOrder.order) { otherDayIndex ->
+      weekOrder.swap(dayIndex, otherDayIndex)
+      // 종목 목록이 통째로 바뀌므로 화면을 다시 세운다.
+      activity.recreate()
+    }
   }
 
   private fun openRestTimer() {

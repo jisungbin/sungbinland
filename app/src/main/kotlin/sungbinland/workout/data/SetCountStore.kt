@@ -5,14 +5,13 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import java.time.LocalDate
 import sungbinland.workout.domain.RoutineExercise
-import sungbinland.workout.domain.exercises
-import sungbinland.workout.domain.todayRoutine
 
 // 오늘 루틴의 종목별 수행 세트 수 + 첫 세트 완료 시각을 SharedPreferences(로컬)에 저장. 날짜가 바뀌면 초기화.
-internal class SetCountStore(context: Context) {
+internal class SetCountStore(
+  context: Context,
+  val todayExercises: List<RoutineExercise>,
+) {
   private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-
-  val todayExercises: List<RoutineExercise> = todayRoutine()?.exercises() ?: emptyList()
 
   private val countsSubject: BehaviorSubject<List<Int>> = BehaviorSubject.createDefault(readTodayCounts())
   private val firstSetSubject: BehaviorSubject<Long> = BehaviorSubject.createDefault(readFirstSetEpochMillis())

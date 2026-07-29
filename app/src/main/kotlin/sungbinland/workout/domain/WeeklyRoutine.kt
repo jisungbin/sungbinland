@@ -135,8 +135,25 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
   ),
 )
 
-// 월~금(1~5)만 루틴 존재. 주말은 null(휴식일).
-internal fun todayRoutine(): RoutineDay? = WEEKLY_ROUTINE.getOrNull(LocalDate.now().dayOfWeek.value - 1)
+internal val DAY_LABELS: List<String> = WEEKLY_ROUTINE.map { it.day }
+
+// 월~금(0~4)만 루틴 존재. 주말은 null(휴식일).
+internal fun todayDayIndex(date: LocalDate = LocalDate.now()): Int? =
+  (date.dayOfWeek.value - 1).takeIf { it in WEEKLY_ROUTINE.indices }
+
+// 요일 자리마다 WEEKLY_ROUTINE의 몇 번째 대분류를 놓을지. 기본은 정순.
+internal val DEFAULT_WEEK_ORDER: List<Int> = WEEKLY_ROUTINE.indices.toList()
+
+/*
+ * 요일 배치는 order로만 표현하고 WEEKLY_ROUTINE 자체는 절대 재정렬하지 않는다.
+ * 종목 순환 오프셋(PART_OCCURRENCES)이 이 리스트의 순서에서 계산되므로, 리스트를 뒤섞으면
+ * 스왑하지 않은 요일의 종목까지 함께 바뀐다. 반대로 order만 갈아치우면 pick의 입력이 하나도 변하지 않아
+ * 교환된 두 날조차 원래 뽑던 종목을 그대로 들고 이동한다.
+ */
+internal fun routineOf(dayIndex: Int, order: List<Int> = DEFAULT_WEEK_ORDER): RoutineDay? =
+  WEEKLY_ROUTINE.getOrNull(order.getOrElse(dayIndex) { -1 })
+
+internal fun currentWeekIndex(date: LocalDate = LocalDate.now()): Int = weekIndex(date)
 
 /*
  * 종목 순환 규칙
