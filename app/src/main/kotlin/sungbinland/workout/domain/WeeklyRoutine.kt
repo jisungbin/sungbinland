@@ -31,7 +31,7 @@ private val ABS = listOf("케이블 크런치", "레그 레이즈")
 private val SIDE_DELTOID = listOf("사이드 레터럴 레이즈", "스미스 비하인드 숄더 프레스")
 private val REAR_DELTOID = listOf("벤트 오버 레이즈", "리버스 팩댁 플라이")
 private val TRICEPS = listOf("트라이셉스 프레스", "케이블 트라이셉스 푸시다운")
-private val BICEPS = listOf("이두 크리처 컬", "이두 드래그 컬")
+private val BICEPS = listOf("이두 크리처 컬", "이두 드래그 컬", "이두 헤머컬")
 
 internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
   RoutineDay(
