@@ -166,7 +166,7 @@ internal fun todayRoutine(): RoutineDay? = WEEKLY_ROUTINE.getOrNull(LocalDate.no
  *
  * ── 2단계: 풀에서 어디부터 꺼낼지 (start)
  *
- *   start = (weekIndex * pickCount + dayIndex) mod pool.size
+ *   start = (weekIndex * pickCount + partOccurrence) mod pool.size
  *
  * 핵심은 매주 *pickCount칸씩* 전진한다는 것(stride = pickCount)이다. 지난주에 꺼낸 구간 바로 뒤에서
  * 이어받으므로 겹침도 빈틈도 없다. 풀 크기 6에서 2개씩 꺼내는 경우:
@@ -179,22 +179,47 @@ internal fun todayRoutine(): RoutineDay? = WEEKLY_ROUTINE.getOrNull(LocalDate.no
  *
  * 7주 만에 정확히 1회전한다. 일반적으로 pool.size와 stride의 최소공배수 / stride 주 만큼이면 전종목을 돈다.
  *
- * ── 3단계: dayIndex를 왜 더하나
+ * ── 3단계: partOccurrence를 왜 더하나
  *
- * 복직근·삼두·측면삼각근처럼 한 주에 두 번 등장하는 부위는 같은 풀을 공유한다. dayIndex(월=0…금=4)를
- * 더하지 않으면 월요일과 목요일에 똑같은 종목이 나온다. 요일마다 시작점을 밀어두면 자연히 갈린다 —
- * 예: 복직근(풀 2개)은 월에 케이블 크런치, 목에 레그 레이즈가 뜬다.
+ * 복직근·삼두·이두처럼 한 주에 여러 번 등장하는 부위는 같은 풀을 공유한다. 보정 없이 weekIndex만 쓰면
+ * 그 날들에 똑같은 종목이 나오므로, 슬롯마다 시작점을 밀어 갈라놓는다.
+ *
+ * 여기서 "요일 번호"나 "주간 통짜 슬롯 번호" 같은 임의의 정수를 쓰면 함정에 빠진다. 두 슬롯의 번호 차이가
+ * pool.size의 배수이면 mod 연산에서 같은 값으로 뭉개지기 때문이다. 실제로 겪은 사례:
+ *
+ *   요일 번호 → 이두(풀 3)는 화=1, 금=4. 차이 3이 mod 3에서 0이라 화·금이 같은 종목.
+ *              번호에 상수를 곱해도(요일×7 등) 차이가 3의 배수인 사실은 그대로라 절대 갈라지지 않는다.
+ *   슬롯 번호 → 이두는 갈라지지만 후면삼각근(풀 2)이 화=9, 금=25로 차이 16 → mod 2에서 0이라 충돌.
+ *
+ * 임의 정수로는 못 푼다. 대신 *그 부위가 주간 루틴에서 몇 번째로 등장하는가*(같은 part끼리 0,1,2… 로 새로 셈)를
+ * 쓴다. 연속된 정수이므로 등장 횟수가 pool.size 이하인 부위는 mod 후에도 전부 서로 다른 값이 되어 충돌이 불가능하다.
+ * 등장 횟수가 pool.size를 넘으면(복직근: 4회 등장 / 풀 2개) 원리상 겹칠 수밖에 없는데, 이 방식은 그 경우에도
+ * 0,1,0,1로 균등히 나눠 각 종목을 정확히 같은 횟수만큼 쓴다.
+ *
+ * 트레이드오프: 같은 부위 슬롯을 추가·삭제하면 그 부위의 등장 번호가 밀려 해당 주 종목이 한 번 재배치된다.
+ * 다른 부위는 영향받지 않고, 커버리지·등장 빈도 균등성도 그대로다.
  *
  * 풀 크기가 1인 부위(카프 레이즈, 웜업 종목 등)는 start가 무엇이든 결과가 같으므로 이 계산이 그냥 무해하게 통과한다.
  */
 internal fun RoutineDay.exercises(date: LocalDate = LocalDate.now()): List<RoutineExercise> {
   val weekIndex = weekIndex(date)
-  val dayIndex = date.dayOfWeek.value - 1
-  return slots.flatMap { slot -> slot.pick(weekIndex, dayIndex) }
+  return slots.flatMap { slot -> slot.pick(weekIndex, PART_OCCURRENCES[slot] ?: 0) }
 }
 
-private fun ExerciseSlot.pick(weekIndex: Int, dayIndex: Int): List<RoutineExercise> {
-  val start = (weekIndex * pickCount + dayIndex).mod(pool.size)
+// 같은 부위 슬롯에 주간 등장 순번(0,1,2…)을 매긴다. ExerciseSlot은 equals를 두지 않아 참조 동일성으로 구분된다.
+private val PART_OCCURRENCES: Map<ExerciseSlot, Int> = buildMap {
+  val counted = mutableMapOf<String, Int>()
+  for (day in WEEKLY_ROUTINE) {
+    for (slot in day.slots) {
+      val occurrence = counted.getOrElse(slot.part) { 0 }
+      put(slot, occurrence)
+      counted[slot.part] = occurrence + 1
+    }
+  }
+}
+
+private fun ExerciseSlot.pick(weekIndex: Int, partOccurrence: Int): List<RoutineExercise> {
+  val start = (weekIndex * pickCount + partOccurrence).mod(pool.size)
   return List(pickCount) { offset ->
     RoutineExercise(
       part = part,
