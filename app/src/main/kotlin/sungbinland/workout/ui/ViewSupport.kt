@@ -6,9 +6,15 @@ import android.widget.Button
 
 internal fun Context.dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
 
-internal fun Context.borderedBox(fill: Int, stroke: Int): GradientDrawable = GradientDrawable().apply {
+internal fun Context.borderedBox(
+  fill: Int,
+  stroke: Int,
+  radiusDp: Int = 0,
+  strokeDp: Int = 2,
+): GradientDrawable = GradientDrawable().apply {
   setColor(fill)
-  setStroke(dp(2), stroke)
+  setStroke(dp(strokeDp), stroke)
+  cornerRadius = dp(radiusDp).toFloat()
 }
 
 internal fun Context.flatButton(label: String, onClick: () -> Unit): Button =
