@@ -49,7 +49,7 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
           "팩댁 플라이",
         ),
         pickCount = 2,
-        setsPerExercise = 3,
+        setsPerExercise = 6,
       ),
       ExerciseSlot("상부가슴", listOf("인클라인 체스트 프레스"), setsPerExercise = 4),
       ExerciseSlot("측면삼각근", SIDE_DELTOID, setsPerExercise = 4),
@@ -61,7 +61,6 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
     "화", "Vertical Pull",
     listOf(
       ExerciseSlot(WARM_UP, listOf("풀오버 머신"), setsPerExercise = 2),
-      ExerciseSlot(WARM_UP, listOf("스트레이트 암풀다운"), setsPerExercise = 2),
       ExerciseSlot(
         "광배",
         listOf("렛풀다운", "서큘러 렛풀다운", "롱 풀", "암풀다운"),
@@ -95,7 +94,7 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
         "햄스트링",
         listOf("루마니안 데드리프트", "스티프 데드리프트", "라잉 레그 컬", "레그 컬"),
         pickCount = 2,
-        setsPerExercise = 3,
+        setsPerExercise = 6,
       ),
       // 스플릿 스쿼트는 대퇴사두 풀에 두지 않는다 — 같은 날 중복 등장을 막고 자극 비중이 큰 둔근에 전속.
       ExerciseSlot("둔근", listOf("킥 백", "스플릿 스쿼트"), setsPerExercise = 4),
@@ -110,7 +109,7 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
         "전면삼각근",
         listOf("숄더 프레스", "컨버징 숄더 프레스", "프론트 레이즈"),
         pickCount = 2,
-        setsPerExercise = 3,
+        setsPerExercise = 6,
       ),
       ExerciseSlot("하부가슴", listOf("시티드 딥스"), setsPerExercise = 4),
       ExerciseSlot("측면삼각근", SIDE_DELTOID, setsPerExercise = 4),
