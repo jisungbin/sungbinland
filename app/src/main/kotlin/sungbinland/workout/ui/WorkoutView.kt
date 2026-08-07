@@ -12,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import sungbinland.workout.data.SetCountStore
 import sungbinland.workout.data.WeekOrderStore
@@ -23,6 +22,7 @@ import sungbinland.workout.domain.exercises
 import sungbinland.workout.domain.routineOf
 import sungbinland.workout.domain.todayDayIndex
 import sungbinland.workout.haptic.Haptics
+import sungbinland.workout.rx.MainThreadScheduler
 
 internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
   val weekOrder = WeekOrderStore(activity)
@@ -142,7 +142,7 @@ internal class WorkoutView(
 
     disposables.add(
       store.todayExerciseCounts
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(MainThreadScheduler)
         .subscribe { counts ->
           completedSets = counts.sum()
           renderItems(counts)
@@ -152,7 +152,7 @@ internal class WorkoutView(
     )
     disposables.add(
       store.firstSetEpochMillis
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(MainThreadScheduler)
         .subscribe { epoch ->
           firstSetEpochMillis = epoch
           updateElapsedTime()
