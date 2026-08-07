@@ -15,7 +15,7 @@ import android.widget.TextView
 import java.util.Locale
 import sungbinland.workout.domain.RestTimer
 
-// 55초 카운트다운(+10초 연장). 완료 시에만 닫히며 onCompleted로 완료 이펙트를 위임한다.
+// 완료 시에만 닫히며 onCompleted로 완료 이펙트를 위임한다.
 internal object RestTimerDialog {
   fun show(activity: Activity, onCompleted: () -> Unit) {
     val timer = RestTimer()
