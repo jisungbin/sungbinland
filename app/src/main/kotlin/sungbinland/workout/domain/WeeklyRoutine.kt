@@ -27,15 +27,15 @@ internal class RoutineExercise(
   val key: String get() = "$part:$name"
 }
 
-private val ABS = listOf("케이블 크런치", "레그 레이즈")
+private val ABS = listOf("레그 레이즈")
 private val SIDE_DELTOID = listOf("사이드 레터럴 레이즈", "스미스 비하인드 숄더 프레스")
 private val REAR_DELTOID = listOf("벤트 오버 레이즈", "리버스 팩댁 플라이")
-private val TRICEPS = listOf("트라이셉스 프레스", "케이블 트라이셉스 푸시다운")
-private val BICEPS = listOf("이두 크리처 컬", "이두 드래그 컬", "이두 헤머컬")
+private val TRICEPS = listOf("트라이셉스 프레스", "케이블 트라이셉스 푸시다운", "케이블 오버헤드 트라이셉스 익스텐션")
+private val BICEPS = listOf("이두 크리처 컬", "이두 드래그 컬", "이두 헤머컬", "이두 이지바 컬")
 
 internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
   RoutineDay(
-    "월", "Horizontal Push",
+    "월", "가슴",
     listOf(
       ExerciseSlot(WARM_UP, listOf("덤벨 풀오버"), setsPerExercise = 2),
       ExerciseSlot(
@@ -49,38 +49,39 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
           "팩댁 플라이",
         ),
         pickCount = 2,
-        setsPerExercise = 3,
+        setsPerExercise = 4,
       ),
-      ExerciseSlot("상부가슴", listOf("인클라인 체스트 프레스"), setsPerExercise = 4),
-      ExerciseSlot("측면삼각근", SIDE_DELTOID, setsPerExercise = 4),
-      ExerciseSlot("삼두", TRICEPS, setsPerExercise = 4),
+      ExerciseSlot("상부가슴", listOf("인클라인 체스트 프레스"), setsPerExercise = 5),
+      ExerciseSlot("하부가슴", listOf("시티드 딥스"), setsPerExercise = 5),
       ExerciseSlot("복직근", ABS, setsPerExercise = 4),
     ),
   ),
   RoutineDay(
-    "화", "Vertical Pull",
+    "화", "등",
     listOf(
-      ExerciseSlot(WARM_UP, listOf("풀오버 머신"), setsPerExercise = 2),
-      ExerciseSlot(WARM_UP, listOf("스트레이트 암풀다운"), setsPerExercise = 2),
+      ExerciseSlot(WARM_UP, listOf("풀오버 머신", "슈러그"), pickCount = 2, setsPerExercise = 2),
       ExerciseSlot(
         "광배",
         listOf("렛풀다운", "서큘러 렛풀다운", "롱 풀", "암풀다운"),
         pickCount = 2,
         setsPerExercise = 4,
       ),
-      ExerciseSlot("후면삼각근", REAR_DELTOID, setsPerExercise = 4),
-      ExerciseSlot("이두", BICEPS, setsPerExercise = 4),
+      ExerciseSlot(
+        "중부등",
+        listOf("시티드 로우", "수평 로우", "로우 로우", "하이 로우", "티바 로우", "바벨 로우"),
+        pickCount = 2,
+        setsPerExercise = 4,
+      ),
       ExerciseSlot("복직근", ABS, setsPerExercise = 4),
     ),
   ),
   RoutineDay(
-    "수", "LEGS",
+    "수", "다리",
     listOf(
       ExerciseSlot(WARM_UP, listOf("힙 어덕션·어브덕션"), setsPerExercise = 2),
       ExerciseSlot(
         "대퇴사두",
         listOf(
-          "레그 프레스",
           "파워 레그 프레스",
           "핵 스쿼트",
           "스쿼트 프레스",
@@ -93,43 +94,35 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
       ),
       ExerciseSlot(
         "햄스트링",
-        listOf("루마니안 데드리프트", "스티프 데드리프트", "라잉 레그 컬", "레그 컬"),
+        listOf("루마니안 데드리프트", "레그 컬"),
         pickCount = 2,
-        setsPerExercise = 3,
+        setsPerExercise = 4,
       ),
       // 스플릿 스쿼트는 대퇴사두 풀에 두지 않는다 — 같은 날 중복 등장을 막고 자극 비중이 큰 둔근에 전속.
       ExerciseSlot("둔근", listOf("킥 백", "스플릿 스쿼트"), setsPerExercise = 4),
       ExerciseSlot("카프", listOf("카프 레이즈"), setsPerExercise = 4),
     ),
   ),
+  // 어깨·팔은 웜업 슬롯이 없다 — 보유한 웜업 종목이 전부 가슴·등·다리용이라 넣을 게 없다.
   RoutineDay(
-    "목", "Vertical Push",
+    "목", "어깨",
     listOf(
-      ExerciseSlot(WARM_UP, listOf("풀오버 머신"), setsPerExercise = 2),
       ExerciseSlot(
         "전면삼각근",
         listOf("숄더 프레스", "컨버징 숄더 프레스", "프론트 레이즈"),
         pickCount = 2,
-        setsPerExercise = 3,
+        setsPerExercise = 4,
       ),
-      ExerciseSlot("하부가슴", listOf("시티드 딥스"), setsPerExercise = 4),
-      ExerciseSlot("측면삼각근", SIDE_DELTOID, setsPerExercise = 4),
-      ExerciseSlot("삼두", TRICEPS, setsPerExercise = 4),
+      ExerciseSlot("측면삼각근", SIDE_DELTOID, setsPerExercise = 6),
+      ExerciseSlot("후면삼각근", REAR_DELTOID, setsPerExercise = 6),
       ExerciseSlot("복직근", ABS, setsPerExercise = 4),
     ),
   ),
   RoutineDay(
-    "금", "Horizontal Pull",
+    "금", "팔",
     listOf(
-      ExerciseSlot(WARM_UP, listOf("슈러그"), setsPerExercise = 2),
-      ExerciseSlot(
-        "중부등",
-        listOf("시티드 로우", "수평 로우", "로우 로우", "하이 로우", "티바 로우", "바벨 로우"),
-        pickCount = 2,
-        setsPerExercise = 5,
-      ),
-      ExerciseSlot("후면삼각근", REAR_DELTOID, setsPerExercise = 4),
-      ExerciseSlot("이두", BICEPS, setsPerExercise = 4),
+      ExerciseSlot("이두", BICEPS, pickCount = 2, setsPerExercise = 5),
+      ExerciseSlot("삼두", TRICEPS, pickCount = 2, setsPerExercise = 5),
       ExerciseSlot("복직근", ABS, setsPerExercise = 4),
     ),
   ),
@@ -181,42 +174,46 @@ internal fun currentWeekIndex(date: LocalDate = LocalDate.now()): Int = weekInde
  *   1970-01-11 (일) epochDay=10 → (10+3)/7 = 1   ← 같은 주 내내 유지
  *   1970-01-12 (월) epochDay=11 → (11+3)/7 = 2
  *
- * ── 2단계: 풀에서 어디부터 꺼낼지 (start)
+ * ── 2단계: 풀에서 무엇을 꺼낼지 (start와 gap)
  *
- *   start = (weekIndex * pickCount + partOccurrence) mod pool.size
+ *   cursor = weekIndex + partOccurrence
+ *   start  = cursor mod pool.size
+ *   gap    = 1 + (cursor / pool.size) mod (pool.size - 1)
+ *   꺼낼 인덱스 = start, start+gap, start+2*gap … (mod pool.size)
  *
- * 핵심은 매주 *pickCount칸씩* 전진한다는 것(stride = pickCount)이다. 지난주에 꺼낸 구간 바로 뒤에서
- * 이어받으므로 겹침도 빈틈도 없다. 풀 크기 6에서 2개씩 꺼내는 경우:
+ * 처음에는 start를 매주 pickCount칸씩 밀었다. 그런데 그러면 풀 크기가 pickCount의 배수일 때 조합이 굳는다.
+ * 풀 6에서 2개씩 꺼내면 (0,1) (2,3) (4,5) 세 쌍만 3주 주기로 돌고 (0,2)나 (1,4)는 영원히 나오지 않는다.
+ * 종목은 다 돌지만 *조합*은 세 가지뿐이라, 늘 같은 짝만 붙어 다니는 게 눈에 띈다.
  *
- *   0주: [0,1]   1주: [2,3]   2주: [4,5]   3주: [0,1] …  → 3주에 6종목 전부 1회전
+ * 그래서 start는 매주 1칸씩만 밀고, 풀을 한 바퀴 돌 때마다 간격(gap)을 1씩 올린다. 풀 6 / 2개씩:
  *
- * 풀 크기가 stride로 나누어지지 않아도 끝에서 앞으로 되감으며 계속 이어진다. 풀 7 / 2개씩:
+ *   0~5주:   gap=1 → (0,1) (1,2) (2,3) (3,4) (4,5) (5,0)
+ *   6~11주:  gap=2 → (0,2) (1,3) (2,4) (3,5) (4,0) (5,1)
+ *   12~17주: gap=3 → (0,3) (1,4) (2,5) …
  *
- *   0주: [0,1]  1주: [2,3]  2주: [4,5]  3주: [6,0]  4주: [1,2]  5주: [3,4]  6주: [5,6]  7주: [0,1] …
- *
- * 7주 만에 정확히 1회전한다. 일반적으로 pool.size와 stride의 최소공배수 / stride 주 만큼이면 전종목을 돈다.
+ * pool.size × (pool.size-1) 주 만에 제자리로 돌아오며, 그 사이 가능한 모든 조합이 같은 횟수씩 나온다.
+ * 풀 크기가 1이면 (pool.size-1)이 0이라 mod가 터지므로 coerceAtLeast(1)로 막는다 — 결과는 어차피 하나뿐이다.
  *
  * ── 3단계: partOccurrence를 왜 더하나
  *
- * 복직근·삼두·이두처럼 한 주에 여러 번 등장하는 부위는 같은 풀을 공유한다. 보정 없이 weekIndex만 쓰면
- * 그 날들에 똑같은 종목이 나오므로, 슬롯마다 시작점을 밀어 갈라놓는다.
+ * 한 주에 같은 부위가 여러 슬롯으로 등장하면 그 슬롯들이 같은 풀을 공유한다. 보정 없이 weekIndex만 쓰면
+ * 그 날들에 똑같은 종목이 나오므로, 슬롯마다 커서를 밀어 갈라놓는다.
  *
  * 여기서 "요일 번호"나 "주간 통짜 슬롯 번호" 같은 임의의 정수를 쓰면 함정에 빠진다. 두 슬롯의 번호 차이가
- * pool.size의 배수이면 mod 연산에서 같은 값으로 뭉개지기 때문이다. 실제로 겪은 사례:
- *
- *   요일 번호 → 이두(풀 3)는 화=1, 금=4. 차이 3이 mod 3에서 0이라 화·금이 같은 종목.
- *              번호에 상수를 곱해도(요일×7 등) 차이가 3의 배수인 사실은 그대로라 절대 갈라지지 않는다.
- *   슬롯 번호 → 이두는 갈라지지만 후면삼각근(풀 2)이 화=9, 금=25로 차이 16 → mod 2에서 0이라 충돌.
+ * pool.size의 배수이면 mod 연산에서 같은 값으로 뭉개지기 때문이다. 요일 번호로 잡으면 풀 2짜리 부위가
+ * 월·금(차이 4)에서 겹치고, 슬롯 번호로 바꿔도 다른 요일 조합에서 같은 일이 그대로 재현된다.
+ * 번호에 상수를 곱해도(요일×7 등) 차이가 배수라는 사실은 변하지 않아 절대 갈라지지 않는다.
  *
  * 임의 정수로는 못 푼다. 대신 *그 부위가 주간 루틴에서 몇 번째로 등장하는가*(같은 part끼리 0,1,2… 로 새로 셈)를
  * 쓴다. 연속된 정수이므로 등장 횟수가 pool.size 이하인 부위는 mod 후에도 전부 서로 다른 값이 되어 충돌이 불가능하다.
- * 등장 횟수가 pool.size를 넘으면(복직근: 4회 등장 / 풀 2개) 원리상 겹칠 수밖에 없는데, 이 방식은 그 경우에도
- * 0,1,0,1로 균등히 나눠 각 종목을 정확히 같은 횟수만큼 쓴다.
+ * 등장 횟수가 pool.size를 넘으면 원리상 겹칠 수밖에 없는데, 이 방식은 그 경우에도 균등히 나눠
+ * 각 종목을 정확히 같은 횟수만큼 쓴다.
  *
  * 트레이드오프: 같은 부위 슬롯을 추가·삭제하면 그 부위의 등장 번호가 밀려 해당 주 종목이 한 번 재배치된다.
  * 다른 부위는 영향받지 않고, 커버리지·등장 빈도 균등성도 그대로다.
  *
- * 풀 크기가 1인 부위(카프 레이즈, 웜업 종목 등)는 start가 무엇이든 결과가 같으므로 이 계산이 그냥 무해하게 통과한다.
+ * 지금 구성에서 여러 번 등장하는 부위는 웜업뿐이고 그 풀이 전부 1개라 이 보정은 놀고 있다.
+ * 풀이 여럿인 부위를 여러 날에 배치하는 순간 다시 필요해진다.
  */
 internal fun RoutineDay.exercises(date: LocalDate = LocalDate.now()): List<RoutineExercise> {
   val weekIndex = weekIndex(date)
@@ -235,12 +232,15 @@ private val PART_OCCURRENCES: Map<ExerciseSlot, Int> = buildMap {
   }
 }
 
+// 주의: gap이 pool.size와 서로소가 아닐 수 있어, pickCount가 3 이상이면 같은 종목이 두 번 뽑힐 수 있다.
 private fun ExerciseSlot.pick(weekIndex: Int, partOccurrence: Int): List<RoutineExercise> {
-  val start = (weekIndex * pickCount + partOccurrence).mod(pool.size)
+  val cursor = weekIndex + partOccurrence
+  val start = cursor.mod(pool.size)
+  val gap = 1 + (cursor / pool.size).mod((pool.size - 1).coerceAtLeast(1))
   return List(pickCount) { offset ->
     RoutineExercise(
       part = part,
-      name = pool[(start + offset) % pool.size],
+      name = pool[(start + offset * gap).mod(pool.size)],
       targetSets = setsPerExercise,
     )
   }
