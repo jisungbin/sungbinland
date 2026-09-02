@@ -12,11 +12,12 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import sungbinland.workout.data.ExercisePickStore
 import sungbinland.workout.data.SetCountStore
 import sungbinland.workout.data.WeekOrderStore
 import sungbinland.workout.domain.DAY_LABELS
 import sungbinland.workout.domain.RoutineDay
-import sungbinland.workout.domain.RoutineExercise
+import sungbinland.workout.domain.exerciseOptions
 import sungbinland.workout.domain.exercises
 import sungbinland.workout.domain.routineOf
 import sungbinland.workout.domain.todayDayIndex
@@ -30,8 +31,9 @@ internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
   val weekOrder = WeekOrderStore(activity)
   val dayIndex = todayDayIndex()
   val today = routineOf(dayIndex, weekOrder.order)
-  val store = SetCountStore(activity, today?.exercises() ?: emptyList())
-  val view = WorkoutView(activity, store, weekOrder, dayIndex, today)
+  val picks = ExercisePickStore(activity, weekOrder.order[dayIndex])
+  val store = SetCountStore(activity, today?.exercises(picks = picks.picks) ?: emptyList())
+  val view = WorkoutView(activity, store, weekOrder, picks, dayIndex, today)
   activity.setContentView(view.root)
   view.start()
   return WorkoutViewHandle(view)
@@ -47,9 +49,13 @@ internal class WorkoutView(
   private val activity: Activity,
   private val store: SetCountStore,
   private val weekOrder: WeekOrderStore,
+  private val exercisePicks: ExercisePickStore,
   private val dayIndex: Int,
   private val today: RoutineDay?,
 ) {
+  // exercises()와 같은 순서의 자리별 종목 후보.
+  private val exerciseOptions: List<List<String>> = today?.exerciseOptions().orEmpty()
+
   private val subscriptions = mutableListOf<Subscription>()
 
   private val elapsedTimeView: TextView
@@ -186,6 +192,25 @@ internal class WorkoutView(
     }
   }
 
+  // 세트를 채운 종목은 바꾸지 못한다 — 진행도는 종목 이름으로 저장돼 있어 바꾸는 순간 그 종목 기록만 사라진다.
+  private fun openExercisePicker(position: Int, count: Int) {
+    if (count > 0) {
+      Toast.makeText(activity, "이미 진행한 종목은 바꿀 수 없습니다.", Toast.LENGTH_SHORT).show()
+      return
+    }
+    val exercise = store.todayExercises[position]
+    ExercisePickerDialog.show(
+      activity = activity,
+      part = exercise.part,
+      current = exercise.name,
+      options = pickableOptions(position),
+    ) { name ->
+      exercisePicks.pick(position, name)
+      // 종목이 바뀌면 세트 저장 키도 함께 바뀌므로 화면을 다시 세운다.
+      activity.recreate()
+    }
+  }
+
   private fun openRestTimer() {
     RestTimerDialog.show(activity) {
       Haptics.vibrateHeavy(activity.applicationContext)
@@ -202,20 +227,21 @@ internal class WorkoutView(
     var index = 0
     while (index < exercises.size) {
       val part = exercises[index].part
-      val group = mutableListOf<Pair<RoutineExercise, Int>>()
+      val positions = mutableListOf<Int>()
       while (index < exercises.size && exercises[index].part == part) {
-        group += exercises[index] to counts.getOrElse(index) { 0 }
+        positions += index
         index++
       }
       itemsContainer.addView(
-        partCard(part, group),
+        partCard(part, positions, counts),
         rowParams(if (itemsContainer.childCount == 0) 0 else activity.dp(8)),
       )
     }
   }
 
-  private fun partCard(part: String, entries: List<Pair<RoutineExercise, Int>>): View {
-    val allDone = entries.all { (exercise, count) -> count >= exercise.targetSets }
+  private fun partCard(part: String, positions: List<Int>, counts: List<Int>): View {
+    val exercises = store.todayExercises
+    val allDone = positions.all { position -> counts.getOrElse(position) { 0 } >= exercises[position].targetSets }
 
     return LinearLayout(activity).apply {
       orientation = LinearLayout.VERTICAL
@@ -234,17 +260,31 @@ internal class WorkoutView(
           letterSpacing = 0.06f
         },
       )
-      entries.forEachIndexed { position, (exercise, count) ->
-        addView(exerciseRow(exercise, count), rowParams(activity.dp(if (position == 0) 4 else 10)))
+      positions.forEachIndexed { order, position ->
+        addView(
+          exerciseRow(position, counts.getOrElse(position) { 0 }),
+          rowParams(activity.dp(if (order == 0) 4 else 10)),
+        )
       }
     }
   }
 
-  private fun exerciseRow(exercise: RoutineExercise, count: Int): View {
+  // 같은 부위가 이미 쓰고 있는 종목은 뺀다 — 세트 진행도가 종목 이름 키라, 겹치면 두 줄이 한 카운터를 공유한다.
+  private fun pickableOptions(position: Int): List<String> {
+    val exercises = store.todayExercises
+    val taken = exercises
+      .filterIndexed { index, exercise -> index != position && exercise.part == exercises[position].part }
+      .mapTo(mutableSetOf()) { it.name }
+    return exerciseOptions.getOrNull(position).orEmpty().filterNot { it in taken }
+  }
+
+  private fun exerciseRow(position: Int, count: Int): View {
+    val exercise = store.todayExercises[position]
     val done = count >= exercise.targetSets
+    val changeable = pickableOptions(position).size > 1
 
     val name = TextView(activity).apply {
-      text = exercise.name
+      text = if (changeable && !done) "${exercise.name}  ▾" else exercise.name
       setTextColor(if (done) Palette.MUTED else Palette.TEXT)
       setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
       paintFlags = if (done) paintFlags or Paint.STRIKE_THRU_TEXT_FLAG else paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
@@ -277,6 +317,7 @@ internal class WorkoutView(
       gravity = Gravity.CENTER_VERTICAL
       addView(name, LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f))
       addView(counter, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
+      if (changeable) setOnClickListener { openExercisePicker(position, count) }
     }
   }
 

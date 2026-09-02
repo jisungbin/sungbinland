@@ -220,10 +220,24 @@ internal fun currentWeekIndex(date: LocalDate = LocalDate.now()): Int = weekInde
  * 지금 구성에서 여러 번 등장하는 부위는 웜업뿐이고 그 풀이 전부 1개라 이 보정은 놀고 있다.
  * 풀이 여럿인 부위를 여러 날에 배치하는 순간 다시 필요해진다.
  */
-internal fun RoutineDay.exercises(date: LocalDate = LocalDate.now()): List<RoutineExercise> {
+internal fun RoutineDay.exercises(
+  date: LocalDate = LocalDate.now(),
+  picks: Map<Int, String> = emptyMap(),
+): List<RoutineExercise> {
   val weekIndex = weekIndex(date)
-  return slots.flatMap { slot -> slot.pick(weekIndex, PART_OCCURRENCES[slot] ?: 0) }
+  var position = 0
+  return slots.flatMap { slot ->
+    slot.pick(weekIndex, PART_OCCURRENCES[slot] ?: 0).map { exercise ->
+      // 풀에 없는 이름은 버린다 — 종목 구성을 고친 뒤 남아 있던 저장값이 화면에 새는 걸 막는다.
+      val picked = picks[position++]?.takeIf { it in slot.pool }
+      if (picked == null) exercise else RoutineExercise(slot.part, picked, slot.setsPerExercise)
+    }
+  }
 }
+
+// exercises()와 같은 순서로, 각 자리에 놓을 수 있는 종목 후보.
+internal fun RoutineDay.exerciseOptions(): List<List<String>> =
+  slots.flatMap { slot -> List(slot.pickCount) { slot.pool } }
 
 // 같은 부위 슬롯에 주간 등장 순번(0,1,2…)을 매긴다. ExerciseSlot은 equals를 두지 않아 참조 동일성으로 구분된다.
 private val PART_OCCURRENCES: Map<ExerciseSlot, Int> = buildMap {
