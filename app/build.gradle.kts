@@ -40,7 +40,3 @@ kotlin {
     allWarningsAsErrors = true
   }
 }
-
-dependencies {
-  implementation(libs.rxjava)
-}

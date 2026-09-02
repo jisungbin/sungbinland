@@ -12,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
-import io.reactivex.disposables.CompositeDisposable
 import sungbinland.workout.data.SetCountStore
 import sungbinland.workout.data.WeekOrderStore
 import sungbinland.workout.domain.DAY_LABELS
@@ -21,8 +20,11 @@ import sungbinland.workout.domain.RoutineExercise
 import sungbinland.workout.domain.exercises
 import sungbinland.workout.domain.routineOf
 import sungbinland.workout.domain.todayDayIndex
+import sungbinland.workout.event.EventBus
+import sungbinland.workout.event.FirstSetChanged
+import sungbinland.workout.event.SetCountsChanged
+import sungbinland.workout.event.Subscription
 import sungbinland.workout.haptic.Haptics
-import sungbinland.workout.rx.MainThreadScheduler
 
 internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
   val weekOrder = WeekOrderStore(activity)
@@ -48,7 +50,7 @@ internal class WorkoutView(
   private val dayIndex: Int?,
   private val today: RoutineDay?,
 ) {
-  private val disposables = CompositeDisposable()
+  private val subscriptions = mutableListOf<Subscription>()
 
   private val elapsedTimeView: TextView
   private val itemsContainer: LinearLayout
@@ -140,28 +142,25 @@ internal class WorkoutView(
       return
     }
 
-    disposables.add(
-      store.todayExerciseCounts
-        .observeOn(MainThreadScheduler)
-        .subscribe { counts ->
-          completedSets = counts.sum()
-          renderItems(counts)
-          // 매 세트(=휴식 타이머 완료)마다만 재계산 — 1초 폴링 대신 배터리를 아낀다.
-          updateElapsedTime()
-        },
+    subscriptions.add(
+      EventBus.subscribe(SetCountsChanged::class.java) { event ->
+        completedSets = event.counts.sum()
+        renderItems(event.counts)
+        // 매 세트(=휴식 타이머 완료)마다만 재계산 — 1초 폴링 대신 배터리를 아낀다.
+        updateElapsedTime()
+      },
     )
-    disposables.add(
-      store.firstSetEpochMillis
-        .observeOn(MainThreadScheduler)
-        .subscribe { epoch ->
-          firstSetEpochMillis = epoch
-          updateElapsedTime()
-        },
+    subscriptions.add(
+      EventBus.subscribe(FirstSetChanged::class.java) { event ->
+        firstSetEpochMillis = event.epochMillis
+        updateElapsedTime()
+      },
     )
   }
 
   fun dispose() {
-    disposables.clear()
+    subscriptions.forEach { it.cancel() }
+    subscriptions.clear()
   }
 
   private fun updateElapsedTime() {

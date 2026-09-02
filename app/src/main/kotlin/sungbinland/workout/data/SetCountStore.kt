@@ -1,10 +1,11 @@
 package sungbinland.workout.data
 
 import android.content.Context
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
 import java.time.LocalDate
 import sungbinland.workout.domain.RoutineExercise
+import sungbinland.workout.event.EventBus
+import sungbinland.workout.event.FirstSetChanged
+import sungbinland.workout.event.SetCountsChanged
 
 // 오늘 루틴의 종목별 수행 세트 수 + 첫 세트 완료 시각을 SharedPreferences(로컬)에 저장. 날짜가 바뀌면 초기화.
 internal class SetCountStore(
@@ -13,14 +14,10 @@ internal class SetCountStore(
 ) {
   private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-  private val countsSubject: BehaviorSubject<List<Int>> = BehaviorSubject.createDefault(readTodayCounts())
-  private val firstSetSubject: BehaviorSubject<Long> = BehaviorSubject.createDefault(readFirstSetEpochMillis())
-
-  // todayExercises와 같은 순서의 완료 세트 수.
-  val todayExerciseCounts: Observable<List<Int>> = countsSubject
-
-  // 0L이면 오늘 아직 세트를 하나도 완료하지 않은 상태.
-  val firstSetEpochMillis: Observable<Long> = firstSetSubject
+  init {
+    EventBus.post(SetCountsChanged(readTodayCounts()))
+    EventBus.post(FirstSetChanged(readFirstSetEpochMillis()))
+  }
 
   // 종목을 순서대로 채워나간다: 아직 목표치를 못 채운 첫 종목에 +1. 웜업이 목록 맨 앞이라 웜업부터 채워진다.
   fun recordCompletedSet() {
@@ -31,12 +28,12 @@ internal class SetCountStore(
     val index = counts.indices.firstOrNull { counts[it] < todayExercises[it].targetSets } ?: return
     counts[index] = counts[index] + 1
     prefs.edit().putString(KEY_COUNTS, encodeCounts(counts)).apply()
-    countsSubject.onNext(counts)
+    EventBus.post(SetCountsChanged(counts))
 
     if (prefs.getLong(KEY_FIRST_SET_EPOCH, 0L) == 0L) {
       val now = System.currentTimeMillis()
       prefs.edit().putLong(KEY_FIRST_SET_EPOCH, now).apply()
-      firstSetSubject.onNext(now)
+      EventBus.post(FirstSetChanged(now))
     }
   }
 

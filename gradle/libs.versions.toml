@@ -6,6 +6,3 @@ kotlin = "2.4.20-RC2"
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
-[libraries]
-rxjava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.21" }
