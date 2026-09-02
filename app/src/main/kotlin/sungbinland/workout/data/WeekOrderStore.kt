@@ -27,7 +27,7 @@ internal class WeekOrderStore(context: Context) {
       .split(",")
       .mapNotNull { it.toIntOrNull() }
     // 순열이 깨져 있으면(중복·범위 이탈) 배치를 신뢰할 수 없으므로 기본으로 되돌린다.
-    return if (stored.sorted() == DEFAULT_WEEK_ORDER) stored else DEFAULT_WEEK_ORDER
+    return if (stored.sorted() == DEFAULT_WEEK_ORDER.sorted()) stored else DEFAULT_WEEK_ORDER
   }
 
   private companion object {

@@ -128,14 +128,19 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
   ),
 )
 
-internal val DAY_LABELS: List<String> = WEEKLY_ROUTINE.map { it.day }
+// 대분류가 놓이지 않은 요일 자리. 그 날은 휴식일이 된다.
+internal const val NO_ROUTINE: Int = -1
 
-// 월~금(0~4)만 루틴 존재. 주말은 null(휴식일).
-internal fun todayDayIndex(date: LocalDate = LocalDate.now()): Int? =
-  (date.dayOfWeek.value - 1).takeIf { it in WEEKLY_ROUTINE.indices }
+internal val DAY_LABELS: List<String> = WEEKLY_ROUTINE.map { it.day } + listOf("토", "일")
 
-// 요일 자리마다 WEEKLY_ROUTINE의 몇 번째 대분류를 놓을지. 기본은 정순.
-internal val DEFAULT_WEEK_ORDER: List<Int> = WEEKLY_ROUTINE.indices.toList()
+internal fun todayDayIndex(date: LocalDate = LocalDate.now()): Int = date.dayOfWeek.value - 1
+
+/*
+ * 요일 자리마다 WEEKLY_ROUTINE의 몇 번째 대분류를 놓을지. 기본은 월~금 정순 + 주말은 휴식.
+ * 주말도 자리를 차지해야 휴식일에서도 평일 루틴을 끌어와 교환할 수 있다 — 교환은 이 리스트의 순열이므로
+ * 주말이 목록에서 빠져 있으면 애초에 교환 대상이 되지 못한다.
+ */
+internal val DEFAULT_WEEK_ORDER: List<Int> = WEEKLY_ROUTINE.indices + listOf(NO_ROUTINE, NO_ROUTINE)
 
 /*
  * 요일 배치는 order로만 표현하고 WEEKLY_ROUTINE 자체는 절대 재정렬하지 않는다.
@@ -144,7 +149,7 @@ internal val DEFAULT_WEEK_ORDER: List<Int> = WEEKLY_ROUTINE.indices.toList()
  * 교환된 두 날조차 원래 뽑던 종목을 그대로 들고 이동한다.
  */
 internal fun routineOf(dayIndex: Int, order: List<Int> = DEFAULT_WEEK_ORDER): RoutineDay? =
-  WEEKLY_ROUTINE.getOrNull(order.getOrElse(dayIndex) { -1 })
+  WEEKLY_ROUTINE.getOrNull(order.getOrElse(dayIndex) { NO_ROUTINE })
 
 internal fun currentWeekIndex(date: LocalDate = LocalDate.now()): Int = weekIndex(date)
 

@@ -29,7 +29,7 @@ import sungbinland.workout.haptic.Haptics
 internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
   val weekOrder = WeekOrderStore(activity)
   val dayIndex = todayDayIndex()
-  val today = dayIndex?.let { routineOf(it, weekOrder.order) }
+  val today = routineOf(dayIndex, weekOrder.order)
   val store = SetCountStore(activity, today?.exercises() ?: emptyList())
   val view = WorkoutView(activity, store, weekOrder, dayIndex, today)
   activity.setContentView(view.root)
@@ -47,7 +47,7 @@ internal class WorkoutView(
   private val activity: Activity,
   private val store: SetCountStore,
   private val weekOrder: WeekOrderStore,
-  private val dayIndex: Int?,
+  private val dayIndex: Int,
   private val today: RoutineDay?,
 ) {
   private val subscriptions = mutableListOf<Subscription>()
@@ -84,24 +84,23 @@ internal class WorkoutView(
       rowParams(activity.dp(8)),
     )
 
-    if (today != null && dayIndex != null) {
-      column.addView(
-        TextView(activity).apply {
-          // 실제 오늘 요일을 쓴다 — 스왑하면 today.day는 원래 요일이라 화면과 어긋난다.
-          val swappedFrom = today.day.takeIf { weekOrder.order[dayIndex] != dayIndex }
-          text = buildString {
-            append("${DAY_LABELS[dayIndex]} · ${today.category}")
-            if (swappedFrom != null) append(" · $swappedFrom 루틴과 교환됨")
-            append("  ▾")
-          }
-          setTextColor(Palette.ACCENT)
-          setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
-          setPadding(0, activity.dp(2), 0, activity.dp(2))
-          setOnClickListener { openSwapPicker() }
-        },
-        rowParams(activity.dp(4)),
-      )
-    }
+    // 휴식일에도 띄운다 — 여기서 평일 루틴을 끌어와야 쉬는 날에 운동할 수 있다.
+    column.addView(
+      TextView(activity).apply {
+        // 실제 오늘 요일을 쓴다 — 스왑하면 today.day는 원래 요일이라 화면과 어긋난다.
+        val swappedFrom = today?.day?.takeIf { weekOrder.order[dayIndex] != dayIndex }
+        text = buildString {
+          append("${DAY_LABELS[dayIndex]} · ${today?.category ?: "휴식"}")
+          if (swappedFrom != null) append(" · $swappedFrom 루틴과 교환됨")
+          append("  ▾")
+        }
+        setTextColor(Palette.ACCENT)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
+        setPadding(0, activity.dp(2), 0, activity.dp(2))
+        setOnClickListener { openSwapPicker() }
+      },
+      rowParams(activity.dp(4)),
+    )
 
     itemsContainer = LinearLayout(activity).apply {
       orientation = LinearLayout.VERTICAL
@@ -176,7 +175,6 @@ internal class WorkoutView(
 
   // 진행한 세트가 하나라도 있으면 스왑을 막는다 — 세트 진행도를 버리지 않고 안전하게 유지하려는 선택.
   private fun openSwapPicker() {
-    if (dayIndex == null) return
     if (completedSets > 0) {
       Toast.makeText(activity, "이미 진행한 세트가 있어 오늘 루틴을 바꿀 수 없습니다.", Toast.LENGTH_SHORT).show()
       return

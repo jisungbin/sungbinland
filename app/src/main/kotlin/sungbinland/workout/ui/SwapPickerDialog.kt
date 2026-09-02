@@ -42,11 +42,12 @@ internal object SwapPickerDialog {
       window?.setGravity(Gravity.CENTER)
     }
 
+    // 루틴이 없는 날(휴식일)도 목록에 남긴다 — 빼버리면 휴식일로 옮긴 루틴을 되돌릴 방법이 사라진다.
     DAY_LABELS.indices.filter { it != dayIndex }.forEach { otherDayIndex ->
-      val routine = routineOf(otherDayIndex, order) ?: return@forEach
+      val routine = routineOf(otherDayIndex, order)
       content.addView(
         TextView(activity).apply {
-          text = "${DAY_LABELS[otherDayIndex]} · ${routine.category}"
+          text = "${DAY_LABELS[otherDayIndex]} · ${routine?.category ?: "휴식"}"
           setTextColor(Palette.TEXT)
           setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
           setPadding(activity.dp(4), activity.dp(14), activity.dp(4), activity.dp(14))
