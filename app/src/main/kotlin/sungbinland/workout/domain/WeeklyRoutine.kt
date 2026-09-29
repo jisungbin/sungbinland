@@ -2,15 +2,18 @@ package sungbinland.workout.domain
 
 import java.time.LocalDate
 
-internal const val WARM_UP = "웜업"
-
 // 한 부위에 배정된 종목 풀. 매주 pool에서 pickCount개를 골라 각 setsPerExercise세트씩 수행한다.
 internal class ExerciseSlot(
   val part: String,
   val pool: List<String>,
   val pickCount: Int = 1,
   val setsPerExercise: Int,
-)
+) {
+  // 정렬이 종목 속성에 기대므로 분류가 빠진 종목은 앱을 띄우는 순간 드러나게 한다.
+  init {
+    require(pool.all { it in TRAITS }) { "관절·기구 분류가 없는 종목: ${pool.filterNot { it in TRAITS }}" }
+  }
+}
 
 internal class RoutineDay(
   val day: String,
@@ -22,22 +25,94 @@ internal class RoutineExercise(
   val part: String,
   val name: String,
   val targetSets: Int,
+  // exerciseOptions()·ExercisePickStore가 쓰는 자리 번호. 화면 순서는 정렬을 거치므로 이 값과 다를 수 있다.
+  val slotPosition: Int,
 ) {
   // 주차마다 종목 구성이 바뀌므로 진행 상황은 순서(index)가 아니라 이 키로 저장한다.
   val key: String get() = "$part:$name"
 }
 
-private val ABS = listOf("레그 레이즈")
-private val SIDE_DELTOID = listOf("사이드 레터럴 레이즈", "스미스 비하인드 숄더 프레스")
-private val REAR_DELTOID = listOf("벤트 오버 레이즈", "리버스 팩댁 플라이")
-private val TRICEPS = listOf("트라이셉스 프레스", "케이블 트라이셉스 푸시다운", "케이블 오버헤드 트라이셉스 익스텐션")
-private val BICEPS = listOf("이두 크리처 컬", "이두 드래그 컬", "이두 헤머컬", "이두 이지바 컬")
+// 요일 루틴·자유 루틴 공통 볼륨: 종목당 4세트, 하루 5종목(복직근 포함) = 20세트.
+internal const val SETS_PER_EXERCISE: Int = 4
+internal const val EXERCISES_PER_DAY: Int = 5
+
+private const val ABS_PART = "복직근"
+
+// 선언 순서가 곧 수행 순서다.
+private enum class Joint { COMPOUND, ISOLATION }
+
+private enum class Equipment { FREE_WEIGHT, MACHINE, CABLE }
+
+private class Traits(val joint: Joint, val equipment: Equipment)
+
+/*
+ * 종목별 관절·기구 분류. 맨몸 운동(풀업·레그 레이즈)은 프리웨이트로 친다.
+ * 스미스 머신은 궤도가 고정돼 머신으로, 렛풀다운 계열과 롱 풀은 전용 스테이션이라 머신으로 분류했다.
+ */
+private val TRAITS: Map<String, Traits> = buildMap {
+  fun add(joint: Joint, equipment: Equipment, vararg names: String) {
+    names.forEach { put(it, Traits(joint, equipment)) }
+  }
+  add(
+    Joint.COMPOUND, Equipment.FREE_WEIGHT,
+    "풀업", "바벨 로우", "티바 로우", "고블릿 스쿼트", "루마니안 데드리프트",
+  )
+  add(
+    Joint.COMPOUND, Equipment.MACHINE,
+    "시티드 체스트 프레스", "라잉 체스트 프레스", "라잉 컨버징 체스트 프레스", "이너 체스트 프레스",
+    "스미스 벤치 프레스", "인클라인 체스트 프레스", "시티드 딥스",
+    "렛풀다운", "서큘러 렛풀다운", "롱 풀", "시티드 로우", "수평 로우", "로우 로우", "하이 로우",
+    "파워 레그 프레스", "핵 스쿼트", "스쿼트 프레스", "슈퍼 스쿼트",
+    "숄더 프레스", "컨버징 숄더 프레스", "스미스 비하인드 숄더 프레스",
+    "트라이셉스 프레스",
+  )
+  add(
+    Joint.ISOLATION, Equipment.FREE_WEIGHT,
+    "레그 레이즈", "사이드 레터럴 레이즈", "벤트 오버 레이즈", "이두 드래그 컬", "이두 헤머컬", "이두 이지바 컬",
+  )
+  add(
+    Joint.ISOLATION, Equipment.MACHINE,
+    "팩댁 플라이", "풀오버 머신", "레그 익스텐션", "레그 컬", "리버스 팩댁 플라이", "이두 크리처 컬",
+  )
+  add(
+    Joint.ISOLATION, Equipment.CABLE,
+    "암풀다운", "케이블 트라이셉스 푸시다운", "케이블 오버헤드 트라이셉스 익스텐션",
+  )
+}
+
+// 자유 루틴 종목 입력의 자동 완성 후보.
+internal val KNOWN_EXERCISES: List<String> = TRAITS.keys.sorted()
+
+/*
+ * 하루 순서: 복직근 → 다관절 → 단일관절, 같은 관절 안에서는 프리웨이트 → 머신 → 케이블.
+ * 풀에서 무엇이 뽑히든(혹은 사용자가 무엇으로 바꾸든) 이 순서가 유지되도록 슬롯 순서가 아니라 종목 속성으로 정렬한다.
+ * 정렬은 안정적이라 속성이 같은 종목끼리는 슬롯 순서를 따른다.
+ */
+private val EXERCISE_ORDER: Comparator<RoutineExercise> = compareBy<RoutineExercise>(
+  { it.part != ABS_PART },
+  { TRAITS.getValue(it.name).joint },
+  { TRAITS.getValue(it.name).equipment },
+)
+
+/*
+ * 요일마다 복직근 4세트로 시작하고, 그 뒤 4종목 × 4세트 = 16세트를 둔다. 수행 순서는 EXERCISE_ORDER가 정한다.
+ *
+ * 종목 선정은 한 주 안에 견갑의 여섯 방향을 모두 쓰는 쪽을 지향한다(필수는 아님).
+ *   거상: 전용 종목 없음 — 숄더 프레스·사이드 레터럴(목)에서 상방회전과 함께 일부 쓰인다.
+ *   하강·하방회전: 풀업·렛풀다운·암풀다운·풀오버(화), 딥스(월)
+ *   후인: 로우(화), 후면 삼각근(목)
+ *   상방회전: 숄더 프레스·사이드 레터럴(목)
+ *   전인: 체스트 프레스·팩댁 플라이(월) — 전용 종목이 없어 가장 약하다. 프레스 끝에서 견갑을 밀어내는 것으로 보완한다.
+ *
+ * 복직근 슬롯은 요일마다 새로 만든다 — PART_OCCURRENCES가 슬롯을 참조 동일성으로 구분하므로 한 인스턴스를 공유하면 등장 순번이 덮어써진다.
+ */
+private fun abs(): ExerciseSlot = ExerciseSlot(ABS_PART, listOf("레그 레이즈"), setsPerExercise = SETS_PER_EXERCISE)
 
 internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
   RoutineDay(
     "월", "가슴",
     listOf(
-      ExerciseSlot(WARM_UP, listOf("덤벨 풀오버"), setsPerExercise = 2),
+      abs(),
       ExerciseSlot(
         "중부가슴",
         listOf(
@@ -46,84 +121,72 @@ internal val WEEKLY_ROUTINE: List<RoutineDay> = listOf(
           "라잉 컨버징 체스트 프레스",
           "이너 체스트 프레스",
           "스미스 벤치 프레스",
-          "팩댁 플라이",
         ),
-        pickCount = 2,
-        setsPerExercise = 4,
+        setsPerExercise = SETS_PER_EXERCISE,
       ),
-      ExerciseSlot("상부가슴", listOf("인클라인 체스트 프레스"), setsPerExercise = 5),
-      ExerciseSlot("하부가슴", listOf("시티드 딥스"), setsPerExercise = 5),
-      ExerciseSlot("복직근", ABS, setsPerExercise = 4),
+      ExerciseSlot("상부가슴", listOf("인클라인 체스트 프레스"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("하부가슴", listOf("시티드 딥스"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("중부가슴", listOf("팩댁 플라이"), setsPerExercise = SETS_PER_EXERCISE),
     ),
   ),
   RoutineDay(
     "화", "등",
     listOf(
-      ExerciseSlot(WARM_UP, listOf("풀오버 머신", "슈러그"), pickCount = 2, setsPerExercise = 2),
+      abs(),
       ExerciseSlot(
         "광배",
-        listOf("렛풀다운", "서큘러 렛풀다운", "롱 풀", "암풀다운"),
-        pickCount = 2,
-        setsPerExercise = 4,
+        listOf("풀업", "렛풀다운", "서큘러 렛풀다운", "롱 풀"),
+        setsPerExercise = SETS_PER_EXERCISE,
       ),
       ExerciseSlot(
         "중부등",
         listOf("시티드 로우", "수평 로우", "로우 로우", "하이 로우", "티바 로우", "바벨 로우"),
         pickCount = 2,
-        setsPerExercise = 4,
+        setsPerExercise = SETS_PER_EXERCISE,
       ),
-      ExerciseSlot("복직근", ABS, setsPerExercise = 4),
+      ExerciseSlot("광배", listOf("암풀다운", "풀오버 머신"), setsPerExercise = SETS_PER_EXERCISE),
     ),
   ),
   RoutineDay(
     "수", "다리",
     listOf(
-      ExerciseSlot(WARM_UP, listOf("힙 어덕션·어브덕션"), setsPerExercise = 2),
+      abs(),
       ExerciseSlot(
         "대퇴사두",
-        listOf(
-          "파워 레그 프레스",
-          "핵 스쿼트",
-          "스쿼트 프레스",
-          "슈퍼 스쿼트",
-          "고블릿 스쿼트",
-          "레그 익스텐션",
-        ),
-        pickCount = 2,
-        setsPerExercise = 4,
+        listOf("파워 레그 프레스", "핵 스쿼트", "스쿼트 프레스", "슈퍼 스쿼트", "고블릿 스쿼트"),
+        setsPerExercise = SETS_PER_EXERCISE,
       ),
-      ExerciseSlot(
-        "햄스트링",
-        listOf("루마니안 데드리프트", "레그 컬"),
-        pickCount = 2,
-        setsPerExercise = 4,
-      ),
-      // 스플릿 스쿼트는 대퇴사두 풀에 두지 않는다 — 같은 날 중복 등장을 막고 자극 비중이 큰 둔근에 전속.
-      ExerciseSlot("둔근", listOf("킥 백", "스플릿 스쿼트"), setsPerExercise = 4),
-      ExerciseSlot("카프", listOf("카프 레이즈"), setsPerExercise = 4),
+      ExerciseSlot("햄스트링", listOf("루마니안 데드리프트"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("대퇴사두", listOf("레그 익스텐션"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("햄스트링", listOf("레그 컬"), setsPerExercise = SETS_PER_EXERCISE),
     ),
   ),
-  // 어깨·팔은 웜업 슬롯이 없다 — 보유한 웜업 종목이 전부 가슴·등·다리용이라 넣을 게 없다.
   RoutineDay(
     "목", "어깨",
     listOf(
-      ExerciseSlot(
-        "전면삼각근",
-        listOf("숄더 프레스", "컨버징 숄더 프레스", "프론트 레이즈"),
-        pickCount = 2,
-        setsPerExercise = 4,
-      ),
-      ExerciseSlot("측면삼각근", SIDE_DELTOID, setsPerExercise = 6),
-      ExerciseSlot("후면삼각근", REAR_DELTOID, setsPerExercise = 6),
-      ExerciseSlot("복직근", ABS, setsPerExercise = 4),
+      abs(),
+      ExerciseSlot("전면삼각근", listOf("숄더 프레스", "컨버징 숄더 프레스"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("측면삼각근", listOf("스미스 비하인드 숄더 프레스"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("측면삼각근", listOf("사이드 레터럴 레이즈"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot("후면삼각근", listOf("벤트 오버 레이즈", "리버스 팩댁 플라이"), setsPerExercise = SETS_PER_EXERCISE),
     ),
   ),
   RoutineDay(
     "금", "팔",
     listOf(
-      ExerciseSlot("이두", BICEPS, pickCount = 2, setsPerExercise = 5),
-      ExerciseSlot("삼두", TRICEPS, pickCount = 2, setsPerExercise = 5),
-      ExerciseSlot("복직근", ABS, setsPerExercise = 4),
+      abs(),
+      ExerciseSlot("삼두", listOf("트라이셉스 프레스"), setsPerExercise = SETS_PER_EXERCISE),
+      ExerciseSlot(
+        "삼두",
+        listOf("케이블 트라이셉스 푸시다운", "케이블 오버헤드 트라이셉스 익스텐션"),
+        setsPerExercise = SETS_PER_EXERCISE,
+      ),
+      ExerciseSlot(
+        "이두",
+        listOf("이두 크리처 컬", "이두 드래그 컬", "이두 헤머컬", "이두 이지바 컬"),
+        pickCount = 2,
+        setsPerExercise = SETS_PER_EXERCISE,
+      ),
     ),
   ),
 )
@@ -217,7 +280,8 @@ internal fun currentWeekIndex(date: LocalDate = LocalDate.now()): Int = weekInde
  * 트레이드오프: 같은 부위 슬롯을 추가·삭제하면 그 부위의 등장 번호가 밀려 해당 주 종목이 한 번 재배치된다.
  * 다른 부위는 영향받지 않고, 커버리지·등장 빈도 균등성도 그대로다.
  *
- * 지금 구성에서 여러 번 등장하는 부위는 웜업뿐이고 그 풀이 전부 1개라 이 보정은 놀고 있다.
+ * 지금 구성에서 매일 등장하는 부위는 복직근뿐이고 그 풀이 1개라 이 보정은 놀고 있다. 같은 날 두 번 나오는 부위
+ * (다관절·단일관절 슬롯)는 서로 다른 풀을 쓰므로 겹칠 일이 없다.
  * 풀이 여럿인 부위를 여러 날에 배치하는 순간 다시 필요해진다.
  */
 internal fun RoutineDay.exercises(
@@ -226,18 +290,36 @@ internal fun RoutineDay.exercises(
 ): List<RoutineExercise> {
   val weekIndex = weekIndex(date)
   var position = 0
-  return slots.flatMap { slot ->
-    slot.pick(weekIndex, PART_OCCURRENCES[slot] ?: 0).map { exercise ->
-      // 풀에 없는 이름은 버린다 — 종목 구성을 고친 뒤 남아 있던 저장값이 화면에 새는 걸 막는다.
-      val picked = picks[position++]?.takeIf { it in slot.pool }
-      if (picked == null) exercise else RoutineExercise(slot.part, picked, slot.setsPerExercise)
+  return slots
+    .flatMap { slot ->
+      slot.pick(weekIndex, PART_OCCURRENCES[slot] ?: 0).map { rotated ->
+        val slotPosition = position++
+        // 풀에 없는 이름은 버린다 — 종목 구성을 고친 뒤 남아 있던 저장값이 화면에 새는 걸 막는다.
+        val name = picks[slotPosition]?.takeIf { it in slot.pool } ?: rotated
+        RoutineExercise(slot.part, name, slot.setsPerExercise, slotPosition)
+      }
     }
-  }
+    .sortedWith(EXERCISE_ORDER)
 }
 
-// exercises()와 같은 순서로, 각 자리에 놓을 수 있는 종목 후보.
+// RoutineExercise.slotPosition 순서로, 각 자리에 놓을 수 있는 종목 후보.
 internal fun RoutineDay.exerciseOptions(): List<List<String>> =
   slots.flatMap { slot -> List(slot.pickCount) { slot.pool } }
+
+/*
+ * 자유 루틴: 요일 루틴과 같은 볼륨(EXERCISES_PER_DAY종목 × SETS_PER_EXERCISE세트)에 종목만 사용자가 채운다.
+ * 사용자가 직접 짠 순서를 그대로 따르므로 정렬하지 않는다. 아직 입력하지 않은 자리는 이름이 빈 문자열이다.
+ * 자리마다 부위 이름을 달리 둬 같은 종목을 두 자리에 넣어도 세트 저장 키가 겹치지 않는다.
+ */
+internal fun freeRoutineExercises(names: List<String>): List<RoutineExercise> =
+  List(EXERCISES_PER_DAY) { position ->
+    RoutineExercise(
+      part = "종목 ${position + 1}",
+      name = names.getOrElse(position) { "" },
+      targetSets = SETS_PER_EXERCISE,
+      slotPosition = position,
+    )
+  }
 
 // 같은 부위 슬롯에 주간 등장 순번(0,1,2…)을 매긴다. ExerciseSlot은 equals를 두지 않아 참조 동일성으로 구분된다.
 private val PART_OCCURRENCES: Map<ExerciseSlot, Int> = buildMap {
@@ -252,17 +334,11 @@ private val PART_OCCURRENCES: Map<ExerciseSlot, Int> = buildMap {
 }
 
 // 주의: gap이 pool.size와 서로소가 아닐 수 있어, pickCount가 3 이상이면 같은 종목이 두 번 뽑힐 수 있다.
-private fun ExerciseSlot.pick(weekIndex: Int, partOccurrence: Int): List<RoutineExercise> {
+private fun ExerciseSlot.pick(weekIndex: Int, partOccurrence: Int): List<String> {
   val cursor = weekIndex + partOccurrence
   val start = cursor.mod(pool.size)
   val gap = 1 + (cursor / pool.size).mod((pool.size - 1).coerceAtLeast(1))
-  return List(pickCount) { offset ->
-    RoutineExercise(
-      part = part,
-      name = pool[(start + offset * gap).mod(pool.size)],
-      targetSets = setsPerExercise,
-    )
-  }
+  return List(pickCount) { offset -> pool[(start + offset * gap).mod(pool.size)] }
 }
 
 // 월요일에 주차가 올라가도록 +3 보정. 자세한 이유는 위 순환 규칙 설명 참고.

@@ -7,7 +7,7 @@ import sungbinland.workout.event.EventBus
 import sungbinland.workout.event.FirstSetChanged
 import sungbinland.workout.event.SetCountsChanged
 
-// 오늘 루틴의 종목별 수행 세트 수 + 첫 세트 완료 시각을 SharedPreferences(로컬)에 저장. 날짜가 바뀌면 초기화.
+// 오늘 루틴의 종목별 수행 세트 수 + 운동 시작 시각(기본은 첫 세트 완료 시각)을 SharedPreferences(로컬)에 저장. 날짜가 바뀌면 초기화.
 internal class SetCountStore(
   context: Context,
   val todayExercises: List<RoutineExercise>,
@@ -19,7 +19,7 @@ internal class SetCountStore(
     EventBus.post(FirstSetChanged(readFirstSetEpochMillis()))
   }
 
-  // 종목을 순서대로 채워나간다: 아직 목표치를 못 채운 첫 종목에 +1. 웜업이 목록 맨 앞이라 웜업부터 채워진다.
+  // 종목을 순서대로 채워나간다: 아직 목표치를 못 채운 첫 종목에 +1. 복직근이 목록 맨 앞이라 복직근부터 채워진다.
   fun recordCompletedSet() {
     if (todayExercises.isEmpty()) return
     resetIfNewDay()
@@ -35,6 +35,13 @@ internal class SetCountStore(
       prefs.edit().putLong(KEY_FIRST_SET_EPOCH, now).apply()
       EventBus.post(FirstSetChanged(now))
     }
+  }
+
+  // 운동 시작 시각을 사용자가 고친다. 첫 세트 전이라도 받아 두고, 이후 첫 세트가 끝나도 덮어쓰지 않는다.
+  fun setStartTime(epochMillis: Long) {
+    resetIfNewDay()
+    prefs.edit().putLong(KEY_FIRST_SET_EPOCH, epochMillis).apply()
+    EventBus.post(FirstSetChanged(epochMillis))
   }
 
   private fun resetIfNewDay() {
