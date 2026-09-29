@@ -12,9 +12,15 @@
 .codex
 .DS_Store
 build
+# 릴리스 APK만 커밋한다. 상위 디렉터리가 통째로 무시되면 하위 예외가 먹지 않아 한 단계씩 다시 연다.
+!app/build/
+app/build/*
 !app/build/outputs/
+app/build/outputs/*
 !app/build/outputs/apk/
+app/build/outputs/apk/*
 !app/build/outputs/apk/release/
+app/build/outputs/apk/release/*
 !app/build/outputs/apk/release/app-release.apk
 local.properties
 secrets.properties
