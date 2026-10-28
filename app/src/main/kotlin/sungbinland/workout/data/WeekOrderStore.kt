@@ -17,11 +17,13 @@ internal class WeekOrderStore(context: Context) {
     next[otherDayIndex] = order[dayIndex]
     prefs.edit()
       .putInt(KEY_WEEK, currentWeekIndex())
+      .putInt(KEY_LAYOUT_VERSION, LAYOUT_VERSION)
       .putString(KEY_ORDER, next.joinToString(","))
       .apply()
   }
 
   private fun read(): List<Int> {
+    if (prefs.getInt(KEY_LAYOUT_VERSION, 0) != LAYOUT_VERSION) return DEFAULT_WEEK_ORDER
     if (prefs.getInt(KEY_WEEK, NO_WEEK) != currentWeekIndex()) return DEFAULT_WEEK_ORDER
     val stored = prefs.getString(KEY_ORDER, "").orEmpty()
       .split(",")
@@ -32,6 +34,8 @@ internal class WeekOrderStore(context: Context) {
 
   private companion object {
     private const val PREFS_NAME = "workout"
+    private const val KEY_LAYOUT_VERSION = "week_order_layout_version"
+    private const val LAYOUT_VERSION = 1
     private const val KEY_WEEK = "week_order_week"
     private const val KEY_ORDER = "week_order"
     private const val NO_WEEK = Int.MIN_VALUE

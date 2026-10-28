@@ -146,6 +146,8 @@ internal class WorkoutView(
         dividerHeight = activity.dp(8)
         selector = ColorDrawable(Color.TRANSPARENT)
         cacheColorHint = Color.TRANSPARENT
+        isVerticalFadingEdgeEnabled = true
+        setFadingEdgeLength(activity.dp(24))
         clipToPadding = false
         setPadding(activity.dp(16), activity.dp(12), activity.dp(16), activity.dp(12))
       }
@@ -365,7 +367,7 @@ internal class WorkoutView(
   private fun pickableOptions(index: Int): List<String> {
     val exercises = store.todayExercises
     val taken = exercises
-      .filterIndexed { other, exercise -> other != index && exercise.part == exercises[index].part }
+      .filterIndexed { other, _ -> other != index }
       .mapTo(mutableSetOf()) { it.name }
     return exerciseOptions.getOrNull(exercises[index].slotPosition).orEmpty().filterNot { it in taken }
   }
