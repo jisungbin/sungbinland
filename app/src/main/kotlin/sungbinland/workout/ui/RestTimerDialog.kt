@@ -41,10 +41,15 @@ internal object RestTimerDialog {
       setPadding(0, activity.dp(16), 0, activity.dp(16))
     }
     content.addView(timerText)
-    content.addView(
-      activity.flatButton("+10초") { timer.extend(10_000L) },
-      LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT),
-    )
+    val controls = LinearLayout(activity).apply {
+      orientation = LinearLayout.HORIZONTAL
+      addView(activity.flatButton("-10초") { timer.reduce(10_000L) })
+      addView(
+        activity.flatButton("+10초") { timer.extend(10_000L) },
+        LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT).apply { leftMargin = activity.dp(8) },
+      )
+    }
+    content.addView(controls, LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT))
 
     val dialog = Dialog(activity).apply {
       setContentView(content, FrameLayout.LayoutParams(activity.dp(300), WRAP_CONTENT))

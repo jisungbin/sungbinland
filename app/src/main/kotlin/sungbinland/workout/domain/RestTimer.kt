@@ -3,7 +3,7 @@ package sungbinland.workout.domain
 import android.os.SystemClock
 
 internal class RestTimer {
-  // 기본 60초 고정, +10초로 목표 시간 연장.
+  // 기본 60초, 10초 단위로 목표 시간을 조절한다.
   var targetMillis: Long = 60_000L
     private set
 
@@ -23,6 +23,10 @@ internal class RestTimer {
 
   fun extend(millis: Long) {
     targetMillis += millis
+  }
+
+  fun reduce(millis: Long) {
+    targetMillis = (targetMillis - millis).coerceAtLeast(0L)
   }
 
   fun elapsedMillis(): Long {

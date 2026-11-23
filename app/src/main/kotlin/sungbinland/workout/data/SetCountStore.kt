@@ -15,6 +15,11 @@ internal class SetCountStore(
   private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
   init {
+    prefs.edit()
+      .remove(KEY_LEGACY_EXERCISE_DATE)
+      .remove(KEY_LEGACY_EXERCISE_NAMES)
+      .remove(KEY_LEGACY_EXERCISE_HISTORY)
+      .apply()
     EventBus.post(SetCountsChanged(readTodayCounts()))
     EventBus.post(FirstSetChanged(readFirstSetEpochMillis()))
   }
@@ -88,6 +93,9 @@ internal class SetCountStore(
     private const val KEY_DATE = "set_date"
     private const val KEY_COUNTS = "exercise_counts"
     private const val KEY_FIRST_SET_EPOCH = "first_set_epoch"
+    private const val KEY_LEGACY_EXERCISE_DATE = "free_routine_date"
+    private const val KEY_LEGACY_EXERCISE_NAMES = "free_routine_names"
+    private const val KEY_LEGACY_EXERCISE_HISTORY = "free_routine_history"
 
     private const val ENTRY_DELIMITER = "|"
     private const val COUNT_DELIMITER = "="
