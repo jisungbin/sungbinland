@@ -2,6 +2,9 @@ package sungbinland.workout.ui
 
 import android.app.Activity
 import android.graphics.Color
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.util.TypedValue
@@ -28,6 +31,8 @@ import sungbinland.workout.event.SetCountsChanged
 import sungbinland.workout.event.Subscription
 import sungbinland.workout.haptic.Haptics
 
+private const val RED_AFTER_MILLIS: Long = 50 * 60_000L
+
 internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
   val exercises = dailyExercises()
   val store = SetCountStore(activity, exercises)
@@ -52,6 +57,7 @@ internal class WorkoutView(
   private val subscriptions = mutableListOf<Subscription>()
 
   private val startTimeView: TextView
+  private val refreshStartTimeAtThreshold = Runnable { updateStartTime() }
   private val cardAdapter = CardAdapter()
   private val confettiView: ConfettiView
 
@@ -60,7 +66,7 @@ internal class WorkoutView(
   val root: View
 
   /*
-   * 화면은 고정 헤더(시작 시각·제목) / 카드 목록 / 하단 휴식 타이머로 구성한다.
+   * 화면은 고정 헤더(시작 시각·운동 주의사항) / 카드 목록 / 하단 휴식 타이머로 구성한다.
    * 스크롤은 가운데 ListView 안에서만 일어나 헤더와 타이머 버튼은 항상 제자리에 있다.
    */
   init {
@@ -78,9 +84,9 @@ internal class WorkoutView(
 
     header.addView(
       TextView(activity).apply {
-        text = "오늘의 운동"
+        text = "호흡 리듬, 복압, 견갑/어깨/가슴, 무게중심, 허리/등 신경쓰기"
         setTextColor(Palette.TEXT)
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
       },
       rowParams(activity.dp(if (hasWorkout) 8 else 0)),
     )
@@ -148,16 +154,40 @@ internal class WorkoutView(
   fun dispose() {
     subscriptions.forEach { it.cancel() }
     subscriptions.clear()
+    startTimeView.removeCallbacks(refreshStartTimeAtThreshold)
   }
 
   private fun updateStartTime() {
+    startTimeView.removeCallbacks(refreshStartTimeAtThreshold)
     val start = firstSetEpochMillis
-    startTimeView.text = if (start == 0L) {
-      "시작 전 · 시작 시각 입력  ▾"
+    if (start == 0L) {
+      startTimeView.setTextColor(Palette.MUTED)
+      startTimeView.text = "시작 전 · 시작 시각 입력  ▾"
+      return
+    }
+
+    val now = System.currentTimeMillis()
+    val elapsedMillis = (now - start).coerceAtLeast(0L)
+    val minutes = elapsedMillis / 60_000L
+    startTimeView.setTextColor(Palette.MUTED)
+    val millisUntilRed = start + RED_AFTER_MILLIS - now
+    if (millisUntilRed > 0L) startTimeView.postDelayed(refreshStartTimeAtThreshold, millisUntilRed)
+
+    val clock = LocalTime.ofInstant(Instant.ofEpochMilli(start), ZoneId.systemDefault())
+    val elapsedText = String.format(Locale.KOREA, "%d분 경과", minutes)
+    val displayText = String.format(Locale.KOREA, "%02d:%02d 시작 · %s  ▾", clock.hour, clock.minute, elapsedText)
+    if (elapsedMillis >= RED_AFTER_MILLIS) {
+      val styledText = SpannableString(displayText)
+      val elapsedStart = displayText.indexOf(elapsedText)
+      styledText.setSpan(
+        ForegroundColorSpan(Color.RED),
+        elapsedStart,
+        elapsedStart + elapsedText.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+      )
+      startTimeView.text = styledText
     } else {
-      val clock = LocalTime.ofInstant(Instant.ofEpochMilli(start), ZoneId.systemDefault())
-      val minutes = ((System.currentTimeMillis() - start) / 60_000L).coerceAtLeast(0L)
-      String.format(Locale.KOREA, "%02d:%02d 시작 · %d분 경과  ▾", clock.hour, clock.minute, minutes)
+      startTimeView.text = displayText
     }
   }
 
