@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.text.style.LineBreakConfigSpan
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
+import android.graphics.text.LineBreakConfig
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -32,6 +34,25 @@ import sungbinland.workout.event.Subscription
 import sungbinland.workout.haptic.Haptics
 
 private const val RED_AFTER_MILLIS: Long = 50 * 60_000L
+
+private fun buildWorkoutReminder(): SpannableString {
+  val text = "호흡 리듬, 복압, 견갑/어깨/가슴, 무게중심, 허리/등 신경쓰기"
+  val styledText = SpannableString(text)
+  var itemStart = 0
+  while (itemStart < text.length) {
+    val commaIndex = text.indexOf(',', itemStart)
+    val itemEnd = if (commaIndex >= 0) commaIndex + 1 else text.length
+    styledText.setSpan(
+      LineBreakConfigSpan.createNoBreakSpan(),
+      itemStart,
+      itemEnd,
+      Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+    )
+    itemStart = itemEnd
+    while (itemStart < text.length && text[itemStart].isWhitespace()) itemStart++
+  }
+  return styledText
+}
 
 internal fun installWorkoutView(activity: Activity): WorkoutViewHandle {
   val exercises = dailyExercises()
@@ -84,7 +105,9 @@ internal class WorkoutView(
 
     header.addView(
       TextView(activity).apply {
-        text = "호흡 리듬, 복압, 견갑/어깨/가슴, 무게중심, 허리/등 신경쓰기"
+        text = buildWorkoutReminder()
+        setTextLocale(Locale.KOREA)
+        setLineBreakWordStyle(LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE)
         setTextColor(Palette.TEXT)
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
       },
